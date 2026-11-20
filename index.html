@@ -1,0 +1,1057 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Power Law Fund</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a partner's desk. Sticky fund ticker on top, tabbed workspace below; deals are memo cards, portfolio is a ledger. */
+:root{
+  --paper:#ECEFF3; --card:#FFFFFF; --ink:#141E28; --muted:#5A6774; --line:#D3DAE2;
+  --accent:#1F4FD8; --accent-ink:#FFFFFF; --accent-soft:#E2E9FB; --band:#C3D1F7;
+  --good:#17804F; --good-soft:#DDF2E7; --warn:#A0630E; --warn-soft:#F7EBD4; --bad:#BF3B33; --bad-soft:#F8E0DE;
+  --shadow:0 1px 2px rgba(20,30,40,.06),0 4px 14px rgba(20,30,40,.05);
+  --f-display:'Archivo','Arial Narrow',system-ui,sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0D1319; --card:#151D26; --ink:#E2E8EE; --muted:#8C98A5; --line:#27323E;
+  --accent:#86A2FF; --accent-ink:#0D1319; --accent-soft:#1B2747; --band:#2C3D6E;
+  --good:#4CC38A; --good-soft:#123326; --warn:#E3AA45; --warn-soft:#3A2A10; --bad:#F2766D; --bad-soft:#3D1A18;
+  --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0D1319; --card:#151D26; --ink:#E2E8EE; --muted:#8C98A5; --line:#27323E;
+  --accent:#86A2FF; --accent-ink:#0D1319; --accent-soft:#1B2747; --band:#2C3D6E;
+  --good:#4CC38A; --good-soft:#123326; --warn:#E3AA45; --warn-soft:#3A2A10; --bad:#F2766D; --bad-soft:#3D1A18;
+  --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--card)}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:1.45rem;font-stretch:85%;font-weight:750}
+h3{font-size:1.2rem;font-stretch:90%;font-weight:700}
+p{margin:0}
+.num,.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:.5rem .85rem;font-weight:600;font-size:.88rem}
+button:hover:not(:disabled){border-color:var(--accent)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.ghost{background:transparent}
+button.danger{color:var(--bad)}
+button.small{padding:.32rem .6rem;font-size:.8rem}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:.55rem .7rem;width:100%}
+label.f{display:grid;gap:.35rem;font-size:.82rem;font-weight:600;color:var(--muted)}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:.3rem;font-size:.72rem;font-weight:600;padding:.15rem .5rem;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip-acc{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.chip-good{border-color:transparent;background:var(--good-soft);color:var(--good)}
+.chip-warn{border-color:transparent;background:var(--warn-soft);color:var(--warn)}
+.chip-bad{border-color:transparent;background:var(--bad-soft);color:var(--bad)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+
+/* ---------- Start screen ---------- */
+.start{padding-block:48px 64px;display:grid;gap:36px}
+.brand{font-size:clamp(3.6rem,13vw,8.5rem);font-stretch:62%;font-weight:900;letter-spacing:-.01em;line-height:.88;text-transform:uppercase}
+.brand span{color:var(--accent)}
+.lede{max-width:62ch;font-size:1.08rem;margin-top:14px;color:var(--ink)}
+.curve{width:100%;max-width:520px;height:auto;margin-top:18px}
+.curve path.fill{fill:var(--accent-soft)} .curve path.line{fill:none;stroke:var(--accent);stroke-width:2.5}
+.curve text{fill:var(--muted);font-family:var(--f-mono);font-size:11px}
+.setup{padding:22px;display:grid;gap:18px}
+.setup-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:14px}
+.diffs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:10px}
+.diff{text-align:left;display:grid;gap:4px;padding:14px;border-radius:10px;font-weight:400}
+.diff b{font-family:var(--f-display);font-stretch:85%;font-size:1.1rem}
+.diff small{color:var(--muted);font-size:.82rem;line-height:1.4}
+.diff.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr));gap:20px}
+.how div{display:grid;gap:6px;align-content:start;border-top:2px solid var(--ink);padding-top:10px}
+.how h3{font-size:1.05rem}
+.how p{color:var(--muted);font-size:.9rem}
+.seedrow{display:flex;gap:8px}
+.seedrow input{flex:1;min-width:0}
+
+/* ---------- Header ---------- */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--card);border-bottom:1px solid var(--line)}
+.bar-in{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;padding-block:10px}
+.fund b{font-family:var(--f-display);font-stretch:75%;font-weight:850;font-size:1.35rem;text-transform:uppercase;display:block;line-height:1}
+.fund span{font-size:.75rem;color:var(--muted)}
+.stats{display:flex;flex-wrap:wrap;gap:6px 20px;flex:1;min-width:0}
+.stat{display:grid;line-height:1.15}
+.stat small{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.stat span{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:600;font-size:.95rem}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.timeline{display:grid;grid-template-columns:repeat(40,1fr);gap:2px;padding-block:0 8px}
+.timeline i{height:5px;border-radius:2px;background:var(--line)}
+.timeline i.inv{background:var(--band)}
+.timeline i.past{background:var(--muted)}
+.timeline i.now{background:var(--accent)}
+.reg{font-weight:700}
+.reg-boom{color:var(--good)} .reg-normal{color:var(--accent)} .reg-correction{color:var(--warn)} .reg-recession{color:var(--bad)}
+
+/* ---------- Main ---------- */
+main.game{padding-block:20px 60px;display:grid;gap:18px}
+.recap{padding:14px 16px;display:grid;gap:8px}
+.recap ul{margin:0;padding:0;list-style:none;display:grid;gap:4px}
+.recap li{font-size:.9rem;padding-left:14px;position:relative}
+.recap li::before{content:"";position:absolute;left:0;top:.55em;width:7px;height:7px;border-radius:50%;background:var(--muted)}
+.recap li.good::before{background:var(--good)} .recap li.bad::before{background:var(--bad)} .recap li.warn::before{background:var(--warn)} .recap li.info::before{background:var(--accent)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{border:0;border-bottom:3px solid transparent;border-radius:0;background:transparent;padding:.6rem .9rem;color:var(--muted);white-space:nowrap}
+.tab.on{color:var(--ink);border-bottom-color:var(--accent)}
+.tab .count{font-family:var(--f-mono);font-size:.75rem;margin-left:4px;background:var(--accent-soft);color:var(--accent);padding:0 .4rem;border-radius:999px}
+.tab .count.alert{background:var(--bad);color:#fff}
+.section-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:8px}
+.section-h p{color:var(--muted);font-size:.88rem;max-width:70ch}
+
+.deals{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:16px;align-items:start}
+.deal{padding:16px;display:grid;gap:12px;min-width:0}
+.deal.is-owned{border-color:var(--good);box-shadow:inset 0 0 0 1px var(--good)}
+.deal-h{display:grid;gap:6px}
+.deal-h .chips{display:flex;flex-wrap:wrap;gap:4px}
+.one{font-size:.9rem}
+.founder{font-size:.8rem;color:var(--muted)}
+.terms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px;margin:0;padding:10px 0;border-block:1px dashed var(--line)}
+.terms div{min-width:0}
+.terms dt{font-size:.66rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.terms dd{margin:0;font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:600;font-size:.86rem;overflow-wrap:anywhere}
+.meters{display:grid;gap:7px}
+.meter{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) 4.6rem;align-items:center;gap:8px;font-size:.8rem}
+.m-track{position:relative;height:8px;background:var(--paper);border-radius:4px;border:1px solid var(--line)}
+.m-band{position:absolute;top:-1px;bottom:-1px;background:var(--band);border-radius:4px}
+.m-dot{position:absolute;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--ink);border:2px solid var(--card)}
+.m-val{font-family:var(--f-mono);font-size:.78rem;text-align:right;white-space:nowrap}
+.m-val i{font-style:normal;color:var(--good);font-family:var(--f-body);font-size:.66rem;font-weight:700;margin-left:3px}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;background:var(--paper);border-radius:8px;padding:10px}
+.facts div{display:grid;min-width:0}
+.facts small{font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.facts span{font-family:var(--f-mono);font-size:.8rem;font-weight:600;overflow-wrap:anywhere}
+.flags{display:grid;gap:5px}
+.flag{font-size:.8rem;padding:6px 9px;border-radius:7px;background:var(--bad-soft);color:var(--bad)}
+.flag.warn{background:var(--warn-soft);color:var(--warn)}
+.flag b{font-weight:700}
+.deal-f{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.deal-f .note{font-size:.8rem;color:var(--muted)}
+.owned-note{font-size:.85rem;color:var(--good);font-weight:600}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+
+/* Portfolio */
+.decisions{display:grid;gap:12px}
+.decision{padding:14px 16px;display:grid;gap:10px;border-left:4px solid var(--accent)}
+.decision.bridge{border-left-color:var(--bad)}
+.decision .row{display:flex;flex-wrap:wrap;gap:8px}
+.port{display:grid;gap:10px}
+.pc{padding:14px 16px;display:grid;gap:10px;min-width:0}
+.pc-top{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.pc-name{display:grid;min-width:min(200px,100%);flex:1}
+.pc-name b{font-family:var(--f-display);font-stretch:90%;font-size:1.1rem}
+.pc-name small{color:var(--muted);font-size:.78rem}
+.kv{display:grid;line-height:1.2}
+.kv small{font-size:.64rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.kv span{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:600;font-size:.88rem}
+.crisis{font-size:.85rem;background:var(--warn-soft);color:var(--warn);padding:8px 10px;border-radius:8px}
+.sup{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sup .lbl{font-size:.75rem;color:var(--muted);margin-right:4px}
+.sup button.done{background:var(--good-soft);color:var(--good);border-color:transparent}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+td.n,th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+
+/* Market */
+.chart{width:100%;height:auto;display:block}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart text{fill:var(--muted);font-family:var(--f-mono);font-size:10px}
+.chart .rate{fill:none;stroke:var(--ink);stroke-width:2}
+.chart .dot{fill:var(--ink)}
+.chart .b-boom{fill:var(--good);opacity:.18} .chart .b-normal{fill:var(--accent);opacity:.1} .chart .b-correction{fill:var(--warn);opacity:.22} .chart .b-recession{fill:var(--bad);opacity:.24}
+.chart .div{stroke:var(--muted);stroke-dasharray:4 4}
+.mk{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:16px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.78rem;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.lg-boom{background:var(--good)} .lg-normal{background:var(--accent)} .lg-correction{background:var(--warn)} .lg-recession{background:var(--bad)}
+.log{display:grid;gap:4px;font-size:.86rem}
+.log div{display:grid;grid-template-columns:5.5rem 1fr;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}
+.log span:first-child{font-family:var(--f-mono);color:var(--muted);font-size:.78rem}
+
+/* Modal */
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(10,16,22,.55);display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal{width:min(680px,100%);max-height:100%;overflow:auto;padding:20px;display:grid;gap:14px}
+.modal-h{display:flex;justify-content:space-between;gap:12px;align-items:start}
+.qs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:8px}
+.q{text-align:left;font-weight:500;font-size:.86rem;padding:10px 12px}
+.q.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.q.asked{opacity:.5}
+.transcript{display:grid;gap:12px}
+.tline{display:grid;gap:4px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.tline .who{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.tline .you{font-weight:600}
+.tline .them{font-size:.95rem}
+.tline .data{font-family:var(--f-mono);font-size:.8rem;color:var(--accent)}
+.checks{display:grid;gap:8px}
+.check{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;text-align:left;padding:12px;font-weight:400}
+.check.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.check b{font-family:var(--f-display);font-stretch:90%;font-size:1rem}
+.mfoot{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+
+/* End screen */
+.end{padding-block:36px 64px;display:grid;gap:26px}
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:12px}
+.score .kpi{padding:14px 16px;display:grid;gap:2px}
+.kpi small{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.kpi b{font-family:var(--f-display);font-stretch:75%;font-weight:850;font-size:2.4rem;line-height:1}
+.kpi span{font-size:.78rem;color:var(--muted)}
+.kpi.hero{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.kpi.hero small,.kpi.hero span{color:var(--accent-ink);opacity:.85}
+.verdict{font-family:var(--f-display);font-stretch:70%;font-weight:900;font-size:clamp(2.4rem,8vw,4.6rem);text-transform:uppercase;line-height:.95}
+.bridge3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:12px}
+.bridge3 .card{padding:14px 16px;display:grid;gap:6px}
+.bridge3 b{font-family:var(--f-mono);font-size:1.4rem}
+.bridge3 p{font-size:.85rem;color:var(--muted)}
+.bars{display:grid;gap:8px}
+.barrow{display:grid;grid-template-columns:8.5rem 1fr 5.5rem;gap:10px;align-items:center;font-size:.84rem}
+.bartrack{height:14px;background:var(--paper);border-radius:4px;overflow:hidden;border:1px solid var(--line)}
+.bartrack i{display:block;height:100%;background:var(--accent)}
+.barrow .n{font-family:var(--f-mono);text-align:right;font-size:.8rem}
+.lesson{padding:16px 18px;display:grid;gap:8px}
+.lesson ul{margin:0;padding-left:1.1rem;display:grid;gap:6px;font-size:.92rem}
+details summary{cursor:pointer;font-weight:600}
+@media (max-width:560px){
+  .terms{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .meter{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 4.2rem}
+  .barrow{grid-template-columns:6.5rem 1fr 4.5rem}
+  .stats{gap:6px 14px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .deal,.pc,.decision{animation:rise .25s ease-out both}
+  @keyframes rise{from{transform:translateY(4px)}to{transform:none}}
+}
+</style>
+
+<div id="app"></div>
+
+<script>
+// ENGINE START
+// ---------------------------------------------------------------------------
+// Game data
+// ---------------------------------------------------------------------------
+const SECTORS = ['AI & Infra','Fintech','Healthtech','Climate','Enterprise SaaS','Consumer'];
+const STAGES = ['Pre-seed','Seed','Series A','Series B','Series C','Series D','Growth'];
+const FKEYS = ['team','traction','revenue','tech','market','fmf'];
+const FLABEL = {team:'Team strength',traction:'Traction',revenue:'Revenue quality',tech:'Technical differentiation',market:'Market size',fmf:'Founder-market fit'};
+const INVEST_QS = 16, TOTAL_QS = 40, DEALS_PER_Q = 3, FUND = 50e6, FEES = 10e6;
+
+const REGIMES = {
+  boom:      {label:'Boom',       val:1.35, raise:0.5,  step:0.2,   exit:1.6,  mom:0.03,  hype:0.6},
+  normal:    {label:'Normal',     val:1.0,  raise:0.1,  step:0,     exit:1.0,  mom:0,     hype:0},
+  correction:{label:'Correction', val:0.8,  raise:-0.45,step:-0.2,  exit:0.5,  mom:-0.04, hype:-0.4},
+  recession: {label:'Recession',  val:0.65, raise:-0.9, step:-0.35, exit:0.25, mom:-0.08, hype:-0.8},
+};
+const ORDER = ['boom','normal','correction','recession'];
+const TRANS = {
+  boom:      {boom:.86, normal:.11, correction:.03, recession:0},
+  normal:    {boom:.07, normal:.84, correction:.08, recession:.01},
+  correction:{boom:0,   normal:.22, correction:.63, recession:.15},
+  recession: {boom:0,   normal:.06, correction:.26, recession:.68},
+};
+const DIFFS = {
+  easy:  {label:'Bull Market', rate:1.5,  calls:24, hours:12, down:0.5, start:'boom',
+          blurb:'Cheap money, open exit windows, rare downturns. 24 diligence calls, 12 partner hours a quarter.'},
+  normal:{label:'Full Cycle',  rate:3.0,  calls:18, hours:10, down:1.0, start:'normal',
+          blurb:'Rates drift, a correction is likely at some point. 18 diligence calls, 10 partner hours a quarter.'},
+  hard:  {label:'Rate Shock',  rate:0.25, calls:14, hours:8,  down:1.3, start:'boom', shock:true,
+          blurb:'Start at the top of a frothy market, then rates climb fast for two years. 14 calls, 8 hours a quarter.'},
+};
+
+const ONELINERS = {
+  'AI & Infra':['GPU scheduling layer that cuts inference costs for mid-size AI teams','Evaluation and monitoring for LLM apps in regulated industries','Vector database built for on-prem deployments','AI agents that automate accounts-payable data entry','Synthetic training data for computer-vision models'],
+  'Fintech':['Embedded lending for B2B marketplaces','Treasury management for startups with idle cash','Fraud scoring API for small online merchants','Payroll and benefits for independent pharmacies','Cross-border payouts for freelancers in emerging markets'],
+  'Healthtech':['Prior-authorization automation for specialty clinics','Remote monitoring for post-surgery patients','Drug supply chain traceability for independent pharmacies','Scheduling and billing for physical therapy practices','At-home lab testing for chronic disease management'],
+  'Climate':['Software to run commercial EV charging fleets','Carbon accounting for mid-market manufacturers','Heat-pump installation marketplace','Battery health analytics for grid storage operators','Low-carbon cement additive with a pilot plant'],
+  'Enterprise SaaS':['Contract lifecycle management for procurement teams','Field service scheduling for HVAC contractors','Security compliance automation for SOC 2 and HIPAA','Revenue forecasting for B2B sales teams','Internal knowledge search for large support teams'],
+  'Consumer':['Subscription meal kits for people with diabetes','Social fitness app built around small group challenges','Resale marketplace for kids gear','Language learning through short-form video','Personal finance app for people in their first job'],
+};
+const MODELS = {
+  'AI & Infra':['Usage-based software',50,72],'Fintech':['Transaction fees',40,68],'Healthtech':['SaaS plus services',50,72],
+  'Climate':['Hardware plus software',22,45],'Enterprise SaaS':['Subscription SaaS',72,88],'Consumer':['Consumer subscription',55,80],
+};
+const SHOCKS = {
+  'AI & Infra':['Enterprise AI budgets double; infra startups raise at a premium','AI spend pulls back after a wave of failed pilots'],
+  'Fintech':['Open banking rules unlock new fintech products','Regulators crack down on fintech partner banks'],
+  'Healthtech':['New reimbursement codes pay for remote care','Hospital budgets freeze and digital health deals stall'],
+  'Climate':['Clean energy tax credits extended for ten years','Climate incentives rolled back; project finance dries up'],
+  'Enterprise SaaS':['IT budgets reopen and SaaS renewals accelerate','CFOs cut software seats across the board'],
+  'Consumer':['Consumer spending surges and app installs climb','Consumer spending slumps and ad costs spike'],
+};
+const FIRST = ['Maya','Arjun','Lena','Tomas','Priya','Diego','Hana','Kofi','Sofia','Ravi','Elise','Marcus','Yuki','Omar','Ines','Felix','Amara','Jonah','Mei','Nikolai','Zara','Theo','Leila','Samir'];
+const LAST = ['Okafor','Lindqvist','Raman','Castellanos','Whitfield','Nakamura','Adeyemi','Brennan','Kowalski','Haddad','Moreau','Chen','Ostrowski','Iyer','Delgado','Fischer','Mbeki','Sato','Vance','Rahman','Torres','Novak','Achebe','Larsen'];
+const NA = ['Kel','Mira','Tor','Quill','Arden','Brix','Cobal','Fenn','Halo','Iri','Juno','Lark','Mosa','Nimb','Orra','Pell','Rune','Sabl','Tess','Umbr','Vey','Wren','Zeph','Ost','Calyx','Dov'];
+const NB = ['ly','io','wise','stack','path','grid','labs','loop','base','forge','mint','ware','bit','flow','sense','dock'];
+const BG = {
+  high:['2x founder with a prior exit','Ex-head of product at a public software company','Founding engineer at a company that reached $1B','Ran operations in this exact industry for 10 years'],
+  mid:['Former senior engineer at a large tech company','Ex-consultant who specialized in this industry','Product manager turned first-time founder','Former sales leader at an industry incumbent'],
+  low:['First-time founder, straight out of school','Career switcher with no industry background','Solo technical founder still building a team','Agency owner pivoting into software'],
+};
+const EVENTS = [
+  {w:.22, crisis:true, fix:'board',   pen:0.6,  short:'Cofounder conflict', text:'Cofounder conflict over roles and equity is stalling decisions.'},
+  {w:.20, crisis:true, fix:'intros',  pen:0.45, short:'Lost top customer',  text:'Lost their largest customer to a competitor.'},
+  {w:.18, crisis:true, fix:'recruit', pen:0.4,  short:'Key hire poached',   text:'Their VP of Engineering was poached by a larger company.'},
+  {w:.22, good:true, boost:0.35, text:'Signed a marquee enterprise customer.'},
+  {w:.18, good:true, boost:0.25, text:'Beat the quarterly plan by a wide margin.'},
+];
+const SUPPORT = {
+  recruit:{label:'Recruiting help', hours:2, tip:'Intro senior candidates. Fixes a poached hire.'},
+  intros: {label:'Customer intros', hours:2, tip:'Open doors to buyers. Fixes a lost customer.'},
+  prep:   {label:'Fundraising prep', hours:3, tip:'Boosts the odds of the next round closing.'},
+  board:  {label:'Board session', hours:3, tip:'Work through hard decisions. Fixes cofounder conflict.'},
+};
+const QUESTIONS = [
+  ['burn','What is your monthly burn?'],
+  ['arr','What is your current revenue run rate?'],
+  ['growth','How fast is revenue growing?'],
+  ['cash','How much cash is in the bank?'],
+  ['lois','Any signed LOIs or paid pilots?'],
+  ['interest','Who else is looking at this round?'],
+  ['cap','Can we see the cap table?'],
+  ['nrr','What does customer retention look like?'],
+  ['gm','What are your gross margins?'],
+  ['conc','How concentrated is your revenue?'],
+  ['refs','Run back-channel references on the founders'],
+  ['tech','Walk us through the technology'],
+  ['market','How do you size the market?'],
+];
+const QTEXT = Object.fromEntries(QUESTIONS);
+const QPERCALL = 3;
+
+// ---------------------------------------------------------------------------
+// Random numbers. Separate seeded streams keep the market, the deal flow and
+// each company's fate identical for everyone who plays the same seed.
+// ---------------------------------------------------------------------------
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hashStr(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19}h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);return(h^h>>>16)>>>0}
+function gauss(r){const u=Math.max(r(),1e-9),v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const sig=x=>1/(1+Math.exp(-x));
+const pick=(arr,u)=>arr[Math.min(arr.length-1,Math.floor(u*arr.length))];
+
+let G = null;
+
+function newGame(o){
+  const D = DIFFS[o.diff];
+  G = {
+    seed:String(o.seed), diff:o.diff, D, thesis:o.thesis, fundName:o.fund||'Fund I',
+    q:0, cash:FUND-FEES, calls:D.calls, hours:D.hours,
+    rate:D.rate, regime:D.start, rateHist:[D.rate], regimeHist:[D.start], shocks:[],
+    marketRng:mulberry32(hashStr(o.seed+'|market')), dealRng:mulberry32(hashStr(o.seed+'|deals')),
+    companies:[], deals:[], pending:[], log:[], recap:[], flows:[], distributed:0, nextId:1, usedNames:{},
+    over:false, tab:'deals', modal:null,
+  };
+  addLog(`${G.fundName} closed at $50M. $10M is set aside for management fees, leaving $40M to invest.`,'info');
+  genDeals();
+}
+
+function byId(id){return G.companies.find(c=>c.id===id)}
+function addLog(text,t='info'){G.log.push({q:G.q,text,t})}
+function rec(c,t,text){ if(!c||c.owned){ G.recap.push({t,text}); G.log.push({q:G.q,text,t}); } }
+function qLabel(q){return `Y${Math.floor(q/4)+1} Q${q%4+1}`}
+
+function genDeals(){ for(let i=0;i<DEALS_PER_Q;i++){ const c=genCompany(); G.companies.push(c); G.deals.push(c.id);} }
+
+function genCompany(){
+  const r=G.dealRng, g=()=>gauss(r);
+  const id=G.nextId++;
+  // Every draw happens in a fixed order so the same seed always yields the same deal.
+  const sRoll=r(), sPick=r(), stRoll=r(), q=g();
+  const F={}; FKEYS.forEach(k=>F[k]=clamp(5.5+1.5*(0.65*q+0.75*g()),1,10));
+  const fl={messy:r()<0.15, inflated:r()<0.18, concentration:r()<0.15, tension:r()<0.12, burnHeavy:r()<0.18};
+  const rArr=g(),rGrowth=g(),rNrr=g(),rGm=r(),rBurn=g(),rRun=r(),rLoi=g(),rConc=r(),rCap=g(),rSafe=r(),rPool=r();
+  const rFirst=r(),rLast=r(),rBg=r(),rN1=r(),rN2=r(),rOne=r(),rVal=g(),rRound=r(),rInt=g(),rRaise=r();
+  const Rn=FKEYS.map(()=>g());
+  const cSeed=Math.floor(r()*4294967296);
+
+  const sector=(G.thesis!=='Generalist'&&sRoll<0.45)?G.thesis:pick(SECTORS,sPick);
+  const stage=stRoll<0.3?0:stRoll<0.8?1:2;
+  if(stage===0) fl.concentration=false;
+  const [model,gmLo,gmHi]=MODELS[sector];
+
+  const arr=[60e3,600e3,3e6][stage]*Math.exp((F.revenue-5.5)/2.2+0.35*rArr);
+  const growth=clamp([120,85,60][stage]+28*(F.traction-5.5)+28*rGrowth,-10,450);
+  const nrr=clamp(100+5*(F.traction-5.5)+7*rNrr,70,165);
+  const gm=gmLo+(gmHi-gmLo)*rGm;
+  const burn=[70e3,220e3,650e3][stage]*Math.exp(0.25*rBurn)*(fl.burnHeavy?1.9:1);
+  const runwayMo=Math.round(5+rRun*16);
+  const lois=Math.max(0,Math.round(1.5+0.8*(F.traction-5.5)+0.6*(F.market-5.5)+1.2*rLoi));
+  const conc=fl.concentration?52+rConc*25:12+rConc*25;
+  const capFounders=clamp([88,72,58][stage]-(fl.messy?22:0)+4*rCap,20,95);
+  const safe=fl.messy?15+rSafe*15:rSafe*6;
+  const pool=8+rPool*8;
+
+  // Founders pitch their own numbers. Reported factors carry noise, and inflaters pad traction.
+  const sd0=(sector===G.thesis)?1.0:1.6;
+  const R={}, sd={};
+  FKEYS.forEach((k,i)=>{ R[k]=clamp(F[k]+sd0*0.8*Rn[i]+(fl.inflated&&(k==='traction'||k==='revenue')?1.3:0),1,10); sd[k]=sd0; });
+  const deckArr=arr*(fl.inflated?1.45+0.3*rSafe:1);
+  const deckGrowth=growth*(fl.inflated?1.35:1);
+
+  // True quality: what actually drives outcomes. Hidden from the player.
+  const z=k=>(F[k]-5.5)/1.5;
+  let s=(0.25*z('team')+0.2*z('traction')+0.1*z('revenue')+0.15*z('tech')+0.2*z('market')+0.1*z('fmf'))/0.72;
+  s-=fl.messy*0.45+fl.inflated*0.5+fl.concentration*0.4+fl.tension*0.6+fl.burnHeavy*0.35;
+
+  // Price follows the pitch and the market, not the truth.
+  const rq=FKEYS.reduce((a,k)=>a+(R[k]-5.5)/1.5,0)/FKEYS.length;
+  const RG=REGIMES[G.regime];
+  const post=[9e6,18e6,55e6][stage]*Math.exp(0.25*rq+0.18*rVal)*RG.val*Math.max(0.6,1-0.035*(G.rate-3));
+  const round=post*(0.18+0.06*rRound);
+  const interest=sig(0.7*s+0.6*rq+RG.hype+0.6*rInt);
+
+  let name=pick(NA,rN1)+pick(NB,rN2); name=name[0].toUpperCase()+name.slice(1);
+  if(G.usedNames[name]){G.usedNames[name]++; name+=' '+['Labs','AI','HQ','Systems'][G.usedNames[name]%4];} else G.usedNames[name]=1;
+  const tier=F.team>=7.2?'high':F.team>=4.8?'mid':'low';
+
+  return {
+    id, name, sector, model, stage, entryStage:stage, F, R, sd, flags:fl, s,
+    metrics:{arr,growth,nrr,gm,burn,runwayMo,cash:burn*runwayMo,lois,conc,capFounders,safe,pool},
+    deck:{arr:deckArr,growth:deckGrowth},
+    post, entryPost:post, round, raised:[0.5e6,2e6,8e6][stage]+round, interest,
+    founder:pick(FIRST,rFirst)+' '+pick(LAST,rLast), bg:pick(BG[tier],rBg), oneLiner:pick(ONELINERS[sector],rOne),
+    facts:{}, flagsSeen:[], asked:[], calls:0, transcript:[],
+    status:'deal', m:0.5*s, prevM:0.5*s, toRaise:6+Math.floor(rRaise*3), burn,
+    owned:false, own:0, invested:0, returned:0, hOwn:1e6/post, hReturned:0,
+    crisis:null, supQ:0, prep:0, supDone:{}, bridges:0, bridgeDecision:null, entryQ:G.q,
+    rng:mulberry32(cSeed^hashStr(G.seed)),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Diligence
+// ---------------------------------------------------------------------------
+function tight(c,k,v){c.sd[k]=Math.min(c.sd[k],v)}
+function answer(c,key){
+  const M=c.metrics,F=c.F,f=c.flags; let quote='',fact=null,flag=null,level='bad';
+  const $=fmt$;
+  switch(key){
+    case 'burn': quote=`We burn about ${$(M.burn)} a month.${f.burnHeavy?' We hired ahead of the round, so it is running above plan.':''}`;
+      fact=['Monthly burn',$(M.burn)]; if(f.burnHeavy) flag='Burn is roughly double the norm for this stage.'; break;
+    case 'arr': quote=M.arr<80e3?`We are early. Run rate is about ${$(M.arr)}, mostly from paid pilots.`:`Run rate is ${$(M.arr)} in annual recurring revenue.`;
+      fact=['Verified ARR',$(M.arr)]; tight(c,'revenue',0.4);
+      if(f.inflated) flag=`The deck said ${$(c.deck.arr)}. The gap is signed contracts that are not live yet.`; break;
+    case 'growth': quote=`We grew ${Math.round(M.growth)}% over the last twelve months.`;
+      fact=['Revenue growth',`${Math.round(M.growth)}% YoY`]; tight(c,'traction',0.7);
+      if(f.inflated && !c.asked.includes('arr')) flag=`The deck showed ${Math.round(c.deck.growth)}% by starting from a slow month.`; break;
+    case 'cash': quote=`We have ${$(M.cash)} in the bank. That is about ${M.runwayMo} months of runway.`;
+      fact=['Cash and runway',`${$(M.cash)} · ${M.runwayMo} mo`];
+      if(M.runwayMo<8){flag='Under 8 months of runway. They need this round to close, which gives you leverage on terms but means little margin for error.';level='warn'} break;
+    case 'lois': quote=M.lois===0?'No signed LOIs yet. We have conversations going.':`We have ${M.lois} signed LOI${M.lois>1?'s':''} and a few more in legal review.`;
+      fact=['Signed LOIs',String(M.lois)]; tight(c,'market',1.0); tight(c,'traction',1.0); break;
+    case 'interest': {
+      const lvl=c.interest>0.68?'High':c.interest>0.42?'Medium':'Low';
+      quote=lvl==='High'?'We have two term sheets and the round is oversubscribed.':lvl==='Medium'?'A lead is in partner meetings. We are about half committed.':'Honestly, quiet so far. You would be the first check.';
+      fact=['Investor demand',lvl];
+      if(lvl==='High'&&(G.regime==='boom')){flag='Demand is high, but in a boom everyone looks oversubscribed. Hype is not the same as quality.';level='warn'}
+      break; }
+    case 'cap': quote=`Founders hold ${Math.round(M.capFounders)}% fully diluted, the option pool is ${Math.round(M.pool)}%${M.safe>8?`, and about ${Math.round(M.safe)}% sits in uncapped SAFEs`:''}.`;
+      fact=['Founders / pool / SAFEs',`${Math.round(M.capFounders)}% / ${Math.round(M.pool)}% / ${Math.round(M.safe)}%`];
+      if(f.messy) flag='Messy cap table. Founders are under-owned for this stage and the SAFE overhang will spook later investors.'; break;
+    case 'nrr': quote=`Net revenue retention is ${Math.round(M.nrr)}%. ${M.nrr>=110?'Customers expand once they are in.':M.nrr>=95?'Most customers renew at about the same size.':'We are losing more than we would like at renewal.'}`;
+      fact=['Net revenue retention',`${Math.round(M.nrr)}%`]; tight(c,'traction',0.45); break;
+    case 'gm': quote=`Gross margin is ${Math.round(M.gm)}%.`; fact=['Gross margin',`${Math.round(M.gm)}%`]; tight(c,'revenue',0.9);
+      if(M.gm<35){flag='Low gross margin limits how much a dollar of revenue is worth at exit.';level='warn'} break;
+    case 'conc': quote=`Our largest customer is ${Math.round(M.conc)}% of revenue.`; fact=['Top customer share',`${Math.round(M.conc)}%`];
+      if(f.concentration) flag='One customer is more than half of revenue. Losing them would sink the company.'; break;
+    case 'refs': {
+      const t=F.team; quote=t>=8?'References are glowing. One former boss called them the best operator they had worked with.':t>=6?'Solid references. A strong executor who is still learning to manage.':t>=4?'Mixed references. Smart, but slow to hire and delegate.':'Lukewarm references. Two former colleagues said they would not work with them again.';
+      quote+=F.fmf>=7?' They lived this problem in a past job.':F.fmf<4.5?' Nobody could say why they picked this market.':'';
+      fact=['References',t>=8?'Excellent':t>=6?'Solid':t>=4?'Mixed':'Weak']; tight(c,'team',0.4); tight(c,'fmf',0.4);
+      if(f.tension) flag='Two references mention friction between the cofounders over equity and roles.'; break; }
+    case 'tech': { const t=F.tech;
+      quote=t>=8?'Proprietary approach with real IP. A competitor would need two years or more to catch up.':t>=6?'Solid engineering and some proprietary data, but the core could be copied in about a year.':t>=4?'Mostly built from off-the-shelf tools. The edge is speed, not technology.':'A thin layer on third-party APIs. A funded competitor could rebuild it in a quarter.';
+      fact=['Technical moat',t>=8?'Deep':t>=6?'Moderate':t>=4?'Thin':'None']; tight(c,'tech',0.4); break; }
+    case 'market': { const t=F.market;
+      quote=t>=8?'Bottoms-up, the addressable market is over $10B and buyer budgets are growing fast.':t>=6?'A $2B to $5B addressable market with clear budget owners.':t>=4?'Under $1B addressable today. Venture scale depends on adjacent markets.':'A niche market. Hard to see a path past $100M in revenue.';
+      fact=['Market sizing',t>=8?'$10B+':t>=6?'$2–5B':t>=4?'<$1B':'Niche']; tight(c,'market',0.4); break; }
+  }
+  if(!c.asked.includes(key)) c.asked.push(key);
+  if(fact) c.facts[key]=fact;
+  if(flag && !c.flagsSeen.some(x=>x.key===key)) c.flagsSeen.push({key,text:flag,level});
+  return {key,q:QTEXT[key],quote,fact,flag,level};
+}
+function runCall(cid,keys){
+  const c=byId(cid); if(!c||G.calls<=0) return null;
+  G.calls--; c.calls++;
+  const lines=keys.slice(0,QPERCALL).map(k=>answer(c,k));
+  c.transcript.push(...lines);
+  addLog(`Diligence call with ${c.founder} of ${c.name}: ${keys.length} question${keys.length>1?'s':''}.`,'info');
+  return lines;
+}
+function burnMultiple(c){
+  if(!(c.asked.includes('burn')&&c.asked.includes('arr')&&c.asked.includes('growth'))) return null;
+  const M=c.metrics; const netNew=M.arr*M.growth/(100+M.growth); if(netNew<=0) return Infinity;
+  return M.burn*12/netNew;
+}
+
+// ---------------------------------------------------------------------------
+// Investing and follow-ons
+// ---------------------------------------------------------------------------
+function checkOptions(c){
+  const base=[[250e3,500e3,1e6],[500e3,1e6,2e6],[1.5e6,3e6,5e6]][c.stage];
+  const labels=['Participate','Co-lead','Lead'];
+  const hot=c.interest>0.68;
+  return base.map((amt,i)=>({amt,label:labels[i],ok:amt<=G.cash&&amt<=c.round*0.75&&!(hot&&i===2),hotBlock:hot&&i===2}));
+}
+function invest(cid,amt){
+  const c=byId(cid); if(!c||amt>G.cash) return;
+  G.cash-=amt; c.owned=true; c.invested+=amt; c.own+=amt/c.post; c.entryQ=G.q;
+  G.flows.push({q:G.q,amt:-amt});
+  addLog(`Invested ${fmt$(amt)} in ${c.name} (${STAGES[c.stage]}) at ${fmt$(c.post)} post for ${pct(amt/c.post)}.`,'good');
+}
+function decide(pid,choice){
+  const i=G.pending.findIndex(p=>p.pid===pid); if(i<0) return; const p=G.pending[i]; const c=byId(p.cid);
+  if(p.type==='prorata'){
+    if(choice==='pass') passProRata(c,p);
+    else { const amt=Math.min(G.cash,p.amount*(choice==='half'?0.5:1)); if(amt>0){
+      G.cash-=amt; c.invested+=amt; c.own+=amt/c.post; G.flows.push({q:G.q,amt:-amt});
+      addLog(`Followed on in ${c.name}'s ${STAGES[c.stage]}: ${fmt$(amt)} at ${fmt$(c.post)} post.`,'good'); } }
+  } else {
+    if(choice==='accept'){ const amt=Math.min(G.cash,p.amount);
+      G.cash-=amt; c.invested+=amt; c.own+=amt/c.post; c.raised+=p.total; G.flows.push({q:G.q,amt:-amt}); c.bridgeDecision='accepted';
+      addLog(`Funded ${fmt$(amt)} of a ${fmt$(p.total)} bridge for ${c.name}.`,'warn');
+    } else { c.bridgeDecision='declined'; addLog(`Declined the bridge for ${c.name}.`,'bad'); }
+  }
+  G.pending.splice(i,1);
+}
+function passProRata(c,p){
+  if(p.ownPre>=0.08){ c.m-=0.2; addLog(`Passed on pro-rata in ${c.name}. As a major holder, sitting out sent a negative signal to other investors.`,'bad'); }
+  else addLog(`Passed on pro-rata in ${c.name}.`,'info');
+}
+function doSupport(cid,key){
+  const c=byId(cid), S=SUPPORT[key]; if(!c||c.supDone[key]||G.hours<S.hours||c.status!=='alive') return;
+  G.hours-=S.hours; c.supDone[key]=true;
+  const mult=c.sector===G.thesis?1.3:1;
+  if(key==='recruit') c.supQ+=0.12*mult;
+  if(key==='intros') c.supQ+=(0.12+(c.F.traction<5?0.08:0))*mult;
+  if(key==='prep') c.prep=Math.min(1,c.prep+0.5*mult);
+  if(key==='board') c.supQ+=0.05*mult;
+  if(c.crisis&&c.crisis.fix===key){ c.crisis=null; c.supQ+=0.08; addLog(`${c.name}: your ${S.label.toLowerCase()} resolved the problem.`,'good'); }
+}
+
+// ---------------------------------------------------------------------------
+// Payouts and marks. Preferred stock: 1x non-participating, pari passu.
+// ---------------------------------------------------------------------------
+function payout(own,inv,val,raised){ return val>=raised?Math.max(own*val,Math.min(inv,val)):val*inv/raised; }
+function haircut(c){ return c.status==='bridge'?0.25:c.m<-1?0.4:c.m<-0.3?0.75:1; }
+function navOf(c){ return (c.status==='alive'||c.status==='bridge')?c.own*c.post*haircut(c):0; }
+function valueOf(c){ return c.status==='exited'?c.returned:navOf(c); }
+function doExit(c,val,kind){
+  c.status='exited'; c.exitVal=val; c.exitKind=kind; c.exitQ=G.q;
+  c.hReturned=payout(c.hOwn,1e6,val,c.raised);
+  if(c.owned){ c.returned=payout(c.own,c.invested,val,c.raised); G.distributed+=c.returned; G.flows.push({q:G.q+1,amt:c.returned});
+    rec(c,c.returned>=c.invested?'good':'bad',`${c.name}: ${kind==='IPO'?'went public':kind==='Soft landing'?'sold for parts':'acquired'} at ${fmt$(val)}. You returned ${fmt$(c.returned)} on ${fmt$(c.invested)} (${fmtX(c.returned/c.invested)}).`); }
+}
+function kill(c){ c.status='dead'; c.exitQ=G.q; if(c.owned) rec(c,'bad',`${c.name} shut down. ${fmt$(c.invested)} written off.`); }
+
+// ---------------------------------------------------------------------------
+// Turn engine
+// ---------------------------------------------------------------------------
+function nextRegime(cur,roll){
+  const ci=ORDER.indexOf(cur), f=G.D.down*(1+Math.max(0,G.rate-3.5)*0.35);
+  const P={}; let sum=0;
+  ORDER.forEach((k,ki)=>{ if(k===cur) return; const p=TRANS[cur][k]*(ki>ci?f:1/f); P[k]=p; sum+=p; });
+  if(sum>0.6){ for(const k in P) P[k]*=0.6/sum; sum=0.6; }
+  P[cur]=1-sum; let acc=0;
+  for(const k of ORDER){ acc+=P[k]; if(roll<acc) return k; } return cur;
+}
+function stepMarket(){
+  const r=G.marketRng; const rr=r(),rn=gauss(r),sr=r(),ss=r(),sg=r();
+  const prev=G.regime; G.regime=nextRegime(G.regime,rr);
+  const drift={boom:0.06,normal:0,correction:-0.12,recession:-0.32}[G.regime]+(G.D.shock&&G.q<8?0.5:0);
+  G.rate=clamp(G.rate+drift+0.15*rn+0.03*(3-G.rate),0,8);
+  if(G.regime!==prev) rec(null,ORDER.indexOf(G.regime)>ORDER.indexOf(prev)?'bad':'good',`The market moved from ${REGIMES[prev].label} to ${REGIMES[G.regime].label}.`);
+  if(G.q%4===3 && sr<0.65){
+    const sector=pick(SECTORS,ss), up=sg>=0.5;
+    G.shocks.push({sector,mag:up?0.12:-0.12,from:G.q+1,until:G.q+5,text:SHOCKS[sector][up?0:1]});
+    rec(null,up?'good':'bad',`Sector news: ${SHOCKS[sector][up?0:1]}.`);
+  }
+}
+function stepCompany(c){
+  const r=c.rng;
+  // Fixed draw count per quarter keeps outcomes reproducible regardless of choices.
+  const n=gauss(r),raiseRoll=r(),stepN=gauss(r),exitRoll=r(),exitN=gauss(r),evRoll=r(),evType=r(),deathRoll=r(),timing=r();
+  const RG=REGIMES[G.regime];
+  if(c.status==='bridge'){
+    const ok=c.owned?c.bridgeDecision==='accepted':deathRoll>=0.55;
+    c.bridgeDecision=null;
+    if(ok){ c.status='alive'; c.toRaise=3; c.m=Math.max(c.m,-0.6)+0.4; c.bridges++; rec(c,'warn',`${c.name} closed its bridge and has about nine months to hit milestones.`); }
+    else if(deathRoll<(c.owned?0.7:0.4)) kill(c);
+    else doExit(c,c.raised*(0.15+0.35*exitRoll),'Soft landing');
+    return;
+  }
+  if(c.crisis){ c.m-=c.owned?c.crisis.pen:c.crisis.pen*0.5; rec(c,'bad',`${c.name}: the ${c.crisis.short.toLowerCase()} went unaddressed and momentum took a hit.`); c.crisis=null; }
+  const shock=G.shocks.filter(s=>s.sector===c.sector&&s.from<=G.q&&G.q<s.until).reduce((a,s)=>a+s.mag,0);
+  c.prevM=c.m;
+  c.m=clamp(0.9*c.m+0.1*c.s+RG.mom+shock+0.3*n+c.supQ,-3,3);
+  c.supQ=0;
+  if(evRoll<0.09){
+    let acc=0, ev=EVENTS[EVENTS.length-1]; for(const e of EVENTS){acc+=e.w; if(evType<acc){ev=e;break;}}
+    if(ev.crisis){ c.crisis={...ev,q:G.q}; rec(c,'warn',`${c.name} needs help: ${ev.text}`); }
+    else { c.m+=ev.boost; rec(c,'good',`${c.name}: ${ev.text}`); }
+  }
+  const pExit=c.stage>=3?Math.min(0.14,0.025+0.025*(c.stage-3))*RG.exit*(c.m>0.3?1:0.3):0.005*RG.exit;
+  if(exitRoll<pExit){
+    const val=c.post*Math.exp(0.15+0.2*c.m+0.3*exitN);
+    doExit(c,val,(val>=1e9&&c.stage>=4&&(G.regime==='boom'||G.regime==='normal'))?'IPO':'Acquisition'); return;
+  }
+  c.toRaise--;
+  if(c.toRaise<=0){
+    const p=sig(0.05+1.1*c.m+RG.raise+c.prep+(c.flags.messy?-0.4:0));
+    c.prep=0;
+    if(raiseRoll<p){
+      const step=clamp(Math.exp(0.22+0.28*c.m+RG.step+0.3*stepN),0.5,4.5);
+      const ownPre=c.own, pre=c.post*step, round=pre*0.25;
+      c.post=pre+round; c.raised+=round; c.stage=Math.min(c.stage+1,6);
+      c.own*=0.8; c.hOwn*=0.8; c.burn*=1.6;
+      c.toRaise=5+Math.floor(timing*3);
+      if(c.owned){
+        G.pending.push({pid:'p'+c.id+'_'+G.q,type:'prorata',cid:c.id,amount:ownPre*round,ownPre,step,round});
+        rec(c,step>=1?'good':'warn',`${c.name} raised a ${STAGES[c.stage]} at ${fmt$(c.post)} post${step<1?' (a down round)':` (${step.toFixed(1)}x step-up)`}. Pro-rata decision waiting.`);
+      }
+    } else {
+      c.status='bridge';
+      if(c.owned){ const total=c.burn*6, ask=total*clamp(c.own*4,0.3,1);
+        G.pending.push({pid:'b'+c.id+'_'+G.q,type:'bridge',cid:c.id,amount:ask,total});
+        rec(c,'bad',`${c.name} could not close its next round and is asking insiders for a bridge.`); }
+    }
+  }
+}
+function endQuarter(reset=true){
+  if(reset) G.recap=[];
+  for(const p of [...G.pending]) decide(p.pid,p.type==='prorata'?'pass':'decline');
+  for(const id of G.deals){ const c=byId(id); if(c.status==='deal'){ c.status='alive'; c.passed=!c.owned; } }
+  G.deals=[];
+  stepMarket();
+  for(const c of G.companies) if(c.status==='alive'||c.status==='bridge') stepCompany(c);
+  G.q++; G.rateHist.push(G.rate); G.regimeHist.push(G.regime);
+  if(G.q>=TOTAL_QS){ finish(); return; }
+  G.hours=G.D.hours; G.companies.forEach(c=>c.supDone={});
+  if(G.q<INVEST_QS) genDeals();
+  if(G.q===INVEST_QS) rec(null,'info','The investment period is over. No new deals from here on: manage reserves, follow-ons and founder support until year 10.');
+}
+function needsAttention(){ return G.pending.length>0 || G.companies.some(c=>c.owned&&c.status==='alive'&&c.crisis); }
+function skipAhead(){
+  G.recap=[]; let n=0;
+  do { endQuarter(false); n++; } while(!G.over && !needsAttention() && G.q>=INVEST_QS && n<40);
+}
+
+// ---------------------------------------------------------------------------
+// Scoring
+// ---------------------------------------------------------------------------
+function irr(flows){
+  const by={}; flows.forEach(f=>by[f.q]=(by[f.q]||0)+f.amt);
+  const ent=Object.entries(by).map(([q,v])=>[+q,v]);
+  const npv=r=>ent.reduce((a,[q,v])=>a+v/Math.pow(1+r,q),0);
+  let lo=-0.6,hi=1.0; if(npv(lo)*npv(hi)>0) return null;
+  for(let i=0;i<120;i++){const mid=(lo+hi)/2; if(npv(lo)*npv(mid)<=0) hi=mid; else lo=mid;}
+  return Math.pow(1+(lo+hi)/2,4)-1;
+}
+function liveStats(){
+  const owned=G.companies.filter(c=>c.owned);
+  const invested=owned.reduce((a,c)=>a+c.invested,0);
+  const nav=owned.reduce((a,c)=>a+navOf(c),0);
+  return {invested,nav,moic:invested>0?(G.distributed+nav)/invested:0};
+}
+function finish(){
+  G.over=true;
+  const owned=G.companies.filter(c=>c.owned);
+  const L=liveStats();
+  const flows=[...G.flows,{q:TOTAL_QS,amt:L.nav}];
+  const paidIn=L.invested+FEES;
+  const hv=c=>c.status==='exited'?c.hReturned:(c.status==='alive'||c.status==='bridge')?c.hOwn*c.post*haircut(c):0;
+  const all=G.companies;
+  const indexM=all.reduce((a,c)=>a+hv(c),0)/(all.length*1e6);
+  const picksM=owned.length?owned.reduce((a,c)=>a+hv(c),0)/(owned.length*1e6):0;
+  const misses=all.filter(c=>!c.owned).map(c=>({c,x:hv(c)/1e6})).sort((a,b)=>b.x-a.x).slice(0,3);
+  G.result={...L,dist:G.distributed,paidIn,tvpi:(G.distributed+L.nav)/paidIn,dpi:G.distributed/paidIn,irr:irr(flows),
+    indexM,picksM,misses,undeployed:G.cash,dealsSeen:all.length,called:all.filter(c=>c.calls>0).length,
+    calledInvested:owned.filter(c=>c.calls>0).length,owned:owned.length};
+}
+
+// Formatting helpers (shared by engine and UI)
+function fmt$(x){const a=Math.abs(x),s=x<0?'-':'';if(a>=1e9)return s+'$'+(a/1e9).toFixed(a>=1e10?1:2)+'B';if(a>=1e6)return s+'$'+(a/1e6).toFixed(a>=1e8?0:1)+'M';if(a>=1e3)return s+'$'+Math.round(a/1e3)+'K';return s+'$'+Math.round(a)}
+function fmtX(x){return (x>=10?x.toFixed(0):x.toFixed(2))+'x'}
+function pct(x,d=1){return (x*100).toFixed(d)+'%'}
+// ENGINE END
+</script>
+
+<script>
+// ---------------------------------------------------------------------------
+// UI
+// ---------------------------------------------------------------------------
+const app=document.getElementById('app');
+const randomSeed=()=>String(Math.floor(10000+Math.random()*89999));
+let START={fund:'Fund I',diff:'normal',thesis:'Generalist',seed:randomSeed()};
+const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+
+function momentumLabel(c){
+  if(c.status==='bridge') return ['Bridge needed','chip-bad'];
+  const m=c.m; if(m>1.2) return ['Breakout','chip-good']; if(m>0.3) return ['Strong','chip-good'];
+  if(m>-0.4) return ['Steady','chip-acc']; if(m>-1.1) return ['Struggling','chip-warn']; return ['Critical','chip-bad'];
+}
+
+function renderStart(){
+  const D=DIFFS;
+  return `<main class="wrap start">
+    <section>
+      <p class="eyebrow">A venture capital fund simulator</p>
+      <h1 class="brand">Power<br><span>Law</span></h1>
+      <p class="lede">Run a $50M seed fund for ten years in under an hour. Read founder pitches, spend a small budget of diligence calls on the deals you care about, decide who gets your follow-on reserves, and support founders through the market cycle. Your score is the multiple you return.</p>
+      <svg class="curve" viewBox="0 0 520 140" role="img" aria-label="Power-law curve: a few companies return most of the fund">
+        <path class="fill" d="M20 12 C 60 100, 120 118, 500 122 L500 126 L20 126 Z"/>
+        <path class="line" d="M20 12 C 60 100, 120 118, 500 122"/>
+        <text x="28" y="20">1 company returns the fund</text>
+        <text x="330" y="112">most return 0–1x</text>
+      </svg>
+    </section>
+    <section class="card setup" aria-label="Fund setup">
+      <h2>Raise your fund</h2>
+      <div class="diffs" role="radiogroup" aria-label="Difficulty">
+        ${Object.entries(D).map(([k,d])=>`<button class="diff ${START.diff===k?'on':''}" role="radio" aria-checked="${START.diff===k}" data-act="pickDiff" data-k="${k}"><b>${d.label}</b><small>${d.blurb}</small></button>`).join('')}
+      </div>
+      <div class="setup-grid">
+        <label class="f" for="fundName">Fund name<input id="fundName" value="${esc(START.fund)}" maxlength="28"></label>
+        <label class="f" for="thesisSel">Investment thesis
+          <select id="thesisSel">${['Generalist',...SECTORS].map(s=>`<option ${START.thesis===s?'selected':''}>${s}</option>`).join('')}</select></label>
+        <label class="f" for="seedInput">Market seed
+          <span class="seedrow"><input id="seedInput" value="${esc(START.seed)}" inputmode="numeric" maxlength="12"><button class="small" data-act="newSeed" type="button">New</button></span></label>
+      </div>
+      <p class="muted" style="font-size:.85rem">A sector thesis sends you more deals in that sector, makes founder pitches there easier to read, and makes your support 30% more effective. It also concentrates your risk when that sector hits bad news. Players who share a seed and thesis see the same market and the same deals, which makes classroom comparisons fair.</p>
+      <div><button class="primary" data-act="start">Close the fund and start Year 1</button></div>
+    </section>
+    <section class="how" aria-label="How the game works">
+      <div><h3>Ten years, forty quarters</h3><p>Years 1–4 are the investment period: three new deals arrive each quarter. Years 5–10 are the harvest: no new deals, only follow-ons, support and exits.</p></div>
+      <div><h3>Pitches are noisy</h3><p>Every deal shows the founder's own read on team, traction, revenue, technology, market and fit. The bands show how unsure you should be. Diligence calls narrow them and surface red flags.</p></div>
+      <div><h3>Reserves decide winners</h3><p>When a company raises, you can buy your pro-rata or pass. When one stalls, insiders get asked for a bridge. Run out of money and you can't back your breakout.</p></div>
+      <div><h3>Founders need your time</h3><p>You get a fixed number of partner hours each quarter. Spend them on recruiting, customer intros, fundraising prep or board sessions when a crisis hits.</p></div>
+    </section>
+  </main>`;
+}
+
+function stat(label,val,cls=''){return `<div class="stat"><small>${label}</small><span class="${cls}">${val}</span></div>`}
+
+function renderHeader(){
+  const L=liveStats();
+  const ticks=Array.from({length:TOTAL_QS},(_,i)=>`<i class="${i<G.q?'past':i===G.q?'now':i<INVEST_QS?'inv':''}" title="${qLabel(i)}"></i>`).join('');
+  return `<header class="bar"><div class="wrap bar-in">
+      <div class="fund"><b>${esc(G.fundName)}</b><span>${G.D.label} · ${esc(G.thesis)} thesis · seed ${esc(G.seed)}</span></div>
+      <div class="stats">
+        ${stat('Quarter',`${qLabel(G.q)}${G.q<INVEST_QS?'':' · harvest'}`)}
+        ${stat('Market',REGIMES[G.regime].label,'reg reg-'+G.regime)}
+        ${stat('Fed funds',G.rate.toFixed(2)+'%')}
+        ${stat('Dry powder',fmt$(G.cash))}
+        ${stat('Diligence calls',`${G.calls} left`)}
+        ${stat('Partner hours',`${G.hours} / ${G.D.hours}`)}
+        ${stat('Gross MOIC',L.invested?fmtX(L.moic):'—')}
+      </div>
+      <div class="acts">
+        <button class="primary" data-act="end">End quarter</button>
+        ${G.q>=INVEST_QS?'<button data-act="skip" title="Advance until a decision or crisis needs you">Skip to next decision</button>':''}
+      </div>
+    </div>
+    <div class="wrap timeline" aria-hidden="true">${ticks}</div>
+  </header>`;
+}
+
+function renderRecap(){
+  if(!G.recap.length) return '';
+  return `<section class="card recap" aria-label="Last quarter"><p class="eyebrow">What happened last quarter</p>
+    <ul>${G.recap.map(r=>`<li class="${r.t}">${esc(r.text)}</li>`).join('')}</ul></section>`;
+}
+
+function meter(c,k){
+  const sd=c.sd[k], verified=sd<=0.6;
+  const v=verified?c.F[k]:sd<=1.0?(c.F[k]+c.R[k])/2:c.R[k];
+  const lo=clamp(v-sd*1.2,1,10), hi=clamp(v+sd*1.2,1,10);
+  return `<div class="meter" title="${verified?'Verified in diligence':'Estimate from the pitch. The band shows your uncertainty.'}">
+    <span>${FLABEL[k]}</span>
+    <span class="m-track"><span class="m-band" style="left:${(lo-1)/9*100}%;width:${Math.max(2,(hi-lo)/9*100)}%"></span><span class="m-dot" style="left:${(v-1)/9*100}%"></span></span>
+    <span class="m-val">${v.toFixed(1)}${verified?'<i>verified</i>':` ±${(sd*1.2).toFixed(1)}`}</span></div>`;
+}
+
+function factsBlock(c){
+  const keys=Object.keys(c.facts); const bm=burnMultiple(c);
+  if(!keys.length) return '';
+  return `<div class="facts">${keys.map(k=>`<div><small>${c.facts[k][0]}</small><span>${esc(c.facts[k][1])}</span></div>`).join('')}
+    ${bm!=null?`<div><small>Burn multiple</small><span>${bm===Infinity?'n/a':bm.toFixed(1)+'x'} ${bm<1.5?'· efficient':bm>3?'· inefficient':'· ok'}</span></div>`:''}</div>
+    ${c.flagsSeen.length?`<div class="flags">${c.flagsSeen.map(f=>`<div class="flag ${f.level==='warn'?'warn':''}"><b>${f.level==='warn'?'Watch:':'Red flag:'}</b> ${esc(f.text)}</div>`).join('')}</div>`:''}`;
+}
+
+function dealCard(c){
+  const thesis=c.sector===G.thesis;
+  const priceMult=c.deck.arr>0?c.post/c.deck.arr:0;
+  return `<article class="card deal ${c.owned?'is-owned':''}">
+    <header class="deal-h">
+      <div class="chips"><span class="chip">${c.sector}</span><span class="chip">${STAGES[c.stage]}</span>${thesis?'<span class="chip chip-acc">In thesis</span>':''}${c.calls?`<span class="chip">${c.calls} call${c.calls>1?'s':''}</span>`:''}</div>
+      <h3>${esc(c.name)}</h3><p class="one">${esc(c.oneLiner)}</p>
+      <p class="founder">${esc(c.founder)}, CEO · ${esc(c.bg)}</p>
+    </header>
+    <dl class="terms">
+      <div><dt>Raising</dt><dd>${fmt$(c.round)}</dd></div>
+      <div><dt>Post-money</dt><dd>${fmt$(c.post)}</dd></div>
+      <div><dt>Price / ARR</dt><dd>${priceMult?Math.round(priceMult)+'x':'—'}</dd></div>
+      <div><dt>Deck ARR</dt><dd>${fmt$(c.deck.arr)}</dd></div>
+      <div><dt>Deck growth</dt><dd>${Math.round(c.deck.growth)}% YoY</dd></div>
+      <div><dt>Model</dt><dd>${c.model}</dd></div>
+    </dl>
+    <div class="meters">${FKEYS.map(k=>meter(c,k)).join('')}</div>
+    ${factsBlock(c)}
+    <footer class="deal-f">
+      ${c.owned?`<span class="owned-note">You invested ${fmt$(c.invested)} for ${pct(c.own)}</span>`:
+        `<button data-act="openCall" data-id="${c.id}" ${G.calls<=0||c.asked.length>=QUESTIONS.length?'disabled':''}>Take a diligence call</button>
+         <button class="primary" data-act="openInvest" data-id="${c.id}" ${G.cash<=0?'disabled':''}>Invest</button>`}
+    </footer>
+  </article>`;
+}
+
+function renderDeals(){
+  if(G.q>=INVEST_QS) return `<div class="card empty"><h3>The investment period is over</h3><p>No new deals after Year 4. Your job now is the portfolio: follow-ons, bridges and founder support. You have ${fmt$(G.cash)} in reserves.</p></div>`;
+  const deployed=(FUND-FEES)-G.cash;
+  return `<div class="section-h"><div><h2>This quarter's deal flow</h2>
+      <p>Deals you don't invest in close without you at the end of the quarter. You have ${G.calls} diligence call${G.calls===1?'':'s'} left for the whole fund, with up to ${QPERCALL} questions per call. You've deployed ${fmt$(deployed)} of $40M (${pct(deployed/(FUND-FEES),0)}). Most seed funds hold back 40–60% for follow-ons.</p></div></div>
+    <div class="deals">${G.deals.map(id=>dealCard(byId(id))).join('')}</div>`;
+}
+
+function decisionCard(p){
+  const c=byId(p.cid); const [ml]=momentumLabel(c);
+  if(p.type==='prorata'){
+    const full=Math.min(p.amount,G.cash);
+    return `<article class="card decision"><div><p class="eyebrow">Pro-rata offer</p><h3>${esc(c.name)} raised a ${STAGES[c.stage]}</h3></div>
+      <p>New round of ${fmt$(p.round)} at ${fmt$(c.post)} post, ${p.step>=1?`a ${p.step.toFixed(1)}x step-up`:'<b>a down round</b>'}. Momentum: ${ml}. Your stake was diluted from ${pct(p.ownPre)} to ${pct(c.own)}. Your full pro-rata is ${fmt$(p.amount)} to hold ${pct(p.ownPre)}.</p>
+      ${p.ownPre>=0.08?'<p class="muted" style="font-size:.85rem">You are a major holder. Passing will be noticed by other investors.</p>':''}
+      <div class="row"><button class="primary" data-act="decide" data-p="${p.pid}" data-c="full" ${full<=0?'disabled':''}>Full pro-rata · ${fmt$(full)}</button>
+      <button data-act="decide" data-p="${p.pid}" data-c="half" ${G.cash<=0?'disabled':''}>Half · ${fmt$(Math.min(p.amount/2,G.cash))}</button>
+      <button class="ghost" data-act="decide" data-p="${p.pid}" data-c="pass">Pass</button></div></article>`;
+  }
+  return `<article class="card decision bridge"><div><p class="eyebrow">Bridge request</p><h3>${esc(c.name)} could not close its next round</h3></div>
+    <p>Insiders are asked for a ${fmt$(p.total)} bridge at the last price to buy about nine months. Your share is ${fmt$(p.amount)}. Without it, the company will most likely shut down or sell for parts. You own ${pct(c.own)} and have ${fmt$(c.invested)} in.</p>
+    <div class="row"><button class="primary" data-act="decide" data-p="${p.pid}" data-c="accept" ${G.cash<=0?'disabled':''}>Fund the bridge · ${fmt$(Math.min(p.amount,G.cash))}</button>
+    <button class="ghost danger" data-act="decide" data-p="${p.pid}" data-c="decline">Decline</button></div></article>`;
+}
+
+function portCard(c){
+  const [ml,mc]=momentumLabel(c); const v=navOf(c); const trend=c.m-c.prevM;
+  return `<article class="card pc">
+    <div class="pc-top">
+      <div class="pc-name"><b>${esc(c.name)}</b><small>${c.sector} · ${STAGES[c.stage]} · in since ${qLabel(c.entryQ)}</small></div>
+      <span class="chip ${mc}">${ml} ${trend>0.05?'↑':trend<-0.05?'↓':''}</span>
+      <div class="kv"><small>Owned</small><span>${pct(c.own)}</span></div>
+      <div class="kv"><small>Invested</small><span>${fmt$(c.invested)}</span></div>
+      <div class="kv"><small>Mark</small><span>${fmt$(v)}</span></div>
+      <div class="kv"><small>Multiple</small><span>${fmtX(v/c.invested)}</span></div>
+      <div class="kv"><small>Next raise</small><span>${c.status==='bridge'?'now':`~${c.toRaise} qtr${c.toRaise>1?'s':''}`}${c.prep>0?' · prepped':''}</span></div>
+    </div>
+    ${c.crisis?`<div class="crisis"><b>Needs you:</b> ${esc(c.crisis.text)} Fix it this quarter with <b>${SUPPORT[c.crisis.fix].label}</b> or momentum takes a hit.</div>`:''}
+    ${c.status==='alive'?`<div class="sup"><span class="lbl">Support</span>${Object.entries(SUPPORT).map(([k,s])=>`<button class="small ${c.supDone[k]?'done':''}" data-act="sup" data-id="${c.id}" data-k="${k}" title="${s.tip}" ${c.supDone[k]||G.hours<s.hours?'disabled':''}>${s.label} · ${s.hours}h</button>`).join('')}</div>`:''}
+  </article>`;
+}
+
+function renderPortfolio(){
+  const own=G.companies.filter(c=>c.owned);
+  const live=own.filter(c=>c.status==='alive'||c.status==='bridge').sort((a,b)=>(b.crisis?1:0)-(a.crisis?1:0)||navOf(b)-navOf(a));
+  const done=own.filter(c=>c.status==='exited'||c.status==='dead');
+  if(!own.length) return `<div class="card empty"><h3>No investments yet</h3><p>Pick a deal from the deal flow tab. Your portfolio, follow-on offers and founder support live here.</p></div>`;
+  return `${G.pending.length?`<section class="decisions"><div class="section-h"><h2>Decisions this quarter</h2><p>Undecided offers count as a pass when the quarter ends.</p></div>${G.pending.map(decisionCard).join('')}</section>`:''}
+    <div class="section-h"><div><h2>Active portfolio</h2><p>${G.hours} of ${G.D.hours} partner hours left this quarter. Support in your thesis sector counts 30% more. Fundraising prep only matters if the company raises soon.</p></div></div>
+    <div class="port">${live.length?live.map(portCard).join(''):'<div class="card empty">No active companies.</div>'}</div>
+    ${done.length?`<div class="section-h"><h2>Exits and write-offs</h2></div>
+    <div class="tablewrap"><table><thead><tr><th>Company</th><th>Outcome</th><th>When</th><th class="n">Invested</th><th class="n">Returned</th><th class="n">Multiple</th></tr></thead><tbody>
+    ${done.map(c=>`<tr><td>${esc(c.name)}</td><td>${c.status==='dead'?'Shut down':c.exitKind}${c.exitVal?' at '+fmt$(c.exitVal):''}</td><td>${qLabel(c.exitQ)}</td><td class="n">${fmt$(c.invested)}</td><td class="n">${fmt$(c.returned)}</td><td class="n">${fmtX(c.returned/c.invested)}</td></tr>`).join('')}
+    </tbody></table></div>`:''}`;
+}
+
+function rateChart(){
+  const W=640,H=210,pl=34,pr=12,pt=12,pb=28,n=TOTAL_QS;
+  const x=q=>pl+(W-pl-pr)*q/n, y=v=>pt+(H-pt-pb)*(1-v/8);
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Fed funds rate and market regime by quarter">`;
+  G.regimeHist.forEach((rg,i)=>{ s+=`<rect class="b-${rg}" x="${x(i)}" y="${pt}" width="${x(1)-x(0)}" height="${H-pt-pb}"/>`; });
+  [0,2,4,6,8].forEach(v=>{ s+=`<line class="grid" x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}"/><text x="${pl-6}" y="${y(v)+3}" text-anchor="end">${v}%</text>`; });
+  for(let yr=0;yr<10;yr++) s+=`<text x="${x(yr*4+2)}" y="${H-10}" text-anchor="middle">Y${yr+1}</text>`;
+  s+=`<line class="div" x1="${x(INVEST_QS)}" x2="${x(INVEST_QS)}" y1="${pt}" y2="${H-pb}"/><text x="${x(INVEST_QS)+4}" y="${pt+10}">harvest</text>`;
+  const pts=G.rateHist.map((v,i)=>`${x(i+0.5).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  s+=`<polyline class="rate" points="${pts}"/>`;
+  const last=G.rateHist.length-1; s+=`<circle class="dot" cx="${x(last+0.5)}" cy="${y(G.rateHist[last])}" r="4"/>`;
+  return s+'</svg>';
+}
+
+function renderMarket(){
+  const RG=REGIMES[G.regime];
+  const active=G.shocks.filter(s=>s.from<=G.q&&G.q<s.until);
+  return `<div class="section-h"><div><h2>Market conditions</h2><p>Rates and the market regime set entry prices, how easily your companies raise, and whether exit windows are open.</p></div></div>
+    <section class="card" style="padding:14px 16px;display:grid;gap:10px">${rateChart()}
+      <div class="legend"><span><i class="lg-boom"></i>Boom</span><span><i class="lg-normal"></i>Normal</span><span><i class="lg-correction"></i>Correction</span><span><i class="lg-recession"></i>Recession</span><span>Line: Fed funds rate</span></div></section>
+    <div class="mk">
+      <section class="card" style="padding:14px 16px;display:grid;gap:8px"><p class="eyebrow">Right now: <span class="reg reg-${G.regime}">${RG.label}</span></p>
+        <div class="tablewrap" style="border:0"><table><tbody>
+          <tr><td>Entry valuations</td><td class="n">${RG.val>=1?'+':''}${Math.round((RG.val-1)*100)}%</td></tr>
+          <tr><td>Odds a company closes its next round</td><td class="n">${RG.raise>0.2?'Higher':RG.raise>-0.2?'Normal':RG.raise>-0.6?'Lower':'Much lower'}</td></tr>
+          <tr><td>Step-ups between rounds</td><td class="n">${RG.step>0?'Bigger':RG.step===0?'Normal':'Smaller'}</td></tr>
+          <tr><td>Exit window</td><td class="n">${RG.exit>1.2?'Wide open':RG.exit>=1?'Open':RG.exit>=0.5?'Narrow':'Mostly shut'}</td></tr>
+        </tbody></table></div>
+        <p class="muted" style="font-size:.82rem">Rates above 3.5% push valuations down and make downturns more likely.</p></section>
+      <section class="card" style="padding:14px 16px;display:grid;gap:8px"><p class="eyebrow">Sector news in effect</p>
+        ${active.length?active.map(s=>`<div><span class="chip ${s.mag>0?'chip-good':'chip-bad'}">${s.sector}</span><p style="font-size:.88rem;margin-top:4px">${esc(s.text)}. Through ${qLabel(s.until-1)}.</p></div>`).join(''):'<p class="muted">No sector-specific news right now. New sector news can land at the start of each year.</p>'}
+      </section>
+    </div>`;
+}
+
+function renderLog(){
+  return `<div class="section-h"><h2>Fund log</h2><button class="ghost small" data-act="askRestart">Start a new fund</button></div>
+    <section class="card" style="padding:6px 16px"><div class="log">${[...G.log].reverse().map(l=>`<div><span>${qLabel(l.q)}</span><span>${esc(l.text)}</span></div>`).join('')}</div></section>`;
+}
+
+function renderModal(){
+  const M=G.modal; if(!M) return '';
+  let body='';
+  if(M.type==='call'){
+    const c=byId(M.cid);
+    if(!M.lines){
+      body=`<div class="modal-h"><div><p class="eyebrow">Diligence call · uses 1 of ${G.calls} left</p><h2>${esc(c.founder)}, ${esc(c.name)}</h2></div><button class="ghost small" data-act="close">Cancel</button></div>
+        <p class="muted">Pick up to ${QPERCALL} questions. Grayed ones you've already asked.</p>
+        <div class="qs">${QUESTIONS.map(([k,t])=>{const asked=c.asked.includes(k),on=M.picked.includes(k);return `<button class="q ${on?'on':''} ${asked?'asked':''}" data-act="pickQ" data-k="${k}" ${asked?'disabled':''} aria-pressed="${on}">${t}</button>`}).join('')}</div>
+        <div class="mfoot"><button class="primary" data-act="runCall" ${M.picked.length?'':'disabled'}>Start the call (${M.picked.length}/${QPERCALL})</button></div>`;
+    } else {
+      body=`<div class="modal-h"><div><p class="eyebrow">Call notes · ${G.calls} calls left</p><h2>${esc(c.name)}</h2></div></div>
+        <div class="transcript">${M.lines.map((l,i)=>`<div class="tline"><span class="who">00:${String(4+i*7).padStart(2,'0')} · You</span><span class="you">${esc(l.q)}</span>
+          <span class="who">${esc(c.founder.split(' ')[0])}</span><span class="them">“${esc(l.quote)}”</span>
+          ${l.fact?`<span class="data">${esc(l.fact[0])}: ${esc(l.fact[1])}</span>`:''}
+          ${l.flag?`<div class="flag ${l.level==='warn'?'warn':''}"><b>${l.level==='warn'?'Watch:':'Red flag:'}</b> ${esc(l.flag)}</div>`:''}</div>`).join('')}</div>
+        <div class="mfoot"><button data-act="close">Back to deals</button><button class="primary" data-act="openInvest" data-id="${c.id}">Invest</button></div>`;
+    }
+  }
+  if(M.type==='invest'){
+    const c=byId(M.cid), opts=checkOptions(c), sel=opts[M.choice]||opts.find(o=>o.ok);
+    const after=sel?G.cash-sel.amt:G.cash;
+    body=`<div class="modal-h"><div><p class="eyebrow">Term sheet · ${STAGES[c.stage]}</p><h2>Invest in ${esc(c.name)}</h2></div><button class="ghost small" data-act="close">Cancel</button></div>
+      <p>${fmt$(c.round)} round at ${fmt$(c.post)} post-money. 1x non-participating preferred.</p>
+      <div class="checks">${opts.map((o,i)=>`<button class="check ${sel===o?'on':''}" data-act="pickCheck" data-i="${i}" ${o.ok?'':'disabled'}><b>${o.label}</b><span>${fmt$(o.amt)} for ${pct(o.amt/c.post)} ownership${o.hotBlock?' · round is oversubscribed, no lead allocation':''}</span><span class="num">${o.ok?'':'n/a'}</span></button>`).join('')}</div>
+      <p class="muted" style="font-size:.85rem">Dry powder after this check: <b class="num">${fmt$(after)}</b> (${pct(after/(FUND-FEES),0)} of investable capital). ${c.calls?'':'You haven\'t taken a diligence call on this company.'}</p>
+      <div class="mfoot"><button class="primary" data-act="confirmInvest" ${sel?'':'disabled'}>Wire ${sel?fmt$(sel.amt):''}</button></div>`;
+  }
+  if(M.type==='confirmEnd'){
+    body=`<div class="modal-h"><h2>End the quarter?</h2></div><p>You have ${G.pending.length} open decision${G.pending.length>1?'s':''}. Ending now passes on pro-rata offers and declines bridge requests.</p>
+      <div class="mfoot"><button data-act="close">Go back</button><button class="primary" data-act="forceEnd">End quarter anyway</button></div>`;
+  }
+  if(M.type==='restart'){
+    body=`<div class="modal-h"><h2>Start a new fund?</h2></div><p>This fund's progress will be lost.</p>
+      <div class="mfoot"><button data-act="close">Keep playing</button><button class="primary danger" data-act="restart">Start over</button></div>`;
+  }
+  return `<div class="overlay" data-act="overlay"><div class="card modal" role="dialog" aria-modal="true">${body}</div></div>`;
+}
+
+function verdict(t){
+  if(t>=5) return ['Legendary vintage','Top 1% territory. LPs will line up for Fund II.'];
+  if(t>=3) return ['Top decile','A fund that defines a career.'];
+  if(t>=2) return ['Top quartile','Fund II should be an easy raise.'];
+  if(t>=1.3) return ['Middle of the pack','You returned capital with a modest gain. Fundraising Fund II will be work.'];
+  if(t>=1) return ['Returned the fund','LPs got their money back, but not much more.'];
+  return ['Lost LP money','Below 1x net. Fund II is in doubt.'];
+}
+
+function renderEnd(){
+  const R=G.result, [v,vs]=verdict(R.tvpi);
+  const owned=G.companies.filter(c=>c.owned).map(c=>({c,val:valueOf(c)})).sort((a,b)=>b.val-a.val);
+  const buckets=[['Written off',0,0.25],['Below cost',0.25,1],['1–3x',1,3],['3–10x',3,10],['10x+',10,1e9]].map(([l,a,b])=>{
+    const xs=owned.filter(o=>{const m=o.val/o.c.invested;return m>=a&&m<b}); return {l,n:xs.length,val:xs.reduce((s,o)=>s+o.val,0)}; });
+  const totVal=buckets.reduce((s,b)=>s+b.val,0)||1;
+  const top=owned[0]; const topShare=top?top.val/totVal:0;
+  const pickEdge=R.picksM-R.indexM, constr=R.moic-R.picksM;
+  return `<main class="wrap end">
+    <section style="display:grid;gap:8px"><p class="eyebrow">${esc(G.fundName)} · ${G.D.label} · ${esc(G.thesis)} thesis · seed ${esc(G.seed)} · Year 10 final</p>
+      <h1 class="verdict">${v}</h1><p class="lede" style="margin-top:0">${vs}</p></section>
+    <section class="score">
+      <div class="card kpi hero"><small>Gross MOIC</small><b>${fmtX(R.moic)}</b><span>${fmt$(R.dist+R.nav)} on ${fmt$(R.invested)} invested</span></div>
+      <div class="card kpi"><small>Net TVPI</small><b>${fmtX(R.tvpi)}</b><span>After $10M in fees</span></div>
+      <div class="card kpi"><small>Gross IRR</small><b>${R.irr==null?'—':pct(R.irr,1)}</b><span>Timing matters as much as the multiple</span></div>
+      <div class="card kpi"><small>DPI</small><b>${fmtX(R.dpi)}</b><span>Cash actually returned to LPs</span></div>
+      <div class="card kpi"><small>Unrealized</small><b>${fmt$(R.nav)}</b><span>Still marked on paper at year 10</span></div>
+    </section>
+    <section style="display:grid;gap:12px"><h2>Skill or luck?</h2>
+      <div class="bridge3">
+        <div class="card"><small class="eyebrow">Market baseline</small><b>${fmtX(R.indexM)}</b><p>What $1M in every one of the ${R.dealsSeen} deals you saw would have returned, with no follow-ons. This is the luck of your market.</p></div>
+        <div class="card"><small class="eyebrow">Your picks</small><b style="color:${pickEdge>=0?'var(--good)':'var(--bad)'}">${fmtX(R.picksM)}</b><p>$1M in each of your ${R.owned} picks. ${pickEdge>=0?`Your selection beat the market by ${pickEdge.toFixed(2)}x.`:`Your selection trailed the market by ${(-pickEdge).toFixed(2)}x.`}</p></div>
+        <div class="card"><small class="eyebrow">Your actual fund</small><b style="color:${constr>=0?'var(--good)':'var(--bad)'}">${fmtX(R.moic)}</b><p>With your real check sizes, follow-ons, bridges and support. ${constr>=0?`Portfolio construction and support added ${constr.toFixed(2)}x.`:`Sizing and follow-ons cost you ${(-constr).toFixed(2)}x versus equal checks.`}</p></div>
+      </div></section>
+    <section class="card lesson"><h3>What this fund teaches</h3><ul>
+      ${top?`<li>Your best company, ${esc(top.c.name)}, produced ${pct(topShare,0)} of all value. ${topShare>0.5?'That is the power law: one winner carries the fund.':'Value was unusually spread out across the portfolio.'}</li>`:''}
+      <li>You took diligence calls on ${R.called} of ${R.dealsSeen} deals and invested in ${R.calledInvested} of those. ${R.owned-R.calledInvested>0?`${R.owned-R.calledInvested} of your investments had no diligence call.`:''}</li>
+      ${R.undeployed>2e6?`<li>You finished with ${fmt$(R.undeployed)} undeployed. LPs pay fees on that money too, which drags net TVPI.</li>`:''}
+      ${R.misses.length&&R.misses[0].x>3?`<li>The one that got away: ${esc(R.misses[0].c.name)} would have turned a $1M check into ${fmt$(R.misses[0].x*1e6)}. ${R.misses[0].c.calls?'You did diligence on it and passed.':'You never took a call.'}</li>`:''}
+    </ul></section>
+    <section style="display:grid;gap:12px"><h2>Where the value came from</h2>
+      <div class="card" style="padding:16px"><div class="bars">${buckets.map(b=>`<div class="barrow"><span>${b.l} · ${b.n}</span><span class="bartrack"><i style="width:${(b.val/totVal*100).toFixed(1)}%"></i></span><span class="n">${fmt$(b.val)}</span></div>`).join('')}</div>
+      <p class="muted" style="font-size:.82rem;margin-top:10px">Bars show each outcome group's share of total value. Labels show how many companies landed there.</p></div></section>
+    <section style="display:grid;gap:12px"><h2>Every investment</h2>
+      <div class="tablewrap"><table><thead><tr><th>Company</th><th>Sector</th><th>Entry</th><th>Outcome</th><th class="n">Invested</th><th class="n">Value</th><th class="n">Multiple</th></tr></thead><tbody>
+      ${owned.map(({c,val})=>`<tr><td>${esc(c.name)}${val>=FUND?' <span class="chip chip-good">Fund returner</span>':''}</td><td>${c.sector}</td><td>${STAGES[c.entryStage]} · ${qLabel(c.entryQ)}</td><td>${c.status==='dead'?'Shut down':c.status==='exited'?c.exitKind:'Unrealized, '+STAGES[c.stage]}</td><td class="n">${fmt$(c.invested)}</td><td class="n">${fmt$(val)}</td><td class="n">${fmtX(val/c.invested)}</td></tr>`).join('')}
+      </tbody></table></div></section>
+    ${R.misses.length?`<section style="display:grid;gap:12px"><h2>Deals you passed on</h2><div class="tablewrap"><table><thead><tr><th>Company</th><th>Sector</th><th>Seen</th><th>Calls</th><th class="n">$1M would be</th></tr></thead><tbody>
+      ${R.misses.map(m=>`<tr><td>${esc(m.c.name)}</td><td>${m.c.sector}</td><td>${qLabel(m.c.entryQ)}</td><td>${m.c.calls}</td><td class="n">${fmt$(m.x*1e6)}</td></tr>`).join('')}</tbody></table></div></section>`:''}
+    <details class="card" style="padding:14px 16px"><summary>Full fund log</summary><div class="log" style="margin-top:10px">${G.log.map(l=>`<div><span>${qLabel(l.q)}</span><span>${esc(l.text)}</span></div>`).join('')}</div></details>
+    <div class="acts"><button class="primary" data-act="replay">Replay this seed</button><button data-act="restart">New fund, new seed</button></div>
+  </main>`;
+}
+
+function render(){
+  if(!G){ app.innerHTML=renderStart(); return; }
+  if(G.over){ app.innerHTML=renderEnd(); return; }
+  const nOwn=G.companies.filter(c=>c.owned&&(c.status==='alive'||c.status==='bridge')).length;
+  const alerts=G.pending.length+G.companies.filter(c=>c.owned&&c.status==='alive'&&c.crisis).length;
+  const tabs=[['deals','Deal flow',G.q<INVEST_QS?G.deals.length:0,false],['port','Portfolio',alerts||nOwn,alerts>0],['market','Market',0,false],['log','Fund log',0,false]];
+  const views={deals:renderDeals,port:renderPortfolio,market:renderMarket,log:renderLog};
+  app.innerHTML=renderHeader()+`<main class="wrap game">${renderRecap()}
+    <nav class="tabs" role="tablist">${tabs.map(([k,l,n,a])=>`<button class="tab ${G.tab===k?'on':''}" role="tab" aria-selected="${G.tab===k}" data-act="tab" data-k="${k}">${l}${n?`<span class="count ${a?'alert':''}">${n}</span>`:''}</button>`).join('')}</nav>
+    ${views[G.tab]()}</main>`+renderModal();
+}
+
+const ACT={
+  pickDiff:d=>{START.diff=d.k},
+  newSeed:()=>{START.seed=randomSeed()},
+  start:()=>{ newGame({...START,seed:(START.seed||randomSeed()).trim()}); window.scrollTo(0,0); },
+  tab:d=>{G.tab=d.k},
+  openCall:d=>{G.modal={type:'call',cid:+d.id,picked:[]}},
+  pickQ:d=>{const p=G.modal.picked,i=p.indexOf(d.k); if(i>=0)p.splice(i,1); else if(p.length<QPERCALL)p.push(d.k);},
+  runCall:()=>{const M=G.modal; M.lines=runCall(M.cid,M.picked)},
+  openInvest:d=>{const c=byId(+d.id); const opts=checkOptions(c); G.modal={type:'invest',cid:c.id,choice:Math.max(0,opts.findIndex(o=>o.ok))}},
+  pickCheck:d=>{G.modal.choice=+d.i},
+  confirmInvest:()=>{const M=G.modal,c=byId(M.cid),o=checkOptions(c)[M.choice]; if(o&&o.ok) invest(c.id,o.amt); G.modal=null;},
+  close:()=>{G.modal=null},
+  overlay:(d,el,e)=>{ if(e.target===el) G.modal=null; },
+  decide:d=>decide(d.p,d.c),
+  sup:d=>doSupport(+d.id,d.k),
+  end:()=>{ if(G.pending.length){G.modal={type:'confirmEnd'};return;} endQuarter(); window.scrollTo(0,0); },
+  forceEnd:()=>{ G.modal=null; endQuarter(); window.scrollTo(0,0); },
+  skip:()=>{ if(G.pending.length){G.modal={type:'confirmEnd'};return;} skipAhead(); window.scrollTo(0,0); },
+  askRestart:()=>{G.modal={type:'restart'}},
+  restart:()=>{ G=null; START.seed=randomSeed(); window.scrollTo(0,0); },
+  replay:()=>{ const o={fund:G.fundName,diff:G.diff,thesis:G.thesis,seed:G.seed}; newGame(o); window.scrollTo(0,0); },
+};
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]'); if(!el) return;
+  const fn=ACT[el.dataset.act]; if(!fn) return;
+  if(el.dataset.act==='overlay'&&e.target!==el) return;
+  fn(el.dataset,el,e); render();
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='fundName') START.fund=e.target.value;
+  if(e.target.id==='seedInput') START.seed=e.target.value;
+});
+document.addEventListener('change',e=>{ if(e.target.id==='thesisSel') START.thesis=e.target.value; });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&G&&G.modal){G.modal=null;render();} });
+render();
+</script>
+
+</body></html>
