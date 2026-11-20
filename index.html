@@ -124,7 +124,23 @@ main.game{padding-block:20px 60px;display:grid;gap:18px}
 .terms div{min-width:0}
 .terms dt{font-size:.66rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .terms dd{margin:0;font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:600;font-size:.86rem;overflow-wrap:anywhere}
-.meters{display:grid;gap:7px}
+.meters{display:grid;gap:7px;margin-top:8px}
+.dsec{display:grid;gap:4px;padding-top:10px;border-top:1px dashed var(--line)}
+.dsec h4{margin:0;font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.dsec dl{margin:0;display:grid;gap:3px}
+.dsec dl div{display:flex;justify-content:space-between;gap:10px;align-items:baseline;font-size:.86rem}
+.dsec dl div[title]{cursor:help}
+.dsec dt{color:var(--ink)}
+.dsec dl div[title] dt{text-decoration:underline dotted var(--muted);text-underline-offset:3px}
+.dsec dd{margin:0;font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:600;text-align:right;overflow-wrap:anywhere}
+.dsec dd s{color:var(--bad);font-weight:400;margin-left:4px}
+.dsec .ask{font-family:var(--f-body,inherit);font-weight:400;font-style:italic;color:var(--muted);font-size:.8rem}
+.dsec .tag{font-family:var(--f-mono);font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--warn);background:var(--warn-soft);border-radius:4px;padding:1px 4px;vertical-align:1px}
+.dsec .tag.n{color:var(--muted);background:var(--paper)}
+.legend-line{font-size:.8rem;color:var(--muted);margin-top:6px}
+.legend-line .tag{font-family:var(--f-mono);font-size:.62rem;font-weight:600;text-transform:uppercase;color:var(--warn);background:var(--warn-soft);border-radius:4px;padding:1px 4px}
+.scores summary{font-size:.82rem;font-weight:600;cursor:pointer}
+.scores summary .muted{font-weight:400}
 .meter{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) 4.6rem;align-items:center;gap:8px;font-size:.8rem}
 .m-track{position:relative;height:8px;background:var(--paper);border-radius:4px;border:1px solid var(--line)}
 .m-band{position:absolute;top:-1px;bottom:-1px;background:var(--band);border-radius:4px}
@@ -242,7 +258,13 @@ details summary{cursor:pointer;font-weight:600}
   .terms{grid-template-columns:repeat(2,minmax(0,1fr))}
   .meter{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 4.2rem}
   .barrow{grid-template-columns:6.5rem 1fr 4.5rem}
-  .stats{gap:6px 14px}
+  .bar-in{display:grid;grid-template-columns:1fr auto;gap:8px 10px;padding-block:8px}
+  .bar-in .fund span{display:none}
+  .bar-in .stats{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px 8px}
+  .bar-in .acts{grid-column:2;grid-row:1}
+  .bar-in .acts button{padding:.4rem .7rem;font-size:.82rem}
+  .stat small{font-size:.58rem;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .stat span{font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
 @media (prefers-reduced-motion:no-preference){
   .deal,.pc,.decision{animation:rise .25s ease-out both}
@@ -867,11 +889,11 @@ function renderHeader(){
   return `<header class="bar"><div class="wrap bar-in">
       <div class="fund"><b>${esc(G.fundName)}</b><span>${G.D.label} · ${esc(G.thesis)} thesis · seed ${esc(G.seed)}</span></div>
       <div class="stats">
-        ${stat('Quarter',`${qLabel(G.q)}${G.q<INVEST_QS?'':' · harvest'}`)}
+        ${stat(G.q<INVEST_QS?'Quarter':'Harvest',qLabel(G.q))}
         ${stat('Market',REGIMES[G.regime].label,'reg reg-'+G.regime)}
         ${stat('Fed funds',G.rate.toFixed(2)+'%')}
         ${stat('Dry powder',fmt$(G.cash))}
-        ${stat('Diligence calls',`${G.calls} left`)}
+        ${stat('Diligence',`${G.calls} calls`)}
         ${stat('Partner hours',`${G.hours} / ${G.D.hours}`)}
         ${stat('Gross MOIC',L.invested?fmtX(L.moic):'—')}
         ${stat('Net TVPI',L.invested?fmtX(settle().tvpi):'—')}
@@ -909,25 +931,50 @@ function factsBlock(c){
     ${c.flagsSeen.length?`<div class="flags">${c.flagsSeen.map(f=>`<div class="flag ${f.level==='warn'?'warn':''}"><b>${f.level==='warn'?'Watch:':'Red flag:'}</b> ${esc(f.text)}</div>`).join('')}</div>`:''}`;
 }
 
+// Deal card: four plain sections (round, team, traction, metrics). Numbers the founder hasn't
+// verified are tagged; metrics you haven't asked about show as open questions for a call.
+const INLINE_FACTS=['arr','growth','lois','nrr','burn','cash','gm','refs','interest'];
 function dealCard(c){
-  const thesis=c.sector===G.thesis;
-  const priceMult=c.deck.arr>0?c.post/c.deck.arr:0;
+  const thesis=c.sector===G.thesis, F=c.facts, M=c.metrics;
+  const ask='<span class="ask">ask</span>';
+  const row=(label,val,tip='')=>`<div${tip?` title="${esc(tip)}"`:''}><dt>${label}</dt><dd>${val}</dd></div>`;
+  const deckTag='<span class="tag">deck</span>';
+  const arrVal=F.arr?`${fmt$(M.arr)}${c.flags.inflated?` <s>${fmt$(c.deck.arr)}</s>`:''}`:`${fmt$(c.deck.arr)} ${deckTag}`;
+  const grVal=F.growth?`${Math.round(M.growth)}%${c.flags.inflated?` <s>${Math.round(c.deck.growth)}%</s>`:''}`:`${Math.round(c.deck.growth)}% ${deckTag}`;
+  const arrNow=F.arr?M.arr:c.deck.arr, priceMult=arrNow>0?c.post/arrNow:0;
+  const bm=burnMultiple(c);
+  const otherKeys=Object.keys(F).filter(k=>!INLINE_FACTS.includes(k));
   return `<article class="card deal ${c.owned?'is-owned':''}">
     <header class="deal-h">
-      <div class="chips"><span class="chip">${c.sector}</span><span class="chip">${STAGES[c.stage]}</span>${thesis?'<span class="chip chip-acc">In thesis</span>':''}${c.calls?`<span class="chip">${c.calls} call${c.calls>1?'s':''}</span>`:''}</div>
+      <div class="chips"><span class="chip">${c.sector}</span><span class="chip">${c.model}</span>${thesis?'<span class="chip chip-acc">In thesis</span>':''}${c.calls?`<span class="chip">${c.calls} call${c.calls>1?'s':''}</span>`:''}</div>
       <h3>${esc(c.name)}</h3><p class="one">${esc(c.oneLiner)}</p>
-      <p class="founder">${esc(c.founder)}, CEO · ${esc(c.bg)}</p>
     </header>
-    <dl class="terms">
-      <div><dt>Raising</dt><dd>${fmt$(c.round)}</dd></div>
-      <div><dt>Post-money</dt><dd>${fmt$(c.post)}</dd></div>
-      <div><dt>Price / ARR</dt><dd>${priceMult?Math.round(priceMult)+'x':'—'}</dd></div>
-      <div><dt>Deck ARR</dt><dd>${fmt$(c.deck.arr)}</dd></div>
-      <div><dt>Deck growth</dt><dd>${Math.round(c.deck.growth)}% YoY</dd></div>
-      <div><dt>Model</dt><dd>${c.model}</dd></div>
-    </dl>
-    <div class="meters">${FKEYS.map(k=>meter(c,k)).join('')}</div>
-    ${factsBlock(c)}
+    <section class="dsec"><h4>The round</h4><dl>
+      ${row('Stage',STAGES[c.stage])}
+      ${row('Raising',fmt$(c.round))}
+      ${row('Valuation',`${fmt$(c.post)} <span class="tag n">post</span>`,'Post-money valuation: the company’s price including the new money. Your ownership = check ÷ post-money.')}
+      ${row('Price ÷ revenue',priceMult?Math.round(priceMult)+'x':'—','Post-money valuation divided by annual recurring revenue. Higher means you pay more for each dollar of revenue.')}
+      ${row('Investor demand',F.interest?esc(F.interest[1]):ask)}
+    </dl></section>
+    <section class="dsec"><h4>Team</h4>
+      <p class="founder"><b>${esc(c.founder)}</b>, CEO · ${esc(c.bg)}</p>
+      <dl>${row('References',F.refs?esc(F.refs[1]):ask)}</dl></section>
+    <section class="dsec"><h4>Traction</h4><dl>
+      ${row('Revenue (ARR)',arrVal,'Annual recurring revenue. Figures tagged “deck” come from the pitch and are unverified until you ask on a call.')}
+      ${row('Growth',grVal,'Year-over-year revenue growth.')}
+      ${row('Signed LOIs / pilots',F.lois?esc(F.lois[1]):ask)}
+      ${row('Net retention',F.nrr?esc(F.nrr[1]):ask,'Net revenue retention: revenue kept from last year’s customers, including upsells. Over 100% means customers expand.')}
+    </dl></section>
+    <section class="dsec"><h4>Metrics</h4><dl>
+      ${row('Monthly burn',F.burn?esc(F.burn[1]):ask)}
+      ${row('Runway',F.cash?`${M.runwayMo} months`:ask,'Months until the company runs out of cash at its current burn.')}
+      ${row('Gross margin',F.gm?esc(F.gm[1]):ask)}
+      ${row('Burn multiple',bm==null?'<span class="ask">ask burn, ARR, growth</span>':bm===Infinity?'n/a':`${bm.toFixed(1)}x ${bm<1.5?'· efficient':bm>3?'· inefficient':'· ok'}`,'Cash burned for each $1 of new revenue added. Under 1.5x is efficient; over 3x is a warning.')}
+    </dl></section>
+    ${otherKeys.length?`<div class="facts">${otherKeys.map(k=>`<div><small>${F[k][0]}</small><span>${esc(F[k][1])}</span></div>`).join('')}</div>`:''}
+    ${c.flagsSeen.length?`<div class="flags">${c.flagsSeen.map(f=>`<div class="flag ${f.level==='warn'?'warn':''}"><b>${f.level==='warn'?'Watch:':'Red flag:'}</b> ${esc(f.text)}</div>`).join('')}</div>`:''}
+    <details class="scores"><summary>Pitch scores <span class="muted">· the founder's self-rating</span></summary>
+      <div class="meters">${FKEYS.map(k=>meter(c,k)).join('')}</div></details>
     <footer class="deal-f">
       ${c.owned?`<span class="owned-note">You invested ${fmt$(c.invested)} for ${pct(c.own)}</span>`:
         `<button data-act="openCall" data-id="${c.id}" ${G.calls<=0||c.asked.length>=QUESTIONS.length?'disabled':''}>Take a diligence call</button>
@@ -938,9 +985,10 @@ function dealCard(c){
 
 function renderDeals(){
   if(G.q>=INVEST_QS) return `<div class="card empty"><h3>The investment period is over</h3><p>No new deals after Year 4. Your job now is the portfolio: follow-ons, bridges and founder support. You have ${fmt$(G.cash)} in reserves.</p></div>`;
-  const deployed=(FUND-FEES)-G.cash;
+  const deployed=G.investable-G.cash;
   return `<div class="section-h"><div><h2>This quarter's deal flow</h2>
-      <p>Deals you don't invest in close without you at the end of the quarter. You have ${G.calls} diligence call${G.calls===1?'':'s'} left for the whole fund, with up to ${QPERCALL} questions per call. You've deployed ${fmt$(deployed)} of $40M (${pct(deployed/(FUND-FEES),0)}). Most seed funds hold back 40–60% for follow-ons.</p></div></div>
+      <p>Deals you don't invest in close without you at the end of the quarter. You have ${G.calls} diligence call${G.calls===1?'':'s'} left for the whole fund, with up to ${QPERCALL} questions per call. You've deployed ${fmt$(deployed)} of ${fmt$(G.investable)} (${pct(deployed/G.investable,0)}). Most seed funds hold back 40–60% for follow-ons.</p>
+      <p class="legend-line"><span class="tag">deck</span> unverified pitch number · <i>ask</i> only known after a diligence call · dotted labels have definitions on hover</p></div></div>
     <div class="deals">${G.deals.map(id=>dealCard(byId(id))).join('')}</div>`;
 }
 
