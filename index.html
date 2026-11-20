@@ -166,6 +166,24 @@ main.game{padding-block:20px 60px;display:grid;gap:18px}
 .decision.bridge{border-left-color:var(--bad)}
 .decision .row{display:flex;flex-wrap:wrap;gap:8px}
 .port{display:grid;gap:10px}
+.glance{display:grid;gap:8px}
+.glance-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px}
+.glance-h p{font-size:.85rem;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(150px,46%),1fr));gap:8px}
+.tile{position:relative;display:grid;gap:1px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:8px;color:var(--ink);text-decoration:none;min-width:0}
+a.tile:hover{border-color:var(--accent);border-left-color:inherit}
+.tile b{font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile small{font-size:.72rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .tx{font-family:var(--f-mono);font-weight:600;font-size:.95rem}
+.tile.done{background:var(--paper)}
+a.tile .tx{color:var(--ink)!important}
+.tile.done b{color:var(--muted)}
+.t-good{border-left-color:var(--good)} .t-good .tx{color:var(--good)}
+.t-acc{border-left-color:var(--accent)} .t-acc .tx{color:var(--accent)}
+.t-warn{border-left-color:var(--warn)} .t-warn .tx{color:var(--warn)}
+.t-bad{border-left-color:var(--bad)} .t-bad .tx{color:var(--bad)}
+.tile .needs{position:absolute;top:6px;right:8px;width:18px;height:18px;border-radius:50%;background:var(--warn);color:#fff;font-style:normal;font-weight:700;font-size:.75rem;display:grid;place-items:center}
+.pc{scroll-margin-top:150px}
 .pc{padding:14px 16px;display:grid;gap:10px;min-width:0}
 .pc-top{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
 .pc-name{display:grid;min-width:min(200px,100%);flex:1}
@@ -223,6 +241,58 @@ tr:last-child td{border-bottom:0}
 .check{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;text-align:left;padding:12px;font-weight:400}
 .check.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
 .check b{font-family:var(--f-display);font-stretch:90%;font-size:1rem}
+.tomb{display:grid;gap:10px;border-top:5px solid var(--bad);margin:-20px -20px 0;padding:16px 20px 0}
+.tomb.good{border-top-color:var(--accent)}
+.tomb.great{border-top-color:var(--good)}
+.tomb-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tomb-kind{font-family:var(--f-mono);font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--bad)}
+.tomb.good .tomb-kind{color:var(--accent)}
+.tomb.great .tomb-kind{color:var(--good)}
+.tomb h2{font-family:var(--f-display);font-stretch:80%;font-weight:850;font-size:2rem;line-height:1;margin:0}
+.tomb blockquote{margin:0;padding:8px 12px;border-left:3px solid var(--line);background:var(--paper);border-radius:0 8px 8px 0;font-size:.92rem;line-height:1.45}
+.tomb-big{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.tomb-big b{font-family:var(--f-display);font-stretch:75%;font-weight:850;font-size:3.2rem;line-height:1;color:var(--bad)}
+.tomb.good .tomb-big b{color:var(--accent)}
+.tomb.great .tomb-big b{color:var(--good)}
+.tomb-big span{color:var(--muted);font-size:.9rem}
+.tomb td.pos{color:var(--good)}
+.pref-note{font-size:.85rem;background:var(--accent-soft);border-radius:8px;padding:8px 12px}
+.wrapdeck{display:grid;gap:14px}
+.wslide{display:grid;gap:12px;justify-items:center;text-align:center;min-height:min(420px,60vh);align-content:center;padding:8px 4px}
+.wslide h2{font-family:var(--f-display);font-stretch:80%;font-weight:850;font-size:clamp(1.5rem,5vw,2.1rem);line-height:1.05;margin:0}
+.whero{display:grid;gap:4px}
+.whero b{font-family:var(--f-display);font-stretch:70%;font-weight:900;font-size:clamp(4rem,16vw,6.5rem);line-height:.95;color:var(--accent)}
+.whero small{color:var(--muted);font-size:.9rem}
+.wline{max-width:46ch;font-size:.98rem;line-height:1.5}
+.wverdict{font-family:var(--f-mono);font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);background:var(--accent);padding:4px 10px;border-radius:6px}
+.wshare{width:min(420px,100%);height:16px;border-radius:5px;background:var(--paper);border:1px solid var(--line);display:flex;overflow:hidden}
+.wshare span{background:var(--accent)} .wshare .s2{background:var(--band)}
+.wflow{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 10px}
+.wflow>span{color:var(--muted);font-size:1.2rem}
+.wstat{display:grid;gap:2px;min-width:80px}
+.wstat b{font-family:var(--f-mono);font-size:1.5rem;font-weight:600}
+.wstat small{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;max-width:14ch;justify-self:center}
+.wgrid{align-items:start;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;width:100%}
+.wsplit{display:flex;width:min(460px,100%);border-radius:6px;overflow:hidden;font-size:.75rem;font-weight:600}
+.wsplit span{background:var(--accent);color:var(--accent-ink);padding:5px 6px;white-space:nowrap;overflow:hidden;min-width:0}
+.wsplit .f{flex:1;background:var(--band);color:var(--ink)}
+.wbars{display:grid;gap:8px;width:min(460px,100%)}
+.wbar{display:grid;grid-template-columns:7rem 1fr 3.6rem;gap:8px;align-items:center;font-size:.86rem;text-align:left}
+.wtrack{height:14px;background:var(--paper);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.wtrack i{display:block;height:100%;background:var(--muted);opacity:.55}
+.wbar.me{font-weight:700} .wbar.me .wtrack i{background:var(--accent);opacity:1}
+.wbar.sp .wtrack i{background:var(--warn);opacity:1}
+.wbar b{font-family:var(--f-mono);text-align:right}
+.wsrc{font-size:.72rem;color:var(--muted);max-width:52ch}
+.wslide .row{display:flex;flex-wrap:wrap;gap:8px}
+.wquote{font-size:.88rem;background:var(--paper);border:1px dashed var(--line);border-radius:8px;padding:10px 12px;max-width:52ch;text-align:left}
+.wnav{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.wdots{display:flex;gap:6px}
+.wdots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.wdots i.on{background:var(--accent)}
+.wskip{justify-self:center}
+.challenge{background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;padding:10px 12px;font-size:.9rem}
+@media (max-width:560px){.wgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .mfoot{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
 
 /* End screen */
@@ -426,7 +496,7 @@ function newGame(o){
     rate:D.rate, regime:D.start, rateHist:[D.rate], regimeHist:[D.start], shocks:[],
     marketRng:mulberry32(hashStr(o.seed+'|market')), dealRng:mulberry32(hashStr(o.seed+'|deals')),
     companies:[], deals:[], pending:[], log:[], recap:[], flows:[], distributed:0, nextId:1, usedNames:{},
-    over:false, tab:'deals', modal:null,
+    over:false, tab:'deals', modal:null, events:[],
   };
   addLog(`${G.fundName} closed with $50M from LPs${gpCommit?` and a ${fmt$(gpCommit)} GP commitment`:''}. Over ten years, $10M of LP money goes to the 2% management fee, leaving ${fmt$(investable)} to invest.`,'info');
   chargeFee();
@@ -541,7 +611,7 @@ function genCompany(){
     facts:{}, flagsSeen:[], asked:[], calls:0, transcript:[],
     status:'deal', m:0.5*s, prevM:0.5*s, toRaise:6+Math.floor(rRaise*3), burn,
     owned:false, own:0, invested:0, returned:0, hOwn:1e6/post, hReturned:0,
-    crisis:null, supQ:0, prep:0, supDone:{}, bridges:0, bridgeDecision:null, entryQ:G.q,
+    crisis:null, supQ:0, prep:0, supDone:{}, bridges:0, story:[], bridgeDecision:null, entryQ:G.q,
     rng:mulberry32(cSeed^hashStr(G.seed)),
   };
 }
@@ -624,7 +694,7 @@ function checkOptions(c){
 }
 function invest(cid,amt){
   const c=byId(cid); if(!c||amt>G.cash) return;
-  c.owned=true; c.entryQ=G.q; deploy(c,amt);
+  c.owned=true; c.entryQ=G.q; c.initial=(c.initial||0)+amt; deploy(c,amt);
   addLog(`Invested ${fmt$(amt)} in ${c.name} (${STAGES[c.stage]}) at ${fmt$(c.post)} post for ${pct(amt/c.post)}.`,'good');
 }
 function decide(pid,choice){
@@ -654,7 +724,7 @@ function doSupport(cid,key){
   if(key==='intros') c.supQ+=(0.12+(c.F.traction<5?0.08:0))*mult;
   if(key==='prep') c.prep=Math.min(1,c.prep+0.5*mult);
   if(key==='board') c.supQ+=0.05*mult;
-  if(c.crisis&&c.crisis.fix===key){ c.crisis=null; c.supQ+=0.08; addLog(`${c.name}: your ${S.label.toLowerCase()} resolved the problem.`,'good'); }
+  if(c.crisis&&c.crisis.fix===key){ c.story.push({k:'fixed',short:c.crisis.short}); c.crisis=null; c.supQ+=0.08; addLog(`${c.name}: your ${S.label.toLowerCase()} resolved the problem.`,'good'); }
 }
 
 // ---------------------------------------------------------------------------
@@ -668,9 +738,33 @@ function doExit(c,val,kind){
   c.status='exited'; c.exitVal=val; c.exitKind=kind; c.exitQ=G.q;
   c.hReturned=payout(c.hOwn,1e6,val,c.raised);
   if(c.owned){ c.returned=payout(c.own,c.invested,val,c.raised); G.distributed+=c.returned; G.flows.push({q:G.q+1,amt:c.returned}); distribute(c);
+    G.events.push({t:'exit',cid:c.id,q:G.q,kind,val,ret:c.returned,inv:c.invested,carry:c.carry||0,lpNet:c.lpNet||0,
+      pref:val<c.raised, common:c.own*val, raised:c.raised, why:storyLine(c,'exit')});
     rec(c,c.returned>=c.invested?'good':'bad',`${c.name}: ${kind==='IPO'?'went public':kind==='Soft landing'?'sold for parts':'acquired'} at ${fmt$(val)}. You returned ${fmt$(c.returned)} on ${fmt$(c.invested)} (${fmtX(c.returned/c.invested)}).`); }
 }
-function kill(c){ c.status='dead'; c.exitQ=G.q; if(c.owned) rec(c,'bad',`${c.name} shut down. ${fmt$(c.invested)} written off.`); }
+// One-line story of why a company ended the way it did, built from its actual history.
+function storyLine(c,end){
+  const S=c.story, ups=S.filter(e=>e.k==='up'), downs=S.filter(e=>e.k==='down').length, bridges=S.filter(e=>e.k==='bridge').length;
+  const crisis=[...S].reverse().find(e=>e.k==='crisis'), noraise=[...S].reverse().find(e=>e.k==='noraise');
+  const best=ups.reduce((a,e)=>Math.max(a,e.step),0), mkt=REGIMES[G.regime].label.toLowerCase();
+  const n=k=>k===1?'one':k===2?'two':k===3?'three':String(k);
+  if(end==='dead'){
+    if(crisis&&!S.some(e=>e.k==='fixed'&&e.short===crisis.short)) return `${({'Cofounder conflict':'The fight between the cofounders','Lost top customer':'Losing its biggest customer','Key hire poached':'Losing its VP of Engineering'})[crisis.short]||'A crisis'} never got addressed. Momentum slid, the next round never came together, and the money ran out.`;
+    if(noraise&&(noraise.regime==='correction'||noraise.regime==='recession')) return `It tried to raise ${noraise.regime==='recession'?'in the middle of a recession':'during a market correction'}. Investors had pulled back, ${bridges?'the bridge only bought a few months, ':''}and the company wound down.`;
+    if(S.some(e=>e.k==='bridgeFail'&&e.funded)) return 'Insiders funded a bridge to buy nine more months. The milestones never came, and neither did a buyer.';
+    return 'Growth never reached the bar for the next round. With no new investors and no buyer, the founders shut it down.';
+  }
+  const x=c.returned/c.invested;
+  if(c.exitKind==='Soft landing') return `${bridges?'After '+n(bridges)+' bridge'+(bridges>1?'s':'')+', the':'The'} company ran short of cash and sold its team and technology to a competitor for less than it had raised.`;
+  if(c.exitKind==='IPO') return `${ups.length?`${n(ups.length)[0].toUpperCase()+n(ups.length).slice(1)} up round${ups.length>1?'s':''}${best>=2?`, including a ${best.toFixed(1)}x step-up,`:''} carried it to the ${STAGES[c.stage]}`:'It compounded quietly'}, and the IPO window was open in a ${mkt} market.`;
+  if(x>=10) return `A breakout. ${best>=2?`A ${best.toFixed(1)}x step-up told everyone what it was becoming, and a`:'A'} strategic buyer paid a premium to own the category.`;
+  if(x>=3) return `${downs||bridges?'It got through a rough patch and':'Steady execution'}${ups.length?` across ${n(ups.length)} up round${ups.length>1?'s':''}`:''} made it an obvious target for a larger competitor.`;
+  if(x>=1) return downs||bridges?`It survived ${downs?'a down round':'a bridge'} but never broke out. A buyer picked it up for its customers and engineers.`:`Revenue kept growing, but never fast enough to stand out. An acquirer bought it for the customer base.`;
+  return `It sold for less than the ${fmt$(c.raised)} investors had put in.${c.exitVal<c.raised?' Preferred stock meant investors were paid back before common, so you recovered part of your money.':''}`;
+}
+function kill(c){ c.status='dead'; c.exitQ=G.q;
+  if(c.owned) G.events.push({t:'dead',cid:c.id,q:G.q,inv:c.invested,why:storyLine(c,'dead')});
+  if(c.owned) rec(c,'bad',`${c.name} shut down. ${fmt$(c.invested)} written off.`); }
 
 // ---------------------------------------------------------------------------
 // Turn engine
@@ -706,13 +800,14 @@ function stepCompany(c){
     if(c.owned&&c.bridgeDecision!=='accepted') pOk*=CAL.brDecl;
     const ok=deathRoll<pOk, funded=c.owned&&c.bridgeDecision==='accepted';
     c.bridgeDecision=null;
+    if(!ok) c.story.push({k:'bridgeFail',funded});
     if(!ok&&funded) rec(c,'bad',`${c.name} burned through the bridge without hitting its milestones.`);
-    if(ok){ c.status='alive'; c.toRaise=3; c.m=Math.max(c.m,-0.6)+0.4; c.bridges++; rec(c,'warn',`${c.name} closed its bridge and has about nine months to hit milestones.`); }
+    if(ok){ c.status='alive'; c.toRaise=3; c.m=Math.max(c.m,-0.6)+0.4; c.bridges++; c.story.push({k:'bridge'}); rec(c,'warn',`${c.name} closed its bridge and has about nine months to hit milestones.`); }
     else if(timing<CAL.killShare) kill(c);
     else doExit(c,c.raised*(0.15+0.35*exitRoll),'Soft landing');
     return;
   }
-  if(c.crisis){ c.m-=c.owned?c.crisis.pen:c.crisis.pen*0.5; rec(c,'bad',`${c.name}: the ${c.crisis.short.toLowerCase()} went unaddressed and momentum took a hit.`); c.crisis=null; }
+  if(c.crisis){ c.story.push({k:'crisis',short:c.crisis.short}); c.m-=c.owned?c.crisis.pen:c.crisis.pen*0.5; rec(c,'bad',`${c.name}: the ${c.crisis.short.toLowerCase()} went unaddressed and momentum took a hit.`); c.crisis=null; }
   const shock=G.shocks.filter(s=>s.sector===c.sector&&s.from<=G.q&&G.q<s.until).reduce((a,s)=>a+s.mag,0);
   c.prevM=c.m;
   c.m=clamp(0.9*c.m+0.1*c.s+RG.mom+shock+0.3*n+c.supQ,-3,3);
@@ -737,12 +832,13 @@ function stepCompany(c){
       c.post=pre+round; c.raised+=round; c.stage=Math.min(c.stage+1,6);
       c.own*=0.8; c.hOwn*=0.8; c.burn*=1.6;
       c.toRaise=5+Math.floor(timing*3);
+      c.story.push({k:step<1?'down':'up',step,stage:c.stage});
       if(c.owned){
         G.pending.push({pid:'p'+c.id+'_'+G.q,type:'prorata',cid:c.id,amount:ownPre*round,ownPre,step,round});
         rec(c,step>=1?'good':'warn',`${c.name} raised a ${STAGES[c.stage]} at ${fmt$(c.post)} post${step<1?' (a down round)':` (${step.toFixed(1)}x step-up)`}. Pro-rata decision waiting.`);
       }
     } else {
-      c.status='bridge';
+      c.status='bridge'; c.story.push({k:'noraise',regime:G.regime});
       if(c.owned){ const total=c.burn*6, ask=total*clamp(c.own*4,0.3,1);
         G.pending.push({pid:'b'+c.id+'_'+G.q,type:'bridge',cid:c.id,amount:ask,total});
         rec(c,'bad',`${c.name} could not close its next round and is asking insiders for a bridge.`); }
@@ -750,7 +846,7 @@ function stepCompany(c){
   }
 }
 function endQuarter(reset=true){
-  if(reset) G.recap=[];
+  if(reset){ G.recap=[]; G.events=[]; }
   for(const p of [...G.pending]) decide(p.pid,p.type==='prorata'?'pass':'decline');
   for(const id of G.deals){ const c=byId(id); if(c.status==='deal'){ c.status='alive'; c.passed=!c.owned; } }
   G.deals=[];
@@ -771,7 +867,7 @@ function snapshot(){
 }
 function needsAttention(){ return G.pending.length>0 || G.companies.some(c=>c.owned&&c.status==='alive'&&c.crisis); }
 function skipAhead(){
-  G.recap=[]; let n=0;
+  G.recap=[]; G.events=[]; let n=0;
   do { endQuarter(false); n++; } while(!G.over && !needsAttention() && G.q>=INVEST_QS && n<40);
 }
 
@@ -852,6 +948,7 @@ function renderStart(){
       </svg>
     </section>
     <section class="card setup" aria-label="Fund setup">
+      ${START.challenge?`<div class="challenge"><b>You've been challenged.</b> ${esc(START.challenge.from)} returned <b>${START.challenge.beat.toFixed(2)}x net TVPI</b> on seed ${esc(START.seed)}. Same market, same deals. Beat it.</div>`:''}
       <h2>Raise your fund</h2>
       <div class="diffs" role="radiogroup" aria-label="Difficulty">
         ${Object.entries(D).map(([k,d])=>`<button class="diff ${START.diff===k?'on':''}" role="radio" aria-checked="${START.diff===k}" data-act="pickDiff" data-k="${k}"><b>${d.label}</b><small>${d.blurb}</small></button>`).join('')}
@@ -1010,9 +1107,27 @@ function decisionCard(p){
     <button class="ghost danger" data-act="decide" data-p="${p.pid}" data-c="decline">Decline</button></div></article>`;
 }
 
+// Portfolio at a glance: one small tile per company, colored by where it stands.
+function portGrid(own){
+  const tile=c=>{
+    const live=c.status==='alive'||c.status==='bridge', x=valueOf(c)/c.invested;
+    let state,cls;
+    if(live){ const [ml,mc]=momentumLabel(c); state=ml; cls=mc.replace('chip-',''); }
+    else if(c.status==='dead'){ state='Shut down'; cls='bad'; }
+    else { state=c.exitKind==='Soft landing'?'Sold for parts':c.exitKind==='IPO'?'IPO':'Acquired'; cls=x>=3?'good':x>=1?'acc':'bad'; }
+    const inner=`<b>${esc(c.name)}</b><small>${state}${live?'':' · '+qLabel(c.exitQ)}</small><span class="tx">${fmtX(x)}</span>${c.crisis&&live?'<i class="needs" title="Needs your help this quarter">!</i>':''}`;
+    return live?`<a class="tile t-${cls}" href="#pc-${c.id}">${inner}</a>`:`<div class="tile t-${cls} done">${inner}</div>`;
+  };
+  const exited=own.filter(c=>c.status==='exited'), dead=own.filter(c=>c.status==='dead');
+  const wins=exited.filter(c=>c.returned>=c.invested).length, closed=exited.length+dead.length;
+  const order=c=>(c.status==='alive'||c.status==='bridge')?0:1;
+  return `<section class="glance"><div class="glance-h"><h2>At a glance</h2>
+      <p>${own.length-closed} active · ${exited.length} exited · ${dead.length} shut down${closed?` · ${pct(wins/closed,0)} of closed deals returned their cost`:''}</p></div>
+    <div class="tiles">${[...own].sort((a,b)=>order(a)-order(b)||valueOf(b)/b.invested-valueOf(a)/a.invested).map(tile).join('')}</div></section>`;
+}
 function portCard(c){
   const [ml,mc]=momentumLabel(c); const v=navOf(c); const trend=c.m-c.prevM;
-  return `<article class="card pc">
+  return `<article class="card pc" id="pc-${c.id}">
     <div class="pc-top">
       <div class="pc-name"><b>${esc(c.name)}</b><small>${c.sector} · ${STAGES[c.stage]} · in since ${qLabel(c.entryQ)}</small></div>
       <span class="chip ${mc}">${ml} ${trend>0.05?'↑':trend<-0.05?'↓':''}</span>
@@ -1032,7 +1147,7 @@ function renderPortfolio(){
   const live=own.filter(c=>c.status==='alive'||c.status==='bridge').sort((a,b)=>(b.crisis?1:0)-(a.crisis?1:0)||navOf(b)-navOf(a));
   const done=own.filter(c=>c.status==='exited'||c.status==='dead');
   if(!own.length) return `<div class="card empty"><h3>No investments yet</h3><p>Pick a deal from the deal flow tab. Your portfolio, follow-on offers and founder support live here.</p></div>`;
-  return `${G.pending.length?`<section class="decisions"><div class="section-h"><h2>Decisions this quarter</h2><p>Undecided offers count as a pass when the quarter ends.</p></div>${G.pending.map(decisionCard).join('')}</section>`:''}
+  return `${portGrid(own)}${G.pending.length?`<section class="decisions"><div class="section-h"><h2>Decisions this quarter</h2><p>Undecided offers count as a pass when the quarter ends.</p></div>${G.pending.map(decisionCard).join('')}</section>`:''}
     <div class="section-h"><div><h2>Active portfolio</h2><p>${G.hours} of ${G.D.hours} partner hours left this quarter. Support in your thesis sector counts 30% more. Fundraising prep only matters if the company raises soon.</p></div></div>
     <div class="port">${live.length?live.map(portCard).join(''):'<div class="card empty">No active companies.</div>'}</div>
     ${done.length?`<div class="section-h"><h2>Exits and write-offs</h2></div>
@@ -1166,6 +1281,29 @@ function renderModal(){
       <p class="muted" style="font-size:.85rem">Dry powder after this check: <b class="num">${fmt$(after)}</b> (${pct(after/G.investable,0)} of investable capital). ${c.calls?'':'You haven\'t taken a diligence call on this company.'}</p>
       <div class="mfoot"><button class="primary" data-act="confirmInvest" ${sel?'':'disabled'}>Wire ${sel?fmt$(sel.amt):''}</button></div>`;
   }
+  if(M.type==='wrap') body=renderWrap(M);
+  if(M.type==='events'){
+    const E=G.events[M.i], c=byId(E.cid), N=G.events.length, last=M.i>=N-1;
+    const dead=E.t==='dead', x=dead?0:E.ret/E.inv, good=!dead&&x>=1;
+    const kind=dead?'Shut down':E.kind==='IPO'?'Went public':E.kind==='Soft landing'?'Sold for parts':'Acquired';
+    const row=(l,v,cls='')=>`<tr><td>${l}</td><td class="n ${cls}">${v}</td></tr>`;
+    body=`<div class="tomb ${good?(x>=3?'great':'good'):'bad'}">
+      <div class="tomb-top"><p class="eyebrow">${dead?'Write-off':'Exit'} · ${qLabel(E.q)}${N>1?` · ${M.i+1} of ${N}`:''}</p>${N>1?`<button class="ghost small" data-act="evSkip">Skip all</button>`:''}</div>
+      <p class="tomb-kind">${kind}</p>
+      <h2>${esc(c.name)}</h2>
+      <p class="one muted">${esc(c.oneLiner)} · ${c.sector} · backed at ${STAGES[c.entryStage]}, ${qLabel(c.entryQ)}</p>
+      <blockquote>${esc(E.why)}</blockquote>
+      <div class="tomb-big"><b>${dead?'0x':fmtX(x)}</b><span>${dead?`${fmt$(E.inv)} written off`:`${fmt$(E.ret)} back on ${fmt$(E.inv)} invested`}</span></div>
+      ${dead?'':`<div class="tablewrap" style="border:0"><table><tbody>
+        ${row(E.kind==='IPO'?'Valuation at IPO':'Sale price',fmt$(E.val))}
+        ${row('Your fund’s proceeds',fmt$(E.ret))}
+        ${row('Net to your LPs',fmt$(E.lpNet))}
+        ${row('Carry to you',E.carry>0?fmt$(E.carry):'$0 · no profit on this deal',E.carry>0?'pos':'')}
+      </tbody></table></div>
+      ${E.pref&&E.ret>E.common+1?`<p class="pref-note"><b>Your 1x preference paid off.</b> The sale price was below the ${fmt$(E.raised)} investors put in, so preferred holders were paid first. You got ${fmt$(E.ret)}; as common stock you'd have gotten ${fmt$(E.common)}.</p>`:''}`}
+      <div class="mfoot"><button class="primary" data-act="evNext">${last?'Back to the fund':`Next · ${M.i+2} of ${N}`}</button></div>
+    </div>`;
+  }
   if(M.type==='confirmEnd'){
     body=`<div class="modal-h"><h2>End the quarter?</h2></div><p>You have ${G.pending.length} open decision${G.pending.length>1?'s':''}. Ending now passes on pro-rata offers and declines bridge requests.</p>
       <div class="mfoot"><button data-act="close">Go back</button><button class="primary" data-act="forceEnd">End quarter anyway</button></div>`;
@@ -1185,6 +1323,66 @@ function verdict(irr,tvpi){
   if(irr>=BENCH_IRR[2].irr) return ['Above median',beat?'Better than most venture funds, and LPs beat the S&P 500.':`Better than most venture funds, but LPs would have done better in the S&P 500 (${pct(SP500_10Y,1)}). Fund II will take work.`];
   if(irr>=BENCH_IRR[3].irr) return ['Below median',`Your LPs earned less than a typical venture fund and less than the S&P 500. Raising Fund II will be hard.`];
   return tvpi>=1?['Bottom quartile','LPs got their money back, but barely beat cash. Fund II is in doubt.']:['Bottom quartile','Below 1x net. LPs lost money and Fund II is in doubt.'];
+}
+
+// Rough percentile among real US venture funds, interpolated from the Carta net IRR tiers.
+function irrPercentile(irr){
+  if(irr==null) return null;
+  const pts=[[-0.10,1],[BENCH_IRR[3].irr,25],[BENCH_IRR[2].irr,50],[BENCH_IRR[1].irr,75],[BENCH_IRR[0].irr,90],[0.45,99]];
+  if(irr<=pts[0][0]) return 1; if(irr>=pts[5][0]) return 99;
+  for(let i=1;i<pts.length;i++) if(irr<=pts[i][0]){const [x0,y0]=pts[i-1],[x1,y1]=pts[i]; return Math.round(y0+(y1-y0)*(irr-x0)/(x1-x0));}
+}
+function shareLink(){
+  const R=G.result, base=location.href.split('#')[0];
+  const h=new URLSearchParams({seed:G.seed,diff:G.diff,thesis:G.thesis,gp:String(G.gpPct),beat:R.tvpi.toFixed(2),from:G.fundName});
+  return base+'#'+h.toString();
+}
+function shareText(){
+  const R=G.result, pc=irrPercentile(R.netIrr);
+  return `I ran ${G.fundName} in Power Law Fund: ${fmtX(R.tvpi)} net TVPI${R.netIrr!=null?`, ${pct(R.netIrr,1)} net IRR`:''}${pc!=null?` (better than ~${pc}% of real VC funds)`:''}. Same market, same deals: seed ${G.seed}, ${G.D.label}, ${G.thesis} thesis. Can you beat it?`;
+}
+
+// The annual LP meeting: a short deck that recaps the fund before the full report.
+function renderWrap(M){
+  const R=G.result, pc=irrPercentile(R.netIrr), [v]=verdict(R.netIrr,R.tvpi);
+  const owned=G.companies.filter(c=>c.owned).map(c=>({c,val:valueOf(c)})).sort((a,b)=>b.val-a.val);
+  const tot=owned.reduce((a,o)=>a+o.val,0)||1, top=owned[0], second=owned[1];
+  const exited=owned.filter(o=>o.c.status==='exited'), dead=owned.filter(o=>o.c.status==='dead');
+  const closed=exited.length+dead.length, wins=exited.filter(o=>o.c.returned>=o.c.invested).length;
+  const initial=owned.reduce((a,o)=>a+(o.c.initial||0),0), follow=R.invested-initial;
+  const bar=(l,val,cls,max)=>`<div class="wbar ${cls}"><span>${l}</span><span class="wtrack"><i style="width:${Math.max(1,Math.min(100,val/max*100)).toFixed(1)}%"></i></span><b>${pct(val,1)}</b></div>`;
+  const big=(n,l)=>`<div class="wstat"><b>${n}</b><small>${l}</small></div>`;
+  const slides=[
+    `<p class="eyebrow">Year 10 · Annual LP meeting</p><h2>${esc(G.fundName)}</h2>
+      <div class="whero"><b>${fmtX(R.tvpi)}</b><small>net TVPI to your LPs</small></div>
+      <p class="wline">${pc!=null?`A net IRR of <b>${pct(R.netIrr,1)}</b> beats about <b>${pc}%</b> of real US venture funds.`:'The fund never produced a meaningful IRR.'}</p>
+      <p class="wverdict">${v}</p>`,
+    top?`<p class="eyebrow">The power law</p><h2>${top.val/tot>=0.5?'One company carried the fund':'No single company carried the fund'}</h2>
+      <div class="whero"><b>${fmtX(top.val/top.c.invested)}</b><small>${esc(top.c.name)} · ${fmt$(top.c.invested)} in, ${fmt$(top.val)} out</small></div>
+      <div class="wshare"><span style="width:${(top.val/tot*100).toFixed(1)}%"></span>${second?`<span class="s2" style="width:${(second.val/tot*100).toFixed(1)}%"></span>`:''}</div>
+      <p class="wline">${esc(top.c.name)} produced <b>${pct(top.val/tot,0)}</b> of all the value in the fund${second?`, and ${esc(second.c.name)} another ${pct(second.val/tot,0)}`:''}. In a typical fund, 1–3 companies drive 50–80% of returns.</p>`
+      :`<p class="eyebrow">The power law</p><h2>No investments</h2><p class="wline">You never deployed capital.</p>`,
+    `<p class="eyebrow">Gross to net</p><h2>What your LPs actually got</h2>
+      <div class="wflow">${big(fmtX(R.moic),'gross MOIC')}<span>→</span>${big('−'+fmt$(R.fees),'management fees')}<span>→</span>${big('−'+fmt$(R.carry),'carry to you')}<span>→</span>${big(fmtX(R.tvpi),'net TVPI')}</div>
+      <p class="wline">You earned <b>${fmt$(R.carry)}</b> in carry${R.clawback>0?` after giving back ${fmt$(R.clawback)} in clawback`:''}${R.gpCommit?`, and your ${fmt$(R.gpCommit)} commitment became ${fmt$(R.gpCommitValue)}`:''}.</p>`,
+    `<p class="eyebrow">Portfolio construction</p><h2>How you built it</h2>
+      <div class="wgrid">${big(owned.length,'companies')}${big(exited.length,'exits')}${big(dead.length,'shut down')}${big(closed?pct(wins/closed,0):'—','of closed deals returned cost')}</div>
+      <div class="wsplit"><span style="width:${(initial/(R.invested||1)*100).toFixed(1)}%">New checks ${pct(initial/(R.invested||1),0)}</span><span class="f">Follow-ons ${pct(follow/(R.invested||1),0)}</span></div>
+      <p class="wline">${fmt$(initial)} went into first checks and ${fmt$(follow)} into follow-ons and bridges. Most seed funds reserve 40–60% for follow-ons.</p>`,
+    `<p class="eyebrow">Against the market</p><h2>${R.netIrr!=null&&R.netIrr>=SP500_10Y?'You beat the index':'An index fund would have done better'}</h2>
+      <div class="wbars">${[{l:'Your fund',v:R.netIrr??-0.05,c:'me'},{l:'Top quartile',v:BENCH_IRR[1].irr,c:''},{l:'S&P 500',v:SP500_10Y,c:'sp'},{l:'Median fund',v:BENCH_IRR[2].irr,c:''}].map(r=>bar(r.l,Math.max(0,r.v),r.c,Math.max(0.3,R.netIrr||0))).join('')}</div>
+      <p class="wsrc">Net IRR. ${BENCH_IRR_SRC}</p>`,
+    `<p class="eyebrow">Challenge a friend</p><h2>Same market. Same deals.</h2>
+      <p class="wline">Anyone who plays seed <b>${esc(G.seed)}</b> on ${G.D.label} with a ${esc(G.thesis)} thesis sees exactly the deals and market you did. The only difference is the decisions.</p>
+      <div class="wquote">${esc(shareText())}</div>
+      <div class="row" style="justify-content:center">${navigator.share?'<button data-act="nativeShare">Share…</button>':''}<button class="primary" data-act="copyShare">${M.copied?'Copied ✓':'Copy challenge link'}</button></div>`,
+  ];
+  const N=slides.length, i=M.i;
+  return `<div class="wrapdeck"><div class="wslide" aria-live="polite">${slides[i]}</div>
+    <div class="wnav"><button class="ghost" data-act="wrapGo" data-d="-1" ${i===0?'disabled':''} aria-label="Previous slide">←</button>
+      <span class="wdots">${slides.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</span>
+      ${i<N-1?`<button class="primary" data-act="wrapGo" data-d="1">Next →</button>`:`<button class="primary" data-act="close">See the full report</button>`}</div>
+    ${i<N-1?'<button class="ghost small wskip" data-act="close">Skip to full report</button>':''}</div>`;
 }
 
 function benchSection(R){
@@ -1275,13 +1473,13 @@ function renderEnd(){
     ${R.misses.length?`<section style="display:grid;gap:12px"><h2>Deals you passed on</h2><div class="tablewrap"><table><thead><tr><th>Company</th><th>Sector</th><th>Seen</th><th>Calls</th><th class="n">$1M would be</th></tr></thead><tbody>
       ${R.misses.map(m=>`<tr><td>${esc(m.c.name)}</td><td>${m.c.sector}</td><td>${qLabel(m.c.entryQ)}</td><td>${m.c.calls}</td><td class="n">${fmt$(m.x*1e6)}</td></tr>`).join('')}</tbody></table></div></section>`:''}
     <details class="card" style="padding:14px 16px"><summary>Full fund log</summary><div class="log" style="margin-top:10px">${G.log.map(l=>`<div><span>${qLabel(l.q)}</span><span>${esc(l.text)}</span></div>`).join('')}</div></details>
-    <div class="acts"><button class="primary" data-act="replay">Replay this seed</button><button data-act="restart">New fund, new seed</button></div>
+    <div class="acts"><button data-act="openWrap" data-i="5">Challenge a friend</button><button data-act="openWrap">Replay the LP meeting</button><button class="primary" data-act="replay">Replay this seed</button><button data-act="restart">New fund, new seed</button></div>
   </main>`;
 }
 
 function render(){
   if(!G){ app.innerHTML=renderStart(); return; }
-  if(G.over){ app.innerHTML=renderEnd(); return; }
+  if(G.over){ app.innerHTML=renderEnd()+renderModal(); return; }
   const nOwn=G.companies.filter(c=>c.owned&&(c.status==='alive'||c.status==='bridge')).length;
   const alerts=G.pending.length+G.companies.filter(c=>c.owned&&c.status==='alive'&&c.crisis).length;
   const tabs=[['deals','Deal flow',G.q<INVEST_QS?G.deals.length:0,false],['port','Portfolio',alerts||nOwn,alerts>0],['fund','LP view',0,false],['market','Market',0,false],['log','Fund log',0,false]];
@@ -1291,6 +1489,7 @@ function render(){
     ${views[G.tab]()}</main>`+renderModal();
 }
 
+function showEvents(){ if(!G) return; if(G.over){ G.modal={type:'wrap',i:0}; return; } if(G.events.length) G.modal={type:'events',i:0}; }
 const ACT={
   pickDiff:d=>{START.diff=d.k},
   pickGp:d=>{START.gp=+d.p},
@@ -1307,9 +1506,15 @@ const ACT={
   overlay:(d,el,e)=>{ if(e.target===el) G.modal=null; },
   decide:d=>decide(d.p,d.c),
   sup:d=>doSupport(+d.id,d.k),
-  end:()=>{ if(G.pending.length){G.modal={type:'confirmEnd'};return;} endQuarter(); window.scrollTo(0,0); },
-  forceEnd:()=>{ G.modal=null; endQuarter(); window.scrollTo(0,0); },
-  skip:()=>{ if(G.pending.length){G.modal={type:'confirmEnd'};return;} skipAhead(); window.scrollTo(0,0); },
+  end:()=>{ if(G.pending.length){G.modal={type:'confirmEnd'};return;} endQuarter(); showEvents(); window.scrollTo(0,0); },
+  forceEnd:()=>{ G.modal=null; endQuarter(); showEvents(); window.scrollTo(0,0); },
+  skip:()=>{ if(G.pending.length){G.modal={type:'confirmEnd'};return;} skipAhead(); showEvents(); window.scrollTo(0,0); },
+  evNext:()=>{ const M=G.modal; if(M.i<G.events.length-1) M.i++; else G.modal=null; },
+  evSkip:()=>{ G.modal=null; },
+  wrapGo:d=>{ const M=G.modal; M.i=Math.max(0,Math.min(5,M.i+(+d.d))); },
+  openWrap:d=>{ G.modal={type:'wrap',i:+(d.i||0)}; },
+  copyShare:()=>{ const t=shareText()+' '+shareLink(); try{ navigator.clipboard.writeText(t).then(()=>{G.modal.copied=true;render();},()=>prompt('Copy this challenge:',t)); }catch(e){ prompt('Copy this challenge:',t); } },
+  nativeShare:()=>{ try{ navigator.share({title:'Power Law Fund challenge',text:shareText(),url:shareLink()}).catch(()=>{}); }catch(e){} },
   askRestart:()=>{G.modal={type:'restart'}},
   restart:()=>{ G=null; START.seed=randomSeed(); window.scrollTo(0,0); },
   replay:()=>{ const o={fund:G.fundName,diff:G.diff,thesis:G.thesis,gp:G.gpPct,seed:G.seed}; newGame(o); window.scrollTo(0,0); },
@@ -1325,7 +1530,22 @@ document.addEventListener('input',e=>{
   if(e.target.id==='seedInput') START.seed=e.target.value;
 });
 document.addEventListener('change',e=>{ if(e.target.id==='thesisSel') START.thesis=e.target.value; });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&G&&G.modal){G.modal=null;render();} });
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&G&&G.modal){G.modal=null;render();}
+  if(G&&G.modal&&G.modal.type==='wrap'&&(e.key==='ArrowRight'||e.key==='ArrowLeft')){ ACT.wrapGo({d:e.key==='ArrowRight'?1:-1}); render(); }
+});
+// A challenge link carries the seed and settings in the URL hash, so a friend plays the same fund.
+(function readChallenge(){
+  try{
+    const h=new URLSearchParams(location.hash.slice(1));
+    const seed=(h.get('seed')||'').replace(/[^0-9a-zA-Z]/g,'').slice(0,12); if(!seed) return;
+    START.seed=seed;
+    if(DIFFS[h.get('diff')]) START.diff=h.get('diff');
+    if(['Generalist',...SECTORS].includes(h.get('thesis'))) START.thesis=h.get('thesis');
+    if(GP_OPTS.includes(+h.get('gp'))) START.gp=+h.get('gp');
+    const beat=parseFloat(h.get('beat')); if(beat>0&&beat<1000) START.challenge={beat, from:(h.get('from')||'A friend').slice(0,28)};
+  }catch(e){}
+})();
 render();
 </script>
 
