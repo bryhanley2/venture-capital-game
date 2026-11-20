@@ -293,6 +293,67 @@ tr:last-child td{border-bottom:0}
 .wskip{justify-self:center}
 .challenge{background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;padding:10px 12px;font-size:.9rem}
 @media (max-width:560px){.wgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stage{position:relative;width:100%;max-width:920px;margin:0 auto;display:grid}
+.lineup{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;max-width:920px;margin:0 auto;width:100%}
+.lu{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border-radius:999px;font-weight:400;flex:0 0 auto}
+.lu-t{display:grid;text-align:left;line-height:1.15}
+.lu-t b{font-size:.84rem}
+.lu-t small{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.lu-now{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.lu-now small{color:var(--accent)}
+.lu-funded small{color:var(--good)} .lu-funded .avatar{background:var(--good-soft);color:var(--good)}
+.lu-passed{opacity:.6}
+.avatar{width:44px;height:44px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-family:var(--f-mono);font-weight:600;font-size:.95rem;letter-spacing:.02em}
+.avatar.sm{width:28px;height:28px;font-size:.7rem}
+.pitch{padding:18px 20px 0;display:grid;gap:14px;min-width:0}
+.pitch.is-owned{border-color:var(--good);box-shadow:inset 0 0 0 1px var(--good)}
+.pitch-h{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
+.pitch-who h3{font-family:var(--f-display);font-stretch:80%;font-weight:850;font-size:1.7rem;line-height:1;margin:0}
+.pitch-who small{color:var(--muted);font-size:.8rem}
+.pitch-h .chips{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.opener{margin:0;font-size:1.04rem;line-height:1.55;padding:12px 16px;background:var(--paper);border-radius:10px;position:relative}
+.pitch-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:4px 22px}
+.pcol{display:grid;gap:10px;align-content:start;min-width:0}
+.verdict-bar{position:sticky;bottom:0;z-index:3;display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:8px;margin:0 -20px;padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line)}
+.verdict-bar button{display:flex;align-items:center;justify-content:center;gap:8px;padding:.75rem .9rem;font-size:.95rem}
+.verdict-bar .owned-note{grid-column:1/-1;text-align:center;padding:6px}
+.act-pass:hover:not(:disabled){border-color:var(--bad);color:var(--bad)}
+.act-call:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+kbd{font-family:var(--f-mono);font-size:.68rem;font-weight:600;border:1px solid currentColor;border-radius:4px;padding:0 4px;opacity:.6}
+@media (hover:none){kbd{display:none}}
+.ghost{position:absolute;inset:0 0 auto 0;z-index:5;pointer-events:none;opacity:0}
+.stamp{position:absolute;top:96px;left:50%;transform:translateX(-50%) rotate(-12deg);font-family:var(--f-display);font-stretch:85%;font-weight:900;font-size:3.2rem;letter-spacing:.06em;text-transform:uppercase;line-height:1;padding:10px 22px;border:5px solid currentColor;border-radius:10px;display:grid;justify-items:center;background:var(--card)}
+.stamp small{font-family:var(--f-mono);font-size:1rem;letter-spacing:.04em}
+.stamp.pass{color:var(--bad)} .stamp.fund{color:var(--good)}
+.lobby{display:grid;gap:14px;justify-items:stretch;text-align:center;padding:28px 8px 12px;min-width:0}
+.lobby>*{min-width:0;margin-inline:auto}
+.lobby h2{font-family:var(--f-display);font-stretch:80%;font-weight:850;font-size:clamp(2rem,6vw,3rem);line-height:1;margin:0;text-wrap:balance}
+.lobby-mkt{font-size:.88rem;color:var(--muted);max-width:70ch}
+.lobby-mkt .reg{font-weight:600}
+.lobby-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:12px;width:100%;max-width:760px;margin-block:6px}
+.lcard{display:grid;justify-items:center;gap:4px;padding:16px 12px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.lcard b{font-size:1.05rem}
+.lcard small{color:var(--muted);font-size:.8rem}
+.lcard .num{font-family:var(--f-mono);font-size:.82rem;font-weight:600}
+.lobby-res{font-size:.85rem;color:var(--muted)}
+.lobby .row,.wrapup .row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+button.big{padding:.8rem 1.3rem;font-size:1rem;display:inline-flex;gap:10px;align-items:center}
+.wrapup{padding:24px;display:grid;gap:10px;justify-items:center;text-align:center}
+.wrapup h2{font-family:var(--f-display);font-stretch:80%;font-weight:850;font-size:2rem;margin:0}
+@media (max-width:560px){
+  .pitch{padding:14px 14px 0}
+  .pitch-h{grid-template-columns:auto minmax(0,1fr)}
+  .pitch-h .chips{grid-column:1/-1;justify-content:flex-start}
+  .verdict-bar{margin:0 -14px;padding-inline:14px;grid-template-columns:1fr 1fr}
+  .verdict-bar .act-call{grid-column:1/-1;grid-row:1}
+  .stamp{font-size:2.4rem;top:70px}
+  .lobby{padding-top:12px}
+  .lobby-cards{gap:8px;grid-template-columns:1fr}
+  .lcard{grid-template-columns:auto minmax(0,1fr) auto;justify-items:start;align-items:center;text-align:left;column-gap:10px;row-gap:0;padding:10px 12px}
+  .lcard .avatar{grid-row:1/3}
+  .lcard small{grid-column:2}
+  .lcard .num{grid-column:3;grid-row:1/3}
+}
 .mfoot{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
 
 /* End screen */
@@ -337,7 +398,19 @@ details summary{cursor:pointer;font-weight:600}
   .stat span{font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
 @media (prefers-reduced-motion:no-preference){
-  .deal,.pc,.decision{animation:rise .25s ease-out both}
+  .pc,.decision{animation:rise .25s ease-out both}
+  .enter{animation:pitchIn .4s cubic-bezier(.2,.8,.2,1) both}
+  .stage .ghost~.enter{animation-delay:.42s}
+  .ghost{opacity:1}
+  .ghost .stamp{animation:stampIn .22s cubic-bezier(.3,1.6,.5,1) both}
+  .ghost.pitch:has(.stamp.pass){animation:passOut .75s ease-in both}
+  .ghost.pitch:has(.stamp.fund){animation:fundOut .9s ease-in both}
+  .fx-intro .lcard{animation:dealIn .45s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d)*130ms + .1s)}
+  @keyframes pitchIn{from{opacity:0;transform:translateX(56px) rotate(1.2deg)}to{opacity:1;transform:none}}
+  @keyframes stampIn{from{opacity:0;transform:translateX(-50%) rotate(-12deg) scale(2.4)}to{opacity:1;transform:translateX(-50%) rotate(-12deg) scale(1)}}
+  @keyframes passOut{0%,40%{opacity:1;transform:none}100%{opacity:0;transform:translateX(-115%) rotate(-9deg)}}
+  @keyframes fundOut{0%,50%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-48px) scale(.95)}}
+  @keyframes dealIn{from{opacity:0;transform:translateY(18px) rotate(-1.5deg)}to{opacity:1;transform:none}}
   @keyframes rise{from{transform:translateY(4px)}to{transform:none}}
 }
 </style>
@@ -1031,7 +1104,7 @@ function factsBlock(c){
 // Deal card: four plain sections (round, team, traction, metrics). Numbers the founder hasn't
 // verified are tagged; metrics you haven't asked about show as open questions for a call.
 const INLINE_FACTS=['arr','growth','lois','nrr','burn','cash','gm','refs','interest'];
-function dealCard(c){
+function dealBody(c){
   const thesis=c.sector===G.thesis, F=c.facts, M=c.metrics;
   const ask='<span class="ask">ask</span>';
   const row=(label,val,tip='')=>`<div${tip?` title="${esc(tip)}"`:''}><dt>${label}</dt><dd>${val}</dd></div>`;
@@ -1041,11 +1114,9 @@ function dealCard(c){
   const arrNow=F.arr?M.arr:c.deck.arr, priceMult=arrNow>0?c.post/arrNow:0;
   const bm=burnMultiple(c);
   const otherKeys=Object.keys(F).filter(k=>!INLINE_FACTS.includes(k));
-  return `<article class="card deal ${c.owned?'is-owned':''}">
-    <header class="deal-h">
-      <div class="chips"><span class="chip">${c.sector}</span><span class="chip">${c.model}</span>${thesis?'<span class="chip chip-acc">In thesis</span>':''}${c.calls?`<span class="chip">${c.calls} call${c.calls>1?'s':''}</span>`:''}</div>
-      <h3>${esc(c.name)}</h3><p class="one">${esc(c.oneLiner)}</p>
-    </header>
+  return `
+    <div class="pitch-cols">
+    <div class="pcol">
     <section class="dsec"><h4>The round</h4><dl>
       ${row('Stage',STAGES[c.stage])}
       ${row('Raising',fmt$(c.round))}
@@ -1056,6 +1127,7 @@ function dealCard(c){
     <section class="dsec"><h4>Team</h4>
       <p class="founder"><b>${esc(c.founder)}</b>, CEO · ${esc(c.bg)}</p>
       <dl>${row('References',F.refs?esc(F.refs[1]):ask)}</dl></section>
+    </div><div class="pcol">
     <section class="dsec"><h4>Traction</h4><dl>
       ${row('Revenue (ARR)',arrVal,'Annual recurring revenue. Figures tagged “deck” come from the pitch and are unverified until you ask on a call.')}
       ${row('Growth',grVal,'Year-over-year revenue growth.')}
@@ -1068,26 +1140,89 @@ function dealCard(c){
       ${row('Gross margin',F.gm?esc(F.gm[1]):ask)}
       ${row('Burn multiple',bm==null?'<span class="ask">ask burn, ARR, growth</span>':bm===Infinity?'n/a':`${bm.toFixed(1)}x ${bm<1.5?'· efficient':bm>3?'· inefficient':'· ok'}`,'Cash burned for each $1 of new revenue added. Under 1.5x is efficient; over 3x is a warning.')}
     </dl></section>
+    </div></div>
     ${otherKeys.length?`<div class="facts">${otherKeys.map(k=>`<div><small>${F[k][0]}</small><span>${esc(F[k][1])}</span></div>`).join('')}</div>`:''}
     ${c.flagsSeen.length?`<div class="flags">${c.flagsSeen.map(f=>`<div class="flag ${f.level==='warn'?'warn':''}"><b>${f.level==='warn'?'Watch:':'Red flag:'}</b> ${esc(f.text)}</div>`).join('')}</div>`:''}
     <details class="scores"><summary>Pitch scores <span class="muted">· the founder's self-rating</span></summary>
-      <div class="meters">${FKEYS.map(k=>meter(c,k)).join('')}</div></details>
-    <footer class="deal-f">
-      ${c.owned?`<span class="owned-note">You invested ${fmt$(c.invested)} for ${pct(c.own)}</span>`:
-        `<button data-act="openCall" data-id="${c.id}" ${G.calls<=0||c.asked.length>=QUESTIONS.length?'disabled':''}>Take a diligence call</button>
-         <button class="primary" data-act="openInvest" data-id="${c.id}" ${G.cash<=0?'disabled':''}>Invest</button>`}
-    </footer>
-  </article>`;
+      <div class="meters">${FKEYS.map(k=>meter(c,k)).join('')}</div></details>`;
 }
 
+// ---------------------------------------------------------------------------
+// Pitch day: the quarter opens in the lobby, founders pitch one at a time,
+// and each decision gets stamped on the memo before the next founder walks in.
+// ---------------------------------------------------------------------------
+const initials=n=>n.split(' ').map(w=>w[0]).join('').slice(0,2);
+const undecided=c=>!c.owned&&c.pitch!=='passed';
+function opener(c){
+  const first=c.founder.split(' ')[0], ol=c.oneLiner, what=/^[A-Z]{2}/.test(ol)?ol:ol[0].toLowerCase()+ol.slice(1);
+  const arr=c.deck.arr, g=Math.round(c.deck.growth);
+  const trend=g<0?`down ${-g}% from last year while we reposition`:g<15?`roughly flat over the last year`:`up ${g}% over the last year`;
+  const traction=arr<80e3?`We're early: ${fmt$(arr)} in revenue, mostly paid pilots${g>=15?`, and growing ${g}% a year`:''}.`:`We're at ${fmt$(arr)} in annual recurring revenue, ${trend}.`;
+  const hook=c.bg.includes('prior exit')?'I’ve built and sold a company before, and this one is bigger. ':c.bg.includes('straight out of school')?'We’re young, but nobody will outwork us. ':'';
+  return `Hi, I'm ${first}. At ${c.name}, we're building ${what}. ${hook}${traction} We're raising ${fmt$(c.round)} at ${fmt$(c.post)} post-money.`;
+}
+function pitchCard(c,i,n,ghost){
+  const thesis=c.sector===G.thesis;
+  const acts=c.owned?`<span class="owned-note">You invested ${fmt$(c.invested)} for ${pct(c.own)}</span>`:`
+      <button class="act-pass" data-act="passDeal" data-id="${c.id}"><span>Pass</span><kbd>P</kbd></button>
+      <button class="act-call" data-act="openCall" data-id="${c.id}" ${G.calls<=0||c.asked.length>=QUESTIONS.length?'disabled':''}><span>Diligence call · ${G.calls} left</span><kbd>D</kbd></button>
+      <button class="primary act-inv" data-act="openInvest" data-id="${c.id}" ${G.cash<=0?'disabled':''}><span>Invest</span><kbd>I</kbd></button>`;
+  return `<article class="card pitch ${ghost?'ghost':''} ${c.owned?'is-owned':''}" ${ghost?'aria-hidden="true"':''}>
+    <header class="pitch-h">
+      <div class="avatar" aria-hidden="true">${esc(initials(c.founder))}</div>
+      <div class="pitch-who"><h3>${esc(c.name)}</h3><small>${esc(c.founder)} · ${c.sector} · ${c.model}</small></div>
+      <div class="chips">${thesis?'<span class="chip chip-acc">In thesis</span>':''}${c.pitch==='passed'?'<span class="chip chip-bad">You passed</span>':''}<span class="chip">Pitch ${i+1} of ${n}</span></div>
+    </header>
+    <blockquote class="opener">“${esc(opener(c))}”</blockquote>
+    ${dealBody(c)}
+    <footer class="verdict-bar">${acts}</footer>
+    ${ghost?`<div class="stamp ${ghost==='fund'?'fund':'pass'}">${ghost==='fund'?`Funded<small>${fmt$(c.invested)}</small>`:'Passed'}</div>`:''}
+  </article>`;
+}
+function lineup(){
+  return `<div class="lineup" role="tablist" aria-label="This quarter's founders">${G.deals.map((id,i)=>{const c=byId(id);
+    const st=c.owned?'funded':c.pitch==='passed'?'passed':G.stage==='pitch'&&i===G.pitch?'now':'waiting';
+    const lbl={funded:'Funded',passed:'Passed',now:'Pitching',waiting:'Waiting'}[st];
+    return `<button class="lu lu-${st}" role="tab" aria-selected="${st==='now'}" data-act="gotoPitch" data-i="${i}"><span class="avatar sm" aria-hidden="true">${esc(initials(c.founder))}</span><span class="lu-t"><b>${esc(c.name)}</b><small>${lbl}</small></span></button>`;}).join('')}</div>`;
+}
 function renderDeals(){
   if(G.q>=INVEST_QS) return `<div class="card empty"><h3>The investment period is over</h3><p>No new deals after Year 4. Your job now is the portfolio: follow-ons, bridges and founder support. You have ${fmt$(G.cash)} in reserves.</p></div>`;
-  const deployed=G.investable-G.cash;
-  return `<div class="section-h"><div><h2>This quarter's deal flow</h2>
-      <p>Deals you don't invest in close without you at the end of the quarter. You have ${G.calls} diligence call${G.calls===1?'':'s'} left for the whole fund, with up to ${QPERCALL} questions per call. You've deployed ${fmt$(deployed)} of ${fmt$(G.investable)} (${pct(deployed/G.investable,0)}). Most seed funds hold back 40–60% for follow-ons.</p>
-      <p class="legend-line"><span class="tag">deck</span> unverified pitch number · <i>ask</i> only known after a diligence call · dotted labels have definitions on hover</p></div></div>
-    <div class="deals">${G.deals.map(id=>dealCard(byId(id))).join('')}</div>`;
+  const deployed=G.investable-G.cash, fx=G.fx, n=G.deals.length;
+  if(G.stage==='intro'){
+    const active=G.shocks.filter(x=>x.from<=G.q&&G.q<x.until);
+    return `<section class="lobby ${fx&&fx.t==='intro'?'fx-intro':''}">
+      <p class="eyebrow">Year ${Math.floor(G.q/4)+1} · Quarter ${G.q%4+1}</p>
+      <h2>${n} founders are in the lobby</h2>
+      <p class="lobby-mkt"><span class="reg reg-${G.regime}">${REGIMES[G.regime].label} market</span> · Fed funds ${G.rate.toFixed(2)}%${active.map(x=>` · <span class="chip ${x.mag>0?'chip-good':'chip-bad'}">${x.sector}</span> ${esc(x.text)}`).join('')}</p>
+      <div class="lobby-cards">${G.deals.map((id,i)=>{const c=byId(id);return `<div class="lcard" style="--d:${i}"><span class="avatar" aria-hidden="true">${esc(initials(c.founder))}</span><b>${esc(c.name)}</b><small>${c.sector} · ${STAGES[c.stage]}</small><span class="num">raising ${fmt$(c.round)}</span></div>`}).join('')}</div>
+      <p class="lobby-res">${fmt$(G.cash)} dry powder (${pct(deployed/G.investable,0)} deployed) · ${G.calls} diligence calls left for the fund · ${G.hours} partner hours this quarter</p>
+      <div class="row"><button class="primary big" data-act="startPitches">Bring in the first founder <kbd>Enter</kbd></button>
+        ${G.pending.length||G.companies.some(c=>c.owned&&c.status==='alive'&&c.crisis)?`<button data-act="tab" data-k="port">Portfolio needs you first</button>`:''}</div>
+    </section>`;
+  }
+  const ghostC=fx&&(fx.t==='pass'||fx.t==='fund')?byId(fx.id):null, ghostI=ghostC?G.deals.indexOf(ghostC.id):0;
+  const ghost=ghostC?pitchCard(ghostC,ghostI,n,fx.t):'';
+  if(G.stage==='done'){
+    const funded=G.deals.map(byId).filter(c=>c.owned), passed=G.deals.map(byId).filter(c=>!c.owned);
+    const needs=G.pending.length+G.companies.filter(c=>c.owned&&c.status==='alive'&&c.crisis).length;
+    return `${lineup()}<div class="stage">${ghost}<section class="card wrapup ${fx?'enter':''}">
+      <p class="eyebrow">Pitch day is over</p><h2>${funded.length?`You backed ${funded.length} of ${n}`:'You passed on everyone'}</h2>
+      ${funded.length?`<p>${funded.map(c=>`<b>${esc(c.name)}</b> · ${fmt$(c.invested)} for ${pct(c.own)}`).join('<br>')}</p>`:''}
+      ${passed.length?`<p class="muted">Passed: ${passed.map(c=>esc(c.name)).join(', ')}</p>`:''}
+      <p class="muted" style="font-size:.85rem">${fmt$(G.cash)} dry powder left. Most seed funds hold back 40–60% for follow-ons.</p>
+      <div class="row">${needs?`<button data-act="tab" data-k="port">Portfolio · ${needs} need${needs>1?'':'s'} you</button>`:''}<button class="primary big" data-act="end">End the quarter</button></div>
+    </section></div>`;
+  }
+  const c=byId(G.deals[G.pitch]);
+  return `${lineup()}<div class="stage">${ghost}<div class="${fx?'enter':''}">${pitchCard(c,G.pitch,n,false)}</div></div>
+    <p class="legend-line"><span class="tag">deck</span> unverified pitch number · <i>ask</i> only known after a diligence call · dotted labels have definitions on hover</p>`;
 }
+function advancePitch(){
+  const n=G.deals.length;
+  for(let k=1;k<=n;k++){ const j=(G.pitch+k)%n; if(undecided(byId(G.deals[j]))){ G.pitch=j; return; } }
+  G.stage='done';
+}
+function startQuarterUI(){ if(!G||G.over) return; G.stage='intro'; G.pitch=0; G.fx={t:'intro'}; G.tab=G.q<INVEST_QS?'deals':'port'; }
 
 function decisionCard(p){
   const c=byId(p.cid); const [ml]=momentumLabel(c);
@@ -1305,7 +1440,8 @@ function renderModal(){
     </div>`;
   }
   if(M.type==='confirmEnd'){
-    body=`<div class="modal-h"><h2>End the quarter?</h2></div><p>You have ${G.pending.length} open decision${G.pending.length>1?'s':''}. Ending now passes on pro-rata offers and declines bridge requests.</p>
+    const wf=waitingFounders();
+    body=`<div class="modal-h"><h2>End the quarter?</h2></div><p>${[wf?`${wf} founder${wf>1?'s haven\'t':' hasn\'t'} heard from you yet. Ending now passes on ${wf>1?'them':'it'}.`:'',G.pending.length?`You have ${G.pending.length} open portfolio decision${G.pending.length>1?'s':''}. Ending now passes on pro-rata offers and declines bridge requests.`:''].filter(Boolean).join(' ')}</p>
       <div class="mfoot"><button data-act="close">Go back</button><button class="primary" data-act="forceEnd">End quarter anyway</button></div>`;
   }
   if(M.type==='restart'){
@@ -1482,42 +1618,48 @@ function render(){
   if(G.over){ app.innerHTML=renderEnd()+renderModal(); return; }
   const nOwn=G.companies.filter(c=>c.owned&&(c.status==='alive'||c.status==='bridge')).length;
   const alerts=G.pending.length+G.companies.filter(c=>c.owned&&c.status==='alive'&&c.crisis).length;
-  const tabs=[['deals','Deal flow',G.q<INVEST_QS?G.deals.length:0,false],['port','Portfolio',alerts||nOwn,alerts>0],['fund','LP view',0,false],['market','Market',0,false],['log','Fund log',0,false]];
+  const tabs=[['deals',G.q<INVEST_QS?'Pitch day':'Deal flow',G.q<INVEST_QS?waitingFounders():0,false],['port','Portfolio',alerts||nOwn,alerts>0],['fund','LP view',0,false],['market','Market',0,false],['log','Fund log',0,false]];
   const views={deals:renderDeals,port:renderPortfolio,fund:renderFund,market:renderMarket,log:renderLog};
-  app.innerHTML=renderHeader()+`<main class="wrap game">${renderRecap()}
+  const showRecap=!(G.tab==='deals'&&G.q<INVEST_QS&&G.stage!=='intro');
+  app.innerHTML=renderHeader()+`<main class="wrap game">${showRecap?renderRecap():''}
     <nav class="tabs" role="tablist">${tabs.map(([k,l,n,a])=>`<button class="tab ${G.tab===k?'on':''}" role="tab" aria-selected="${G.tab===k}" data-act="tab" data-k="${k}">${l}${n?`<span class="count ${a?'alert':''}">${n}</span>`:''}</button>`).join('')}</nav>
     ${views[G.tab]()}</main>`+renderModal();
+  G.fx=null;
 }
 
+function waitingFounders(){ return G.q<INVEST_QS?G.deals.filter(id=>undecided(byId(id))).length:0; }
 function showEvents(){ if(!G) return; if(G.over){ G.modal={type:'wrap',i:0}; return; } if(G.events.length) G.modal={type:'events',i:0}; }
 const ACT={
   pickDiff:d=>{START.diff=d.k},
   pickGp:d=>{START.gp=+d.p},
   newSeed:()=>{START.seed=randomSeed()},
-  start:()=>{ newGame({...START,seed:(START.seed||randomSeed()).trim()}); window.scrollTo(0,0); },
+  start:()=>{ newGame({...START,seed:(START.seed||randomSeed()).trim()}); startQuarterUI(); window.scrollTo(0,0); },
   tab:d=>{G.tab=d.k},
   openCall:d=>{G.modal={type:'call',cid:+d.id,picked:[]}},
   pickQ:d=>{const p=G.modal.picked,i=p.indexOf(d.k); if(i>=0)p.splice(i,1); else if(p.length<QPERCALL)p.push(d.k);},
   runCall:()=>{const M=G.modal; M.lines=runCall(M.cid,M.picked)},
   openInvest:d=>{const c=byId(+d.id); const opts=checkOptions(c); G.modal={type:'invest',cid:c.id,choice:Math.max(0,opts.findIndex(o=>o.ok))}},
   pickCheck:d=>{G.modal.choice=+d.i},
-  confirmInvest:()=>{const M=G.modal,c=byId(M.cid),o=checkOptions(c)[M.choice]; if(o&&o.ok) invest(c.id,o.amt); G.modal=null;},
+  confirmInvest:()=>{const M=G.modal,c=byId(M.cid),o=checkOptions(c)[M.choice]; G.modal=null; if(o&&o.ok){ invest(c.id,o.amt); if(G.tab==='deals'&&G.stage==='pitch'&&G.deals[G.pitch]===c.id){ G.fx={t:'fund',id:c.id}; advancePitch(); } } },
   close:()=>{G.modal=null},
   overlay:(d,el,e)=>{ if(e.target===el) G.modal=null; },
   decide:d=>decide(d.p,d.c),
   sup:d=>doSupport(+d.id,d.k),
-  end:()=>{ if(G.pending.length){G.modal={type:'confirmEnd'};return;} endQuarter(); showEvents(); window.scrollTo(0,0); },
-  forceEnd:()=>{ G.modal=null; endQuarter(); showEvents(); window.scrollTo(0,0); },
-  skip:()=>{ if(G.pending.length){G.modal={type:'confirmEnd'};return;} skipAhead(); showEvents(); window.scrollTo(0,0); },
+  end:()=>{ if(G.pending.length||waitingFounders()){G.modal={type:'confirmEnd'};return;} endQuarter(); startQuarterUI(); showEvents(); window.scrollTo(0,0); },
+  forceEnd:()=>{ G.modal=null; endQuarter(); startQuarterUI(); showEvents(); window.scrollTo(0,0); },
+  skip:()=>{ if(G.pending.length){G.modal={type:'confirmEnd'};return;} skipAhead(); startQuarterUI(); showEvents(); window.scrollTo(0,0); },
   evNext:()=>{ const M=G.modal; if(M.i<G.events.length-1) M.i++; else G.modal=null; },
   evSkip:()=>{ G.modal=null; },
+  startPitches:()=>{ G.stage='pitch'; G.pitch=Math.max(0,G.deals.findIndex(id=>undecided(byId(id)))); G.fx={t:'enter'}; window.scrollTo(0,0); },
+  passDeal:d=>{ const c=byId(+d.id); c.pitch='passed'; G.fx={t:'pass',id:c.id}; advancePitch(); window.scrollTo(0,0); },
+  gotoPitch:d=>{ G.stage='pitch'; G.pitch=+d.i; G.fx={t:'enter'}; },
   wrapGo:d=>{ const M=G.modal; M.i=Math.max(0,Math.min(5,M.i+(+d.d))); },
   openWrap:d=>{ G.modal={type:'wrap',i:+(d.i||0)}; },
   copyShare:()=>{ const t=shareText()+' '+shareLink(); try{ navigator.clipboard.writeText(t).then(()=>{G.modal.copied=true;render();},()=>prompt('Copy this challenge:',t)); }catch(e){ prompt('Copy this challenge:',t); } },
   nativeShare:()=>{ try{ navigator.share({title:'Power Law Fund challenge',text:shareText(),url:shareLink()}).catch(()=>{}); }catch(e){} },
   askRestart:()=>{G.modal={type:'restart'}},
   restart:()=>{ G=null; START.seed=randomSeed(); window.scrollTo(0,0); },
-  replay:()=>{ const o={fund:G.fundName,diff:G.diff,thesis:G.thesis,gp:G.gpPct,seed:G.seed}; newGame(o); window.scrollTo(0,0); },
+  replay:()=>{ const o={fund:G.fundName,diff:G.diff,thesis:G.thesis,gp:G.gpPct,seed:G.seed}; newGame(o); startQuarterUI(); window.scrollTo(0,0); },
 };
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-act]'); if(!el) return;
@@ -1533,6 +1675,14 @@ document.addEventListener('change',e=>{ if(e.target.id==='thesisSel') START.thes
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&G&&G.modal){G.modal=null;render();}
   if(G&&G.modal&&G.modal.type==='wrap'&&(e.key==='ArrowRight'||e.key==='ArrowLeft')){ ACT.wrapGo({d:e.key==='ArrowRight'?1:-1}); render(); }
+  if(!G||G.modal||G.over||G.tab!=='deals'||G.q>=INVEST_QS||e.metaKey||e.ctrlKey||e.altKey||/INPUT|SELECT|TEXTAREA/.test(document.activeElement&&document.activeElement.tagName)) return;
+  const k=e.key.toLowerCase();
+  if(G.stage==='intro'&&k==='enter'){ e.preventDefault(); ACT.startPitches(); render(); return; }
+  if(G.stage!=='pitch') return;
+  const c=byId(G.deals[G.pitch]); if(!c||c.owned) return;
+  if(k==='p'){ ACT.passDeal({id:c.id}); render(); }
+  else if(k==='d'&&G.calls>0){ ACT.openCall({id:c.id}); render(); }
+  else if(k==='i'&&G.cash>0){ ACT.openInvest({id:c.id}); render(); }
 });
 // A challenge link carries the seed and settings in the URL hash, so a friend plays the same fund.
 (function readChallenge(){
