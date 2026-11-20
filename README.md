@@ -15,9 +15,27 @@ python3 -m http.server 8000
 # then visit http://localhost:8000
 ```
 
+## Fund economics
+
+- **2 and 20 over a 10-year life.** LPs commit $50M; the 2% fee is charged quarterly on commitments ($10M total).
+- **American (deal-by-deal) waterfall.** The GP takes 20% carry on each exit's profit, with a whole-fund clawback test at year 10. No hurdle.
+- **Optional GP commitment** (0–5% of the fund) from $2.5M of personal capital, invested alongside LPs with no fees or carry.
+- **Gross and net scoring.** Gross MOIC and IRR, plus net TVPI, DPI and IRR to LPs, a J-curve, and an LP view tab.
+
+## Benchmarks and calibration
+
+The end screen compares net IRR with real funds: Carta VC Fund Performance Report, Q1 2025 (2017 vintage) — bottom quartile 5.0%, median 11.5%, top quartile 18.7%, top decile 28.3% — and the S&P 500 10-year return of 13.6% (Cambridge Associates, H1 2025). Deal outcomes are compared with the Correlation Ventures mix: 35% total loss, 29% below cost, 22% at 1–3x, 14% at 3x+.
+
+Company outcomes are tuned with the `CAL` table in `index.html`. To check calibration after a change:
+
+```bash
+node tools/calibrate.js index.html 300
+```
+
 ## Project layout
 
 - `index.html` — the whole game (markup, styles and script in one file)
+- `tools/calibrate.js` — batch simulator that measures outcomes against the benchmarks
 
 ## Live version
 

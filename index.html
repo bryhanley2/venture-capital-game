@@ -67,6 +67,11 @@ label.f{display:grid;gap:.35rem;font-size:.82rem;font-weight:600;color:var(--mut
 .diff{text-align:left;display:grid;gap:4px;padding:14px;border-radius:10px;font-weight:400}
 .diff b{font-family:var(--f-display);font-stretch:85%;font-size:1.1rem}
 .diff small{color:var(--muted);font-size:.82rem;line-height:1.4}
+.gpopts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(130px,100%),1fr));gap:8px;margin-top:4px}
+.gpopt{text-align:left;display:grid;gap:2px;padding:10px 12px;border-radius:10px;font-weight:400}
+.gpopt b{font-family:var(--f-mono)}
+.gpopt small{color:var(--muted);font-size:.76rem}
+.gpopt.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
 .diff.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
 .how{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr));gap:20px}
 .how div{display:grid;gap:6px;align-content:start;border-top:2px solid var(--ink);padding-top:10px}
@@ -170,6 +175,10 @@ tr:last-child td{border-bottom:0}
 .chart text{fill:var(--muted);font-family:var(--f-mono);font-size:10px}
 .chart .rate{fill:none;stroke:var(--ink);stroke-width:2}
 .chart .dot{fill:var(--ink)}
+.chart .zero{stroke:var(--muted);stroke-width:1.2}
+.chart .jc-area{fill:var(--accent-soft);opacity:.8}
+.chart .jc-line{fill:none;stroke:var(--accent);stroke-width:2.2}
+.chart .jc-dot{fill:var(--accent)}
 .chart .b-boom{fill:var(--good);opacity:.18} .chart .b-normal{fill:var(--accent);opacity:.1} .chart .b-correction{fill:var(--warn);opacity:.22} .chart .b-recession{fill:var(--bad);opacity:.24}
 .chart .div{stroke:var(--muted);stroke-dasharray:4 4}
 .mk{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:16px}
@@ -220,6 +229,13 @@ tr:last-child td{border-bottom:0}
 .bartrack i{display:block;height:100%;background:var(--accent)}
 .barrow .n{font-family:var(--f-mono);text-align:right;font-size:.8rem}
 .lesson{padding:16px 18px;display:grid;gap:8px}
+.bm-row{grid-template-columns:9rem 1fr 4rem}
+.bm-row>span:first-child{display:grid;line-height:1.2}
+.bm-row small{color:var(--muted);font-size:.72rem}
+.bm-row.bm .bartrack i{background:var(--muted);opacity:.55}
+.bm-row.sp .bartrack i{background:var(--warn)}
+.bm-row.me{font-weight:700}
+.bm-row.me .bartrack i{background:var(--accent)}
 .lesson ul{margin:0;padding-left:1.1rem;display:grid;gap:6px;font-size:.92rem}
 details summary{cursor:pointer;font-weight:600}
 @media (max-width:560px){
@@ -246,6 +262,29 @@ const STAGES = ['Pre-seed','Seed','Series A','Series B','Series C','Series D','G
 const FKEYS = ['team','traction','revenue','tech','market','fmf'];
 const FLABEL = {team:'Team strength',traction:'Traction',revenue:'Revenue quality',tech:'Technical differentiation',market:'Market size',fmf:'Founder-market fit'};
 const INVEST_QS = 16, TOTAL_QS = 40, DEALS_PER_Q = 3, FUND = 50e6, FEES = 10e6;
+// Fund terms: 2 and 20 over a 10-year life. LPs commit $50M; the 2% fee is charged on
+// commitments every quarter ($250K x 40 = $10M). Carry is 20% under an American
+// (deal-by-deal) waterfall, with a whole-fund clawback test at the end of the fund's life.
+const FEE_RATE = 0.02, FEE_Q = FUND*FEE_RATE/4, CARRY = 0.20;
+// The GP's own money. Whatever isn't committed to the fund stays on the GP's personal
+// balance sheet for other uses (not modeled yet).
+const GP_WEALTH = 2.5e6, GP_OPTS = [0, 0.01, 0.02, 0.05];
+// Benchmarks. Net IRR by tier: Carta VC Fund Performance Report, Q1 2025, 2017 vintage
+// (2,500+ US funds; net of fees, expenses and carry). S&P 500 10-yr annualized return:
+// Cambridge Associates US PE/VC Benchmark Commentary, H1 2025 (periods ended June 30, 2025).
+const BENCH_IRR = [
+  {key:'p90', label:'Top decile', sub:'90th pct', irr:0.283},
+  {key:'p75', label:'Top quartile', sub:'75th pct', irr:0.187},
+  {key:'p50', label:'Median', sub:'50th pct', irr:0.115},
+  {key:'p25', label:'Bottom quartile', sub:'25th pct', irr:0.050},
+];
+const SP500_10Y = 0.136;
+const BENCH_IRR_SRC = 'Carta VC Fund Performance Report, Q1 2025 (2017 vintage, 2,500+ US funds). S&P 500: Cambridge Associates, H1 2025.';
+// Deal outcome mix in a typical VC portfolio: Correlation Ventures study of 27,000+ investments
+// (2009–2018) via Deutsche Bank Wealth Management; illustrative midpoints. 1–3 deals typically
+// drive 50–80% of fund returns (PitchBook / Cambridge Associates 2024).
+const BENCH_MIX = [['Total loss',0.35],['Below cost',0.29],['1–3x',0.22],['3x+',0.14]];
+const BENCH_MIX_SRC = 'Correlation Ventures, 27,000+ investments 2009–2018 (via Deutsche Bank Wealth Management). Illustrative midpoints.';
 
 const REGIMES = {
   boom:      {label:'Boom',       val:1.35, raise:0.5,  step:0.2,   exit:1.6,  mom:0.03,  hype:0.6},
@@ -329,6 +368,18 @@ const QUESTIONS = [
 const QTEXT = Object.fromEntries(QUESTIONS);
 const QPERCALL = 3;
 
+// Outcome calibration. Tuned with a batch simulator so a typical portfolio lands near the
+// Correlation Ventures outcome mix and typical play lands near the Carta median net IRR.
+const CAL = {
+  raiseBase:0.05,                 // baseline odds of closing the next round
+  stepBase:0.02, stepM:0.42,      // step-up between rounds (log scale) and momentum sensitivity
+  exitBase:0.15, exitM:0.2,       // exit premium over last post-money
+  brA:0.4, brM:1.0, brN:0.8,      // odds a bridge buys a real second chance: base, momentum, each prior bridge
+  brDecl:0.25,                    // a major insider declining the bridge cuts those odds to this fraction
+  earlyExit:0.012,                // quarterly odds a pre-Series B company gets acquired (scaled down if struggling)
+  killShare:0.5,                  // failed bridges that shut down outright (the rest sell for parts)
+};
+
 // ---------------------------------------------------------------------------
 // Random numbers. Separate seeded streams keep the market, the deal flow and
 // each company's fate identical for everyone who plays the same seed.
@@ -344,16 +395,60 @@ let G = null;
 
 function newGame(o){
   const D = DIFFS[o.diff];
+  const gpPct = GP_OPTS.includes(+o.gp) ? +o.gp : 0.01, gpCommit = FUND*gpPct, investable = FUND-FEES+gpCommit;
   G = {
     seed:String(o.seed), diff:o.diff, D, thesis:o.thesis, fundName:o.fund||'Fund I',
-    q:0, cash:FUND-FEES, calls:D.calls, hours:D.hours,
+    gpPct, gpCommit, gpKept:GP_WEALTH-gpCommit, investable, gpShare:gpCommit/investable,
+    lp:{called:0, fees:0, dist:0}, gp:{called:0, dist:0, carry:0}, lpFlows:[], hist:[],
+    q:0, cash:investable, calls:D.calls, hours:D.hours,
     rate:D.rate, regime:D.start, rateHist:[D.rate], regimeHist:[D.start], shocks:[],
     marketRng:mulberry32(hashStr(o.seed+'|market')), dealRng:mulberry32(hashStr(o.seed+'|deals')),
     companies:[], deals:[], pending:[], log:[], recap:[], flows:[], distributed:0, nextId:1, usedNames:{},
     over:false, tab:'deals', modal:null,
   };
-  addLog(`${G.fundName} closed at $50M. $10M is set aside for management fees, leaving $40M to invest.`,'info');
+  addLog(`${G.fundName} closed with $50M from LPs${gpCommit?` and a ${fmt$(gpCommit)} GP commitment`:''}. Over ten years, $10M of LP money goes to the 2% management fee, leaving ${fmt$(investable)} to invest.`,'info');
+  chargeFee();
   genDeals();
+}
+
+// ---------------------------------------------------------------------------
+// Fund accounting: capital calls, fees, and the American (deal-by-deal) waterfall.
+// G.flows tracks gross deal cash flows; G.lpFlows tracks what LPs actually pay in and get back.
+// ---------------------------------------------------------------------------
+function chargeFee(){ G.lp.fees+=FEE_Q; G.lpFlows.push({q:G.q,amt:-FEE_Q}); }
+function deploy(c,amt){
+  // Every dollar invested is called pro rata from LPs and the GP.
+  G.cash-=amt; c.invested+=amt; c.own+=amt/c.post; G.flows.push({q:G.q,amt:-amt});
+  const gp=amt*G.gpShare, lp=amt-gp;
+  G.lp.called+=lp; G.gp.called+=gp; G.lpFlows.push({q:G.q,amt:-lp});
+}
+function distribute(c){
+  // Proceeds split pro rata. The GP's own commitment pays no carry. On the LP share, the
+  // GP takes 20% of this deal's profit as soon as it exits: the American model.
+  const P=c.returned, gpP=P*G.gpShare, lpP=P-gpP, lpCost=c.invested*(1-G.gpShare);
+  const carry=CARRY*Math.max(0,lpP-lpCost), lpNet=lpP-carry;
+  c.carry=carry; c.lpNet=lpNet; c.lpGross=lpP;
+  G.lp.dist+=lpNet; G.gp.dist+=gpP; G.gp.carry+=carry;
+  G.lpFlows.push({q:G.q+1,amt:lpNet});
+  if(carry>0) addLog(`${c.name}: GP earned ${fmt$(carry)} in carry on this exit (20% of the LPs' ${fmt$(lpP-lpCost)} profit).`,'info');
+}
+// Settles the fund as if it liquidated at today's marks. The final settlement uses the same math.
+function settle(){
+  const g=G.gpShare, owned=G.companies.filter(c=>c.owned);
+  const nav=owned.reduce((a,c)=>a+navOf(c),0), lpNav=nav*(1-g);
+  // Carry the GP would be owed deal by deal on unrealized companies if they sold at their marks.
+  const accruedDbd=owned.filter(c=>navOf(c)>0).reduce((a,c)=>a+CARRY*Math.max(0,(navOf(c)-c.invested)*(1-g)),0);
+  const paidIn=G.lp.called+G.lp.fees;
+  // Clawback: across the whole fund, the GP can keep at most 20% of LP profit after fees.
+  const lpGrossTotal=G.lp.dist+G.gp.carry+lpNav;
+  const fair=CARRY*Math.max(0,lpGrossTotal-paidIn);
+  const entitled=Math.min(G.gp.carry+accruedDbd,fair);
+  const clawback=Math.max(0,G.gp.carry-fair);
+  const accrued=Math.max(0,entitled-G.gp.carry);
+  const lpValue=G.lp.dist+clawback+lpNav-accrued;
+  return {nav,lpNav,paidIn,fair,entitled,clawback,accrued,lpValue,
+    tvpi:paidIn>0?lpValue/paidIn:0, dpi:paidIn>0?G.lp.dist/paidIn:0,
+    carryNet:G.gp.carry-clawback+accrued};
 }
 
 function byId(id){return G.companies.find(c=>c.id===id)}
@@ -507,8 +602,7 @@ function checkOptions(c){
 }
 function invest(cid,amt){
   const c=byId(cid); if(!c||amt>G.cash) return;
-  G.cash-=amt; c.owned=true; c.invested+=amt; c.own+=amt/c.post; c.entryQ=G.q;
-  G.flows.push({q:G.q,amt:-amt});
+  c.owned=true; c.entryQ=G.q; deploy(c,amt);
   addLog(`Invested ${fmt$(amt)} in ${c.name} (${STAGES[c.stage]}) at ${fmt$(c.post)} post for ${pct(amt/c.post)}.`,'good');
 }
 function decide(pid,choice){
@@ -516,11 +610,11 @@ function decide(pid,choice){
   if(p.type==='prorata'){
     if(choice==='pass') passProRata(c,p);
     else { const amt=Math.min(G.cash,p.amount*(choice==='half'?0.5:1)); if(amt>0){
-      G.cash-=amt; c.invested+=amt; c.own+=amt/c.post; G.flows.push({q:G.q,amt:-amt});
+      deploy(c,amt);
       addLog(`Followed on in ${c.name}'s ${STAGES[c.stage]}: ${fmt$(amt)} at ${fmt$(c.post)} post.`,'good'); } }
   } else {
     if(choice==='accept'){ const amt=Math.min(G.cash,p.amount);
-      G.cash-=amt; c.invested+=amt; c.own+=amt/c.post; c.raised+=p.total; G.flows.push({q:G.q,amt:-amt}); c.bridgeDecision='accepted';
+      deploy(c,amt); c.raised+=p.total; c.bridgeDecision='accepted';
       addLog(`Funded ${fmt$(amt)} of a ${fmt$(p.total)} bridge for ${c.name}.`,'warn');
     } else { c.bridgeDecision='declined'; addLog(`Declined the bridge for ${c.name}.`,'bad'); }
   }
@@ -551,7 +645,7 @@ function valueOf(c){ return c.status==='exited'?c.returned:navOf(c); }
 function doExit(c,val,kind){
   c.status='exited'; c.exitVal=val; c.exitKind=kind; c.exitQ=G.q;
   c.hReturned=payout(c.hOwn,1e6,val,c.raised);
-  if(c.owned){ c.returned=payout(c.own,c.invested,val,c.raised); G.distributed+=c.returned; G.flows.push({q:G.q+1,amt:c.returned});
+  if(c.owned){ c.returned=payout(c.own,c.invested,val,c.raised); G.distributed+=c.returned; G.flows.push({q:G.q+1,amt:c.returned}); distribute(c);
     rec(c,c.returned>=c.invested?'good':'bad',`${c.name}: ${kind==='IPO'?'went public':kind==='Soft landing'?'sold for parts':'acquired'} at ${fmt$(val)}. You returned ${fmt$(c.returned)} on ${fmt$(c.invested)} (${fmtX(c.returned/c.invested)}).`); }
 }
 function kill(c){ c.status='dead'; c.exitQ=G.q; if(c.owned) rec(c,'bad',`${c.name} shut down. ${fmt$(c.invested)} written off.`); }
@@ -585,10 +679,14 @@ function stepCompany(c){
   const n=gauss(r),raiseRoll=r(),stepN=gauss(r),exitRoll=r(),exitN=gauss(r),evRoll=r(),evType=r(),deathRoll=r(),timing=r();
   const RG=REGIMES[G.regime];
   if(c.status==='bridge'){
-    const ok=c.owned?c.bridgeDecision==='accepted':deathRoll>=0.55;
+    // Bridge money buys time, not survival. Odds depend on momentum and how many bridges came before.
+    let pOk=sig(CAL.brA+CAL.brM*c.m-CAL.brN*c.bridges);
+    if(c.owned&&c.bridgeDecision!=='accepted') pOk*=CAL.brDecl;
+    const ok=deathRoll<pOk, funded=c.owned&&c.bridgeDecision==='accepted';
     c.bridgeDecision=null;
+    if(!ok&&funded) rec(c,'bad',`${c.name} burned through the bridge without hitting its milestones.`);
     if(ok){ c.status='alive'; c.toRaise=3; c.m=Math.max(c.m,-0.6)+0.4; c.bridges++; rec(c,'warn',`${c.name} closed its bridge and has about nine months to hit milestones.`); }
-    else if(deathRoll<(c.owned?0.7:0.4)) kill(c);
+    else if(timing<CAL.killShare) kill(c);
     else doExit(c,c.raised*(0.15+0.35*exitRoll),'Soft landing');
     return;
   }
@@ -602,17 +700,17 @@ function stepCompany(c){
     if(ev.crisis){ c.crisis={...ev,q:G.q}; rec(c,'warn',`${c.name} needs help: ${ev.text}`); }
     else { c.m+=ev.boost; rec(c,'good',`${c.name}: ${ev.text}`); }
   }
-  const pExit=c.stage>=3?Math.min(0.14,0.025+0.025*(c.stage-3))*RG.exit*(c.m>0.3?1:0.3):0.005*RG.exit;
+  const pExit=c.stage>=3?Math.min(0.14,0.025+0.025*(c.stage-3))*RG.exit*(c.m>0.3?1:0.3):CAL.earlyExit*RG.exit*(c.m>0?1:0.4);
   if(exitRoll<pExit){
-    const val=c.post*Math.exp(0.15+0.2*c.m+0.3*exitN);
+    const val=c.post*Math.exp(CAL.exitBase+CAL.exitM*c.m+0.3*exitN);
     doExit(c,val,(val>=1e9&&c.stage>=4&&(G.regime==='boom'||G.regime==='normal'))?'IPO':'Acquisition'); return;
   }
   c.toRaise--;
   if(c.toRaise<=0){
-    const p=sig(0.05+1.1*c.m+RG.raise+c.prep+(c.flags.messy?-0.4:0));
+    const p=sig(CAL.raiseBase+1.1*c.m+RG.raise+c.prep+(c.flags.messy?-0.4:0));
     c.prep=0;
     if(raiseRoll<p){
-      const step=clamp(Math.exp(0.22+0.28*c.m+RG.step+0.3*stepN),0.5,4.5);
+      const step=clamp(Math.exp(CAL.stepBase+CAL.stepM*c.m+RG.step+0.3*stepN),0.5,4.5);
       const ownPre=c.own, pre=c.post*step, round=pre*0.25;
       c.post=pre+round; c.raised+=round; c.stage=Math.min(c.stage+1,6);
       c.own*=0.8; c.hOwn*=0.8; c.burn*=1.6;
@@ -637,10 +735,17 @@ function endQuarter(reset=true){
   stepMarket();
   for(const c of G.companies) if(c.status==='alive'||c.status==='bridge') stepCompany(c);
   G.q++; G.rateHist.push(G.rate); G.regimeHist.push(G.regime);
+  snapshot();
   if(G.q>=TOTAL_QS){ finish(); return; }
+  chargeFee();
   G.hours=G.D.hours; G.companies.forEach(c=>c.supDone={});
   if(G.q<INVEST_QS) genDeals();
   if(G.q===INVEST_QS) rec(null,'info','The investment period is over. No new deals from here on: manage reserves, follow-ons and founder support until year 10.');
+}
+// One point per quarter for the J-curve: LP cumulative net cash flow and net TVPI at that point.
+function snapshot(){
+  const S=settle();
+  G.hist.push({q:G.q, net:G.lp.dist-G.lp.called-G.lp.fees, tvpi:S.tvpi, dpi:S.dpi});
 }
 function needsAttention(){ return G.pending.length>0 || G.companies.some(c=>c.owned&&c.status==='alive'&&c.crisis); }
 function skipAhead(){
@@ -659,6 +764,7 @@ function irr(flows){
   for(let i=0;i<120;i++){const mid=(lo+hi)/2; if(npv(lo)*npv(mid)<=0) hi=mid; else lo=mid;}
   return Math.pow(1+(lo+hi)/2,4)-1;
 }
+function netIrrLive(){ const S=settle(); return irr([...G.lpFlows,{q:G.q,amt:S.clawback+S.lpNav-S.accrued}]); }
 function liveStats(){
   const owned=G.companies.filter(c=>c.owned);
   const invested=owned.reduce((a,c)=>a+c.invested,0);
@@ -670,13 +776,19 @@ function finish(){
   const owned=G.companies.filter(c=>c.owned);
   const L=liveStats();
   const flows=[...G.flows,{q:TOTAL_QS,amt:L.nav}];
-  const paidIn=L.invested+FEES;
+  const S=settle();
+  const lpFinal=[...G.lpFlows,{q:TOTAL_QS,amt:S.clawback+S.lpNav-S.accrued}];
+  const paidIn=S.paidIn;
   const hv=c=>c.status==='exited'?c.hReturned:(c.status==='alive'||c.status==='bridge')?c.hOwn*c.post*haircut(c):0;
   const all=G.companies;
   const indexM=all.reduce((a,c)=>a+hv(c),0)/(all.length*1e6);
   const picksM=owned.length?owned.reduce((a,c)=>a+hv(c),0)/(owned.length*1e6):0;
   const misses=all.filter(c=>!c.owned).map(c=>({c,x:hv(c)/1e6})).sort((a,b)=>b.x-a.x).slice(0,3);
-  G.result={...L,dist:G.distributed,paidIn,tvpi:(G.distributed+L.nav)/paidIn,dpi:G.distributed/paidIn,irr:irr(flows),
+  const gpCommitValue=G.gp.dist+S.nav*G.gpShare;
+  G.result={...L,dist:G.distributed,paidIn,S,tvpi:S.tvpi,dpi:(G.lp.dist+S.clawback)/paidIn,irr:irr(flows),netIrr:irr(lpFinal),
+    fees:G.lp.fees,carry:S.entitled,carryPaid:G.gp.carry,clawback:S.clawback,lpDist:G.lp.dist,
+    gpCommit:G.gpCommit,gpCommitValue,gpKept:G.gpKept,
+    grossLp:G.lp.dist+G.gp.carry+S.lpNav,
     indexM,picksM,misses,undeployed:G.cash,dealsSeen:all.length,called:all.filter(c=>c.calls>0).length,
     calledInvested:owned.filter(c=>c.calls>0).length,owned:owned.length};
 }
@@ -694,7 +806,7 @@ function pct(x,d=1){return (x*100).toFixed(d)+'%'}
 // ---------------------------------------------------------------------------
 const app=document.getElementById('app');
 const randomSeed=()=>String(Math.floor(10000+Math.random()*89999));
-let START={fund:'Fund I',diff:'normal',thesis:'Generalist',seed:randomSeed()};
+let START={fund:'Fund I',diff:'normal',thesis:'Generalist',gp:0.01,seed:randomSeed()};
 const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
 
 function momentumLabel(c){
@@ -729,6 +841,12 @@ function renderStart(){
         <label class="f" for="seedInput">Market seed
           <span class="seedrow"><input id="seedInput" value="${esc(START.seed)}" inputmode="numeric" maxlength="12"><button class="small" data-act="newSeed" type="button">New</button></span></label>
       </div>
+      <div class="f"><span>GP commitment <span class="muted">· from your ${fmt$(GP_WEALTH)} of personal capital</span></span>
+        <div class="gpopts" role="radiogroup" aria-label="GP commitment">
+          ${GP_OPTS.map(p=>`<button class="gpopt ${START.gp===p?'on':''}" role="radio" aria-checked="${START.gp===p}" data-act="pickGp" data-p="${p}"><b>${p?pct(p,0):'None'}</b><small>${p?fmt$(FUND*p):'$0'} in · ${fmt$(GP_WEALTH-FUND*p)} kept</small></button>`).join('')}
+        </div>
+        <small class="muted" style="font-weight:400">LPs commit $50M on 2 and 20 terms: a 2% yearly fee on commitments for ten years ($10M total) and 20% carry, paid deal by deal (American waterfall) with a clawback at the end. Your GP commitment invests alongside them with no fees or carry, so it adds dry powder and puts your own money on the line. Money you keep is set aside for other uses.</small>
+      </div>
       <p class="muted" style="font-size:.85rem">A sector thesis sends you more deals in that sector, makes founder pitches there easier to read, and makes your support 30% more effective. It also concentrates your risk when that sector hits bad news. Players who share a seed and thesis see the same market and the same deals, which makes classroom comparisons fair.</p>
       <div><button class="primary" data-act="start">Close the fund and start Year 1</button></div>
     </section>
@@ -756,6 +874,7 @@ function renderHeader(){
         ${stat('Diligence calls',`${G.calls} left`)}
         ${stat('Partner hours',`${G.hours} / ${G.D.hours}`)}
         ${stat('Gross MOIC',L.invested?fmtX(L.moic):'—')}
+        ${stat('Net TVPI',L.invested?fmtX(settle().tvpi):'—')}
       </div>
       <div class="acts">
         <button class="primary" data-act="end">End quarter</button>
@@ -838,6 +957,7 @@ function decisionCard(p){
   }
   return `<article class="card decision bridge"><div><p class="eyebrow">Bridge request</p><h3>${esc(c.name)} could not close its next round</h3></div>
     <p>Insiders are asked for a ${fmt$(p.total)} bridge at the last price to buy about nine months. Your share is ${fmt$(p.amount)}. Without it, the company will most likely shut down or sell for parts. You own ${pct(c.own)} and have ${fmt$(c.invested)} in.</p>
+    ${(()=>{const pOk=sig(CAL.brA+CAL.brM*c.m-CAL.brN*c.bridges);return `<p class="muted" style="font-size:.85rem">Bridge money buys time, not survival. Given its momentum${c.bridges?` and ${c.bridges} earlier bridge${c.bridges>1?'s':''}`:''}, the odds this one leads to a recovery are about <b>${Math.round(pOk*20)*5}%</b>. If it fails, the money is likely gone.</p>`})()}
     <div class="row"><button class="primary" data-act="decide" data-p="${p.pid}" data-c="accept" ${G.cash<=0?'disabled':''}>Fund the bridge · ${fmt$(Math.min(p.amount,G.cash))}</button>
     <button class="ghost danger" data-act="decide" data-p="${p.pid}" data-c="decline">Decline</button></div></article>`;
 }
@@ -908,6 +1028,63 @@ function renderMarket(){
     </div>`;
 }
 
+// J-curve: LPs' cumulative net cash flow (distributions minus capital calls and fees) by quarter.
+function jCurve(){
+  const W=640,H=220,pl=46,pr=12,pt=12,pb=28,n=TOTAL_QS;
+  const pts=[{q:0,net:0},...G.hist];
+  const vals=pts.map(p=>p.net/1e6);
+  const lo=Math.min(-10,...vals), hi=Math.max(10,...vals);
+  const step=(hi-lo)>120?50:(hi-lo)>50?20:10;
+  const yLo=Math.floor(lo/step)*step, yHi=Math.ceil(hi/step)*step;
+  const x=q=>pl+(W-pl-pr)*q/n, y=v=>pt+(H-pt-pb)*(1-(v-yLo)/(yHi-yLo));
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="J-curve: LP cumulative net cash flow by quarter">`;
+  for(let v=yLo;v<=yHi;v+=step) s+=`<line class="grid${v===0?' zero':''}" x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}"/><text x="${pl-6}" y="${y(v)+3}" text-anchor="end">${v<0?'-':''}$${Math.abs(v)}M</text>`;
+  for(let yr=0;yr<10;yr++) s+=`<text x="${x(yr*4+2)}" y="${H-10}" text-anchor="middle">Y${yr+1}</text>`;
+  s+=`<line class="div" x1="${x(INVEST_QS)}" x2="${x(INVEST_QS)}" y1="${pt}" y2="${H-pb}"/><text x="${x(INVEST_QS)+4}" y="${pt+10}">harvest</text>`;
+  const line=pts.map(p=>`${x(p.q).toFixed(1)},${y(p.net/1e6).toFixed(1)}`).join(' ');
+  s+=`<polygon class="jc-area" points="${x(0)},${y(0)} ${line} ${x(pts[pts.length-1].q)},${y(0)}"/>`;
+  s+=`<polyline class="jc-line" points="${line}"/>`;
+  const L=pts[pts.length-1]; s+=`<circle class="jc-dot" cx="${x(L.q)}" cy="${y(L.net/1e6)}" r="4"/>`;
+  return s+'</svg>';
+}
+
+function renderFund(){
+  const S=settle(), paid=S.paidIn, ir=G.q>=8?netIrrLive():null;
+  const exits=G.companies.filter(c=>c.owned&&c.status==='exited').sort((a,b)=>a.exitQ-b.exitQ);
+  const trough=Math.min(0,...G.hist.map(h=>h.net));
+  return `<div class="section-h"><div><h2>LP view</h2><p>What your limited partners see: the capital you call, the fees they pay, what comes back, and what you keep as carry.</p></div></div>
+    <section class="score">
+      <div class="card kpi"><small>Paid-in capital</small><b>${fmt$(paid)}</b><span>${fmt$(G.lp.called)} invested + ${fmt$(G.lp.fees)} fees, of $50M committed</span></div>
+      <div class="card kpi"><small>Distributed</small><b>${fmt$(G.lp.dist)}</b><span>Cash back to LPs after carry</span></div>
+      <div class="card kpi"><small>Net DPI</small><b>${fmtX(S.dpi)}</b><span>Distributed ÷ paid-in</span></div>
+      <div class="card kpi"><small>Net TVPI</small><b>${paid?fmtX(S.tvpi):'—'}</b><span>Cash back plus marks, after fees and carry</span></div>
+      <div class="card kpi"><small>Net IRR</small><b>${ir==null?'—':pct(ir,1)}</b><span>${G.q<8?'Not meaningful before year 3':'Annualized, on LP cash flows'}</span></div>
+      <div class="card kpi"><small>Carry paid to you</small><b>${fmt$(G.gp.carry)}</b><span>${S.clawback>0?`<span style="color:var(--bad)">${fmt$(S.clawback)} at risk of clawback</span>`:'20% of each exit’s profit'}</span></div>
+    </section>
+    <section class="card" style="padding:14px 16px;display:grid;gap:10px"><p class="eyebrow">The J-curve</p>${jCurve()}
+      <p class="muted" style="font-size:.85rem">LPs' cumulative cash in minus cash out. Fees and investments push it down in the early years. Exits pull it back up, usually late. ${trough<0?`The deepest point so far is ${fmt$(trough)}.`:''} The fund breaks even for LPs in cash terms when the line crosses zero.</p></section>
+    <div class="mk">
+      <section class="card" style="padding:14px 16px;display:grid;gap:8px"><p class="eyebrow">Fund terms</p>
+        <div class="tablewrap" style="border:0"><table><tbody>
+          <tr><td>LP commitments</td><td class="n">$50M</td></tr>
+          <tr><td>GP commitment</td><td class="n">${G.gpCommit?`${fmt$(G.gpCommit)} (${pct(G.gpPct,0)})`:'None'}</td></tr>
+          <tr><td>Management fee</td><td class="n">2% a year · ${fmt$(FEE_Q)} a quarter</td></tr>
+          <tr><td>Fees paid so far</td><td class="n">${fmt$(G.lp.fees)} of $10M</td></tr>
+          <tr><td>Carried interest</td><td class="n">20%, deal by deal</td></tr>
+          <tr><td>Investable capital</td><td class="n">${fmt$(G.investable)}</td></tr>
+          <tr><td>Your capital kept outside the fund</td><td class="n">${fmt$(G.gpKept)}</td></tr>
+        </tbody></table></div></section>
+      <section class="card" style="padding:14px 16px;display:grid;gap:8px"><p class="eyebrow">How the American waterfall works</p>
+        <p style="font-size:.88rem">Each exit settles on its own. LPs get back the capital that went into that company, and the GP takes 20% of the profit above it right away, even if other companies are losing money.</p>
+        <p style="font-size:.88rem">That makes carry arrive early, so at the end of the fund there's a <b>clawback</b> test: across the whole fund, the GP may keep only 20% of LP profit after fees. Anything above that goes back to LPs.</p>
+        <p class="muted" style="font-size:.82rem">At today's marks, whole-fund carry would be ${fmt$(S.fair)}. ${S.clawback>0?`You've been paid ${fmt$(G.gp.carry)}, so you'd owe back ${fmt$(S.clawback)}.`:`You've been paid ${fmt$(G.gp.carry)} so far.`}</p></section>
+    </div>
+    ${exits.length?`<div class="section-h"><h2>Distributions</h2></div>
+    <div class="tablewrap"><table><thead><tr><th>Company</th><th>When</th><th class="n">LP share of proceeds</th><th class="n">LP cost</th><th class="n">Carry to GP</th><th class="n">Net to LPs</th></tr></thead><tbody>
+    ${exits.map(c=>`<tr><td>${esc(c.name)}</td><td>${qLabel(c.exitQ)}</td><td class="n">${fmt$(c.lpGross||0)}</td><td class="n">${fmt$(c.invested*(1-G.gpShare))}</td><td class="n">${fmt$(c.carry||0)}</td><td class="n">${fmt$(c.lpNet||0)}</td></tr>`).join('')}
+    </tbody></table></div>`:''}`;
+}
+
 function renderLog(){
   return `<div class="section-h"><h2>Fund log</h2><button class="ghost small" data-act="askRestart">Start a new fund</button></div>
     <section class="card" style="padding:6px 16px"><div class="log">${[...G.log].reverse().map(l=>`<div><span>${qLabel(l.q)}</span><span>${esc(l.text)}</span></div>`).join('')}</div></section>`;
@@ -938,7 +1115,7 @@ function renderModal(){
     body=`<div class="modal-h"><div><p class="eyebrow">Term sheet · ${STAGES[c.stage]}</p><h2>Invest in ${esc(c.name)}</h2></div><button class="ghost small" data-act="close">Cancel</button></div>
       <p>${fmt$(c.round)} round at ${fmt$(c.post)} post-money. 1x non-participating preferred.</p>
       <div class="checks">${opts.map((o,i)=>`<button class="check ${sel===o?'on':''}" data-act="pickCheck" data-i="${i}" ${o.ok?'':'disabled'}><b>${o.label}</b><span>${fmt$(o.amt)} for ${pct(o.amt/c.post)} ownership${o.hotBlock?' · round is oversubscribed, no lead allocation':''}</span><span class="num">${o.ok?'':'n/a'}</span></button>`).join('')}</div>
-      <p class="muted" style="font-size:.85rem">Dry powder after this check: <b class="num">${fmt$(after)}</b> (${pct(after/(FUND-FEES),0)} of investable capital). ${c.calls?'':'You haven\'t taken a diligence call on this company.'}</p>
+      <p class="muted" style="font-size:.85rem">Dry powder after this check: <b class="num">${fmt$(after)}</b> (${pct(after/G.investable,0)} of investable capital). ${c.calls?'':'You haven\'t taken a diligence call on this company.'}</p>
       <div class="mfoot"><button class="primary" data-act="confirmInvest" ${sel?'':'disabled'}>Wire ${sel?fmt$(sel.amt):''}</button></div>`;
   }
   if(M.type==='confirmEnd'){
@@ -952,17 +1129,39 @@ function renderModal(){
   return `<div class="overlay" data-act="overlay"><div class="card modal" role="dialog" aria-modal="true">${body}</div></div>`;
 }
 
-function verdict(t){
-  if(t>=5) return ['Legendary vintage','Top 1% territory. LPs will line up for Fund II.'];
-  if(t>=3) return ['Top decile','A fund that defines a career.'];
-  if(t>=2) return ['Top quartile','Fund II should be an easy raise.'];
-  if(t>=1.3) return ['Middle of the pack','You returned capital with a modest gain. Fundraising Fund II will be work.'];
-  if(t>=1) return ['Returned the fund','LPs got their money back, but not much more.'];
-  return ['Lost LP money','Below 1x net. Fund II is in doubt.'];
+function verdict(irr,tvpi){
+  if(irr==null) return tvpi>=1?['Returned the fund','LPs got their money back, but not much more.']:['Lost LP money','Below 1x net. Fund II is in doubt.'];
+  const beat=irr>=SP500_10Y;
+  if(irr>=BENCH_IRR[0].irr) return ['Top decile',`Net IRR above ${pct(BENCH_IRR[0].irr,1)}. A fund that defines a career, and LPs will line up for Fund II.`];
+  if(irr>=BENCH_IRR[1].irr) return ['Top quartile','Fund II should be an easy raise.'];
+  if(irr>=BENCH_IRR[2].irr) return ['Above median',beat?'Better than most venture funds, and LPs beat the S&P 500.':`Better than most venture funds, but LPs would have done better in the S&P 500 (${pct(SP500_10Y,1)}). Fund II will take work.`];
+  if(irr>=BENCH_IRR[3].irr) return ['Below median',`Your LPs earned less than a typical venture fund and less than the S&P 500. Raising Fund II will be hard.`];
+  return tvpi>=1?['Bottom quartile','LPs got their money back, but barely beat cash. Fund II is in doubt.']:['Bottom quartile','Below 1x net. LPs lost money and Fund II is in doubt.'];
+}
+
+function benchSection(R){
+  const me=R.netIrr, hi=Math.max(0.35,(me||0)+0.03), lo=Math.min(0,(me||0)-0.03), w=v=>((v-lo)/(hi-lo)*100).toFixed(1);
+  const rows=[...BENCH_IRR.map(b=>({l:b.label,sub:b.sub,v:b.irr,cls:'bm'})),{l:'S&P 500',sub:'10-yr annualized',v:SP500_10Y,cls:'sp'},{l:esc(G.fundName),sub:'your net IRR',v:me,cls:'me'}]
+    .filter(r=>r.v!=null).sort((a,b)=>b.v-a.v);
+  const owned=G.companies.filter(c=>c.owned), n=owned.length||1;
+  const mult=c=>valueOf(c)/c.invested;
+  const mine=[owned.filter(c=>mult(c)<0.05).length,owned.filter(c=>mult(c)>=0.05&&mult(c)<1).length,owned.filter(c=>mult(c)>=1&&mult(c)<3).length,owned.filter(c=>mult(c)>=3).length];
+  return `<section style="display:grid;gap:12px"><h2>How you compare</h2>
+    <div class="mk">
+      <div class="card" style="padding:14px 16px;display:grid;gap:10px"><p class="eyebrow">Net IRR vs. real venture funds</p>
+        <div class="bars">${rows.map(r=>`<div class="barrow bm-row ${r.cls}"><span>${r.l}<small>${r.sub}</small></span><span class="bartrack"><i style="margin-left:${r.v<0?w(r.v):w(0)}%;width:${Math.abs(w(r.v)-w(0)).toFixed(1)}%"></i></span><span class="n">${pct(r.v,1)}</span></div>`).join('')}</div>
+        <p class="muted" style="font-size:.78rem">${BENCH_IRR_SRC} All VC figures net of fees, expenses and carry.</p></div>
+      <div class="card" style="padding:14px 16px;display:grid;gap:10px"><p class="eyebrow">Your deal outcomes vs. a typical portfolio</p>
+        <div class="tablewrap" style="border:0"><table><thead><tr><th>Outcome</th><th class="n">Your fund</th><th class="n">Typical</th></tr></thead><tbody>
+          ${BENCH_MIX.map(([l,t],i)=>`<tr><td>${l}</td><td class="n">${pct(mine[i]/n,0)} · ${mine[i]}</td><td class="n">${pct(t,0)}</td></tr>`).join('')}
+        </tbody></table></div>
+        <p class="muted" style="font-size:.82rem">In a typical fund, ${pct(BENCH_MIX[0][1]+BENCH_MIX[1][1],0)} of deals fail to return their cost and 1–3 investments drive 50–80% of returns. Unrealized companies are counted at their year-10 marks.</p>
+        <p class="muted" style="font-size:.78rem">${BENCH_MIX_SRC}</p></div>
+    </div></section>`;
 }
 
 function renderEnd(){
-  const R=G.result, [v,vs]=verdict(R.tvpi);
+  const R=G.result, [v,vs]=verdict(R.netIrr,R.tvpi);
   const owned=G.companies.filter(c=>c.owned).map(c=>({c,val:valueOf(c)})).sort((a,b)=>b.val-a.val);
   const buckets=[['Written off',0,0.25],['Below cost',0.25,1],['1–3x',1,3],['3–10x',3,10],['10x+',10,1e9]].map(([l,a,b])=>{
     const xs=owned.filter(o=>{const m=o.val/o.c.invested;return m>=a&&m<b}); return {l,n:xs.length,val:xs.reduce((s,o)=>s+o.val,0)}; });
@@ -974,11 +1173,38 @@ function renderEnd(){
       <h1 class="verdict">${v}</h1><p class="lede" style="margin-top:0">${vs}</p></section>
     <section class="score">
       <div class="card kpi hero"><small>Gross MOIC</small><b>${fmtX(R.moic)}</b><span>${fmt$(R.dist+R.nav)} on ${fmt$(R.invested)} invested</span></div>
-      <div class="card kpi"><small>Net TVPI</small><b>${fmtX(R.tvpi)}</b><span>After $10M in fees</span></div>
-      <div class="card kpi"><small>Gross IRR</small><b>${R.irr==null?'—':pct(R.irr,1)}</b><span>Timing matters as much as the multiple</span></div>
-      <div class="card kpi"><small>DPI</small><b>${fmtX(R.dpi)}</b><span>Cash actually returned to LPs</span></div>
+      <div class="card kpi"><small>Gross IRR</small><b>${R.irr==null?'—':pct(R.irr,1)}</b><span>On deal cash flows, before fees and carry</span></div>
+      <div class="card kpi"><small>Net TVPI</small><b>${fmtX(R.tvpi)}</b><span>What LPs got per dollar paid in</span></div>
+      <div class="card kpi"><small>Net IRR</small><b>${R.netIrr==null?'—':pct(R.netIrr,1)}</b><span>LP return after fees and carry</span></div>
+      <div class="card kpi"><small>Net DPI</small><b>${fmtX(R.dpi)}</b><span>Cash actually returned to LPs</span></div>
       <div class="card kpi"><small>Unrealized</small><b>${fmt$(R.nav)}</b><span>Still marked on paper at year 10</span></div>
     </section>
+    <section style="display:grid;gap:12px"><h2>From gross to net</h2>
+      <div class="mk">
+        <div class="card" style="padding:14px 16px;display:grid;gap:8px"><p class="eyebrow">Where the LPs' money went</p>
+          <div class="tablewrap" style="border:0"><table><tbody>
+            <tr><td>LPs paid in</td><td class="n">${fmt$(R.paidIn)}</td></tr>
+            <tr><td>&nbsp;&nbsp;of which management fees</td><td class="n">${fmt$(R.fees)}</td></tr>
+            <tr><td>LP share of fund value, before carry</td><td class="n">${fmt$(R.grossLp)}</td></tr>
+            <tr><td>Less carry to GP</td><td class="n">-${fmt$(R.carry)}</td></tr>
+            <tr><td><b>LP value after fees and carry</b></td><td class="n"><b>${fmt$(R.S.lpValue)}</b></td></tr>
+          </tbody></table></div>
+          <p class="muted" style="font-size:.82rem">Gross MOIC of ${fmtX(R.moic)} became a net TVPI of ${fmtX(R.tvpi)}. Fees cost LPs ${fmt$(R.fees)} no matter how the fund did. Carry only takes a cut when there's profit.</p></div>
+        <div class="card" style="padding:14px 16px;display:grid;gap:8px"><p class="eyebrow">Your economics as GP</p>
+          <div class="tablewrap" style="border:0"><table><tbody>
+            <tr><td>Carry paid deal by deal</td><td class="n">${fmt$(R.carryPaid)}</td></tr>
+            ${R.clawback>0?`<tr><td>Clawback owed back to LPs</td><td class="n" style="color:var(--bad)">-${fmt$(R.clawback)}</td></tr>`:''}
+            ${R.S.accrued>0?`<tr><td>Carry still accrued on unrealized marks</td><td class="n">${fmt$(R.S.accrued)}</td></tr>`:''}
+            <tr><td><b>Carry you keep</b></td><td class="n"><b>${fmt$(R.carry)}</b></td></tr>
+            <tr><td>GP commitment</td><td class="n">${R.gpCommit?`${fmt$(R.gpCommit)} → ${fmt$(R.gpCommitValue)} (${fmtX(R.gpCommitValue/Math.max(1,G.gp.called))} on called)`:'None'}</td></tr>
+            <tr><td>Capital kept outside the fund</td><td class="n">${fmt$(R.gpKept)}</td></tr>
+          </tbody></table></div>
+          <p class="muted" style="font-size:.82rem">${R.clawback>0?'Deal-by-deal carry paid you early on winners while losers were still open. The clawback took the excess back so you kept only 20% of total fund profit.':R.carry>0?'Carry is where GPs make real money. Fee income mostly pays salaries and overhead.':'No carry: the fund never made a profit for LPs after fees. You lived on the management fee, which mostly pays salaries.'}</p></div>
+      </div>
+      <div class="card" style="padding:14px 16px;display:grid;gap:8px"><p class="eyebrow">The J-curve</p>${jCurve()}
+        <p class="muted" style="font-size:.82rem">LPs' cumulative net cash flow, quarter by quarter. Unrealized value at year 10 isn't in this line, since LPs don't have that cash yet.</p></div>
+    </section>
+    ${benchSection(R)}
     <section style="display:grid;gap:12px"><h2>Skill or luck?</h2>
       <div class="bridge3">
         <div class="card"><small class="eyebrow">Market baseline</small><b>${fmtX(R.indexM)}</b><p>What $1M in every one of the ${R.dealsSeen} deals you saw would have returned, with no follow-ons. This is the luck of your market.</p></div>
@@ -1010,8 +1236,8 @@ function render(){
   if(G.over){ app.innerHTML=renderEnd(); return; }
   const nOwn=G.companies.filter(c=>c.owned&&(c.status==='alive'||c.status==='bridge')).length;
   const alerts=G.pending.length+G.companies.filter(c=>c.owned&&c.status==='alive'&&c.crisis).length;
-  const tabs=[['deals','Deal flow',G.q<INVEST_QS?G.deals.length:0,false],['port','Portfolio',alerts||nOwn,alerts>0],['market','Market',0,false],['log','Fund log',0,false]];
-  const views={deals:renderDeals,port:renderPortfolio,market:renderMarket,log:renderLog};
+  const tabs=[['deals','Deal flow',G.q<INVEST_QS?G.deals.length:0,false],['port','Portfolio',alerts||nOwn,alerts>0],['fund','LP view',0,false],['market','Market',0,false],['log','Fund log',0,false]];
+  const views={deals:renderDeals,port:renderPortfolio,fund:renderFund,market:renderMarket,log:renderLog};
   app.innerHTML=renderHeader()+`<main class="wrap game">${renderRecap()}
     <nav class="tabs" role="tablist">${tabs.map(([k,l,n,a])=>`<button class="tab ${G.tab===k?'on':''}" role="tab" aria-selected="${G.tab===k}" data-act="tab" data-k="${k}">${l}${n?`<span class="count ${a?'alert':''}">${n}</span>`:''}</button>`).join('')}</nav>
     ${views[G.tab]()}</main>`+renderModal();
@@ -1019,6 +1245,7 @@ function render(){
 
 const ACT={
   pickDiff:d=>{START.diff=d.k},
+  pickGp:d=>{START.gp=+d.p},
   newSeed:()=>{START.seed=randomSeed()},
   start:()=>{ newGame({...START,seed:(START.seed||randomSeed()).trim()}); window.scrollTo(0,0); },
   tab:d=>{G.tab=d.k},
@@ -1037,7 +1264,7 @@ const ACT={
   skip:()=>{ if(G.pending.length){G.modal={type:'confirmEnd'};return;} skipAhead(); window.scrollTo(0,0); },
   askRestart:()=>{G.modal={type:'restart'}},
   restart:()=>{ G=null; START.seed=randomSeed(); window.scrollTo(0,0); },
-  replay:()=>{ const o={fund:G.fundName,diff:G.diff,thesis:G.thesis,seed:G.seed}; newGame(o); window.scrollTo(0,0); },
+  replay:()=>{ const o={fund:G.fundName,diff:G.diff,thesis:G.thesis,gp:G.gpPct,seed:G.seed}; newGame(o); window.scrollTo(0,0); },
 };
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-act]'); if(!el) return;
