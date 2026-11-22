@@ -22,6 +22,14 @@ python3 -m http.server 8000
 - **Optional GP commitment** (0–5% of the fund) from $2.5M of personal capital, invested alongside LPs with no fees or carry.
 - **Gross and net scoring.** Gross MOIC and IRR, plus net TVPI, DPI and IRR to LPs, a J-curve, and an LP view tab.
 
+## How a quarter plays
+
+- **Pitch day.** Founders pitch one at a time: pass, pass and refer, take a diligence call, or invest.
+- **Rounds run on a clock.** Demand sets the schedule. Hot rounds step the cap up every two weeks (for example $10M, then $14M, then $20M) and close fast. Each diligence call takes about two weeks, so diligence costs price and sometimes the deal.
+- **Price moves.** With no lead you can propose a lower cap; cold rounds can be left open and may come back cheaper next quarter, or fill without you.
+- **Relationships.** Four fictional co-investor funds and a founder reputation score. Close relationships hold your allocation at the first-close cap in hot rounds, bring referred deals, and help portfolio companies raise.
+- **Board decisions.** Pro-rata, bridges and acquisition offers (sell or hold out).
+
 ## Benchmarks and calibration
 
 The end screen compares net IRR with real funds: Carta VC Fund Performance Report, Q1 2025 (2017 vintage) — bottom quartile 5.0%, median 11.5%, top quartile 18.7%, top decile 28.3% — and the S&P 500 10-year return of 13.6% (Cambridge Associates, H1 2025). Deal outcomes are compared with the Correlation Ventures mix: 35% total loss, 29% below cost, 22% at 1–3x, 14% at 3x+.

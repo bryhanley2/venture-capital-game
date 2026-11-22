@@ -387,6 +387,18 @@ button.big{padding:.8rem 1.3rem;font-size:1rem;display:inline-flex;gap:10px;alig
 .flog{margin:0;padding:0;list-style:none;display:grid;gap:2px;font-size:.78rem}
 .flog .up{color:var(--good)} .flog .down{color:var(--bad)}
 @media (max-width:560px){.verdict-bar.four{grid-template-columns:1fr 1fr}.verdict-bar.four .act-call{grid-column:1/-1;grid-row:1}}
+.ladder{display:grid;gap:4px;margin-top:8px}
+.lad-bar{position:relative;height:30px;border-radius:6px;background:var(--paper);border:1px solid var(--line);overflow:hidden}
+.lad-seg{position:absolute;top:0;bottom:0;display:grid;place-items:center;border-right:2px solid var(--card);background:var(--accent-soft)}
+.lad-seg:nth-child(2){background:color-mix(in srgb,var(--accent-soft) 55%,var(--warn-soft))}
+.lad-seg:nth-child(3){background:var(--warn-soft)}
+.lad-seg b{font-family:var(--f-mono);font-size:.72rem;font-weight:600;white-space:nowrap}
+.lad-closed{position:absolute;top:0;bottom:0;display:grid;place-items:center;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);background:repeating-linear-gradient(135deg,var(--paper) 0 6px,var(--line) 6px 7px)}
+.lad-now{position:absolute;top:-2px;bottom:-2px;width:3px;margin-left:-1px;background:var(--ink);border-radius:2px}
+.lad-axis{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.62rem;color:var(--muted)}
+.lad-line{font-size:.82rem;line-height:1.4}
+.lad-moves{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.lostnote{color:var(--bad)!important}
 .mfoot{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
 
 /* End screen */
@@ -630,9 +642,9 @@ function newGame(o){
 // G.flows tracks gross deal cash flows; G.lpFlows tracks what LPs actually pay in and get back.
 // ---------------------------------------------------------------------------
 function chargeFee(){ G.lp.fees+=FEE_Q; G.lpFlows.push({q:G.q,amt:-FEE_Q}); }
-function deploy(c,amt){
+function deploy(c,amt,price=c.post){
   // Every dollar invested is called pro rata from LPs and the GP.
-  G.cash-=amt; c.invested+=amt; c.own+=amt/c.post; G.flows.push({q:G.q,amt:-amt});
+  G.cash-=amt; c.invested+=amt; c.own+=amt/price; G.flows.push({q:G.q,amt:-amt});
   const gp=amt*G.gpShare, lp=amt-gp;
   G.lp.called+=lp; G.gp.called+=gp; G.lpFlows.push({q:G.q,amt:-lp});
 }
@@ -671,16 +683,16 @@ function rec(c,t,text){ if(!c||c.owned){ G.recap.push({t,text}); G.log.push({q:G
 function qLabel(q){return `Y${Math.floor(q/4)+1} Q${q%4+1}`}
 
 function genDeals(){
-  for(let i=0;i<DEALS_PER_Q;i++){ const c=genCompany(); c.lead=leadFor(c); G.companies.push(c); G.deals.push(c.id); }
+  for(let i=0;i<DEALS_PER_Q;i++){ const c=genCompany(); c.lead=leadFor(c); setTerms(c); G.companies.push(c); G.deals.push(c.id); }
   // Referrals come from a separate random stream, so the base deals on a seed are identical for every player.
   const rr=G.refRng, r1=rr(), r2=rr(), r3=rr();
   const elig=FUNDS.filter(f=>f.refers&&G.rel[f.id]>=f.thr).sort((a,b)=>(G.rel[b.id]-b.thr)-(G.rel[a.id]-a.thr));
   if(elig.length){ const f=elig[0]; if(r1<f.freq*(0.6+(G.rel[f.id]-f.thr)/50)){
-    const c=genCompany(rr,f.boost); c.referredBy=f.id; c.lead=f.id; G.companies.push(c); G.deals.push(c.id);
+    const c=genCompany(rr,f.boost); c.referredBy=f.id; c.lead=f.id; setTerms(c); G.companies.push(c); G.deals.push(c.id);
     addLog(`${f.name} brought you into ${c.name}, a deal they're leading.`,'good'); } }
   const port=G.companies.filter(c=>c.owned&&(c.status==='alive'||c.status==='bridge'));
   if(G.rep>=60&&port.length&&r2<(G.rep-50)/200){
-    const c=genCompany(rr,0.5), by=pick(port,r3); c.referredBy='founder'; c.referrer=by.founder; c.lead=leadFor(c); G.companies.push(c); G.deals.push(c.id);
+    const c=genCompany(rr,0.5), by=pick(port,r3); c.referredBy='founder'; c.referrer=by.founder; c.lead=leadFor(c); setTerms(c); G.companies.push(c); G.deals.push(c.id);
     addLog(`${by.founder} of ${by.name} introduced you to ${c.founder} of ${c.name}.`,'good'); }
 }
 // Who is leading the round, if anyone. Deterministic per company so every player sees the same lead.
@@ -693,6 +705,49 @@ const hotRound=c=>c.interest>0.68;
 // A strong relationship with the lead, or a strong reputation with founders, gets you into hot rounds.
 const hasAccess=c=>(c.lead&&G.rel[c.lead]>=60)||G.rep>=75;
 const isExploding=c=>hotRound(c)&&!hasAccess(c)&&!c.owned;
+
+// Round terms. Demand sets a schedule: the cap steps up as the round fills, and hot rounds close fast.
+// Each diligence call takes about two weeks of that clock. A close relationship with the lead holds
+// your allocation at the first-close cap.
+const WEEKS_PER_CALL=2, QUARTER_WEEKS=12;
+function setTerms(c){
+  const h=c.interest, p=c.post; c.week=0;
+  if(h>0.68) c.terms={tr:[{cap:p,until:2},{cap:p*1.4,until:4},{cap:p*2,until:6}],close:6,heat:'hot'};
+  else if(h>0.42) c.terms={tr:[{cap:p,until:4},{cap:p*1.25,until:QUARTER_WEEKS}],close:Infinity,heat:'warm'};
+  else c.terms={tr:[{cap:p,until:QUARTER_WEEKS}],close:Infinity,heat:'cold'};
+}
+const heldPrice=c=>c.terms.heat==='hot'&&hasAccess(c);
+const closeWeek=c=>c.terms.heat==='hot'&&!hasAccess(c)?4:c.terms.close;
+const roundClosed=c=>!c.owned&&c.week>=closeWeek(c);
+function capAt(c,week){
+  if(c.negCap) return c.negCap;
+  if(heldPrice(c)) return c.terms.tr[0].cap;
+  const t=c.terms.tr.find(t=>week<t.until)||c.terms.tr[c.terms.tr.length-1]; return t.cap;
+}
+const capNow=c=>roundClosed(c)?null:capAt(c,c.week);
+function closeIfDone(c,why){ if(roundClosed(c)&&!c.pitch){ c.pitch='lost'; addLog(`${c.name}'s round closed ${why}.`,'bad'); } }
+// Propose a lower cap. Only possible when nobody is leading the round. Odds depend on demand and reputation.
+const negOdds=(c,disc)=>sig(3*(0.55-c.interest)+(G.rep-50)/20-8*(disc-0.1));
+function negotiate(cid,disc){
+  const c=byId(cid); if(!c||c.owned||c.lead||c.negotiated||roundClosed(c)) return null;
+  const cur=capNow(c), p=negOdds(c,disc), ok=hashStr(G.seed+'|neg|'+c.name)/4294967296<p;
+  c.negotiated=true; c.week+=1;
+  if(ok){ c.negCap=cur*(1-disc); addLog(`${c.founder} agreed to a ${fmt$(c.negCap)} cap for you on ${c.name}, down from ${fmt$(cur)}.`,'good'); }
+  else { addLog(`${c.founder} turned down a ${pct(disc,0)} lower cap on ${c.name}.`,'warn'); if(disc>=0.25) repChg(-1,`you lowballed ${c.founder}.`); }
+  closeIfDone(c,'while you negotiated');
+  return {ok,cur,disc};
+}
+// Cold rounds can be left open: the company may come back next quarter at a lower cap, or fill without you.
+function waitDeal(cid){ const c=byId(cid); if(!c||c.owned||c.terms.heat!=='cold'||c.waited) return; c.pitch='waiting'; c.waitStage=c.stage; c.waitM=c.m; }
+function requeueWaiting(){
+  for(const c of G.companies){ if(c.pitch!=='waiting') continue;
+    if(c.status!=='alive'||c.owned){ c.pitch='passed'; continue; }
+    if(c.stage!==c.waitStage||c.m>c.waitM+0.15){ c.pitch='passed'; rec(null,'warn',`${c.name}'s round filled while you waited.`); continue; }
+    const cut=c.m<c.waitM-0.15?0.7:0.85, cap=c.terms.tr[0].cap*cut;
+    c.terms={tr:[{cap,until:QUARTER_WEEKS}],close:Infinity,heat:'cold'}; c.week=0; c.pitch=undefined; c.waited=true; c.negotiated=false; c.negCap=null;
+    G.deals.push(c.id); rec(null,'good',`${c.name} is still raising, now at a ${fmt$(cap)} cap (${pct(1-cut,0)} lower).`);
+  }
+}
 function relChg(fid,d,why){ if(!fid||!FUND_BY[fid]) return; const v=G.rel[fid]; G.rel[fid]=clamp(v+d,0,100);
   if(why){ G.relLog.push({q:G.q,fid,d,why}); addLog(`${FUND_BY[fid].short} ${d>0?'+':''}${d}: ${why}`,d>0?'good':'bad'); }
   const t0=relTier(v),t1=relTier(G.rel[fid]); if(t0!==t1) rec(null,d>0?'good':'bad',`Your relationship with ${FUND_BY[fid].name} is now ${t1}.`); }
@@ -828,11 +883,13 @@ function answer(c,key){
 }
 function runCall(cid,keys){
   const c=byId(cid); if(!c||G.calls<=0) return null;
-  if(isExploding(c)&&c.calls>=1) return null;
+  if(roundClosed(c)) return null;
   G.calls--; c.calls++;
+  const capBefore=capNow(c); c.week+=WEEKS_PER_CALL; c.lastMove={from:capBefore,to:capNow(c)};
   const lines=keys.slice(0,QPERCALL).map(k=>answer(c,k));
   c.transcript.push(...lines);
   addLog(`Diligence call with ${c.founder} of ${c.name}: ${keys.length} question${keys.length>1?'s':''}.`,'info');
+  closeIfDone(c,'while you were doing diligence');
   return lines;
 }
 function burnMultiple(c){
@@ -852,8 +909,9 @@ function checkOptions(c){
 }
 function invest(cid,amt){
   const c=byId(cid); if(!c||amt>G.cash) return;
-  c.owned=true; c.entryQ=G.q; c.initial=(c.initial||0)+amt; deploy(c,amt);
-  addLog(`Invested ${fmt$(amt)} in ${c.name} (${STAGES[c.stage]}) at ${fmt$(c.post)} post for ${pct(amt/c.post)}.`,'good');
+  const price=(c.terms&&capNow(c))||c.post;
+  c.owned=true; c.entryQ=G.q; c.initial=(c.initial||0)+amt; c.entryCap=price; c.firstCap=c.terms?c.terms.tr[0].cap:c.post; deploy(c,amt,price);
+  addLog(`Invested ${fmt$(amt)} in ${c.name} (${STAGES[c.stage]}) at a ${fmt$(price)} post-money cap for ${pct(amt/price)}.`,'good');
   if(c.lead) relChg(c.lead,6,`co-invested in ${c.name}.`);
   repChg(1);
 }
@@ -1041,7 +1099,7 @@ function endQuarter(reset=true){
   G.hours=G.D.hours; G.companies.forEach(c=>c.supDone={}); G.coffee={};
   // Relationships need upkeep: anything above a fund's starting point fades a little each quarter.
   FUNDS.forEach(f=>{ if(G.rel[f.id]>f.start) G.rel[f.id]-=1; });
-  if(G.q<INVEST_QS) genDeals();
+  if(G.q<INVEST_QS){ genDeals(); requeueWaiting(); }
   if(G.q===INVEST_QS) rec(null,'info','The investment period is over. No new deals from here on: manage reserves, follow-ons and founder support until year 10.');
 }
 // One point per quarter for the J-curve: LP cumulative net cash flow and net TVPI at that point.
@@ -1215,6 +1273,28 @@ function factsBlock(c){
 // Deal card: four plain sections (round, team, traction, metrics). Numbers the founder hasn't
 // verified are tagged; metrics you haven't asked about show as open questions for a call.
 const INLINE_FACTS=['arr','growth','lois','nrr','burn','cash','gm','refs','interest'];
+// The round's price schedule as a strip of weeks: each tranche's cap, where the clock is, and when it closes.
+function termsLadder(c){
+  const T=c.terms, cw=Math.min(closeWeek(c),QUARTER_WEEKS), held=heldPrice(c), closed=roundClosed(c);
+  let prev=0; const segs=[];
+  for(const t of T.tr){ if(prev>=cw) break; const end=Math.min(t.until,cw); segs.push({from:prev,to:end,cap:held?T.tr[0].cap:t.cap}); prev=end; }
+  const W=w=>(w/QUARTER_WEEKS*100).toFixed(2)+'%';
+  const now=Math.min(c.week,QUARTER_WEEKS), cur=capNow(c), next=T.tr.find(t=>c.week<t.until&&t.cap>cur);
+  const line=closed?`The round closed at week ${closeWeek(c)}.`
+    :c.negCap?`You negotiated a ${fmt$(c.negCap)} cap. It holds until the round closes.`
+    :held?`Your relationship with ${FUND_BY[c.lead]?FUND_BY[c.lead].short:'the lead'} holds your allocation at the first-close cap until week ${closeWeek(c)}.`
+    :next?`Week ${c.week}. The cap is ${fmt$(cur)} now and rises to ${fmt$(next.cap)} at week ${Math.min(...T.tr.filter(t=>c.week<t.until).map(t=>t.until))}.${closeWeek(c)!==Infinity?` Closes at week ${closeWeek(c)}.`:''}`
+    :`Week ${c.week}. The cap is ${fmt$(cur)}${closeWeek(c)===Infinity?' and the round has no deadline yet.':`, and the round closes at week ${closeWeek(c)}.`}`;
+  const moves=c.pitch||closed?'':[
+    !c.lead&&!c.negotiated?`<button class="small" data-act="openNeg" data-id="${c.id}">Propose a lower cap</button>`:'',
+    T.heat==='cold'&&!c.waited?`<button class="small" data-act="waitDeal" data-id="${c.id}" title="Leave the round open. Next quarter it may come back cheaper, or fill without you if the company improves.">Wait for a better price</button>`:'',
+    c.negotiated&&!c.negCap?'<span class="muted" style="font-size:.8rem">The founder turned down your lower cap.</span>':''].join('');
+  return `<div class="ladder ${T.heat}"><div class="lad-bar">${segs.map(g=>`<span class="lad-seg" style="left:${W(g.from)};width:${W(g.to-g.from)}"><b>${fmt$(g.cap)}</b></span>`).join('')}
+      ${cw<QUARTER_WEEKS?`<span class="lad-closed" style="left:${W(cw)};width:${W(QUARTER_WEEKS-cw)}">closed</span>`:''}
+      <i class="lad-now" style="left:${W(now)}"></i></div>
+    <div class="lad-axis"><span>week 0</span><span>${QUARTER_WEEKS}</span></div>
+    <p class="lad-line">${line}</p>${moves?`<div class="lad-moves">${moves}</div>`:''}</div>`;
+}
 function dealBody(c){
   const thesis=c.sector===G.thesis, F=c.facts, M=c.metrics;
   const ask='<span class="ask">ask</span>';
@@ -1222,7 +1302,8 @@ function dealBody(c){
   const deckTag='<span class="tag">deck</span>';
   const arrVal=F.arr?`${fmt$(M.arr)}${c.flags.inflated?` <s>${fmt$(c.deck.arr)}</s>`:''}`:`${fmt$(c.deck.arr)} ${deckTag}`;
   const grVal=F.growth?`${Math.round(M.growth)}%${c.flags.inflated?` <s>${Math.round(c.deck.growth)}%</s>`:''}`:`${Math.round(c.deck.growth)}% ${deckTag}`;
-  const arrNow=F.arr?M.arr:c.deck.arr, priceMult=arrNow>0?c.post/arrNow:0;
+  const priceNow=c.owned?c.entryCap||c.post:(c.terms?capNow(c)||capAt(c,c.week):c.post);
+  const arrNow=F.arr?M.arr:c.deck.arr, priceMult=arrNow>0?priceNow/arrNow:0;
   const bm=burnMultiple(c);
   const otherKeys=Object.keys(F).filter(k=>!INLINE_FACTS.includes(k));
   return `
@@ -1231,11 +1312,12 @@ function dealBody(c){
     <section class="dsec"><h4>The round</h4><dl>
       ${row('Stage',STAGES[c.stage])}
       ${row('Raising',fmt$(c.round))}
-      ${row('Valuation',`${fmt$(c.post)} <span class="tag n">post</span>`,'Post-money valuation: the company’s price including the new money. Your ownership = check ÷ post-money.')}
+      ${row(c.stage<2?'Post-money cap':'Post-money valuation',`${fmt$(priceNow)}${c.owned?' <span class="tag n">yours</span>':''}`,c.stage<2?'The SAFE’s post-money valuation cap: the price your money converts at. Your ownership = check ÷ cap. A lower cap means more of the company for the same check.':'Post-money valuation: the company’s price including the new money. Your ownership = check ÷ post-money.')}
       ${row('Price ÷ revenue',priceMult?Math.round(priceMult)+'x':'—','Post-money valuation divided by annual recurring revenue. Higher means you pay more for each dollar of revenue.')}
       ${row('Investor demand',F.interest?esc(F.interest[1]):ask)}
+      ${row('Round closes',c.terms&&!c.owned?(roundClosed(c)?'<span class="ask">closed</span>':closeWeek(c)===Infinity?'<span class="ask">open, no deadline</span>':`week ${closeWeek(c)}`):'—','How long the round stays open. Each diligence call takes about two weeks.')}
       ${row('Lead investor',c.lead?`${FUND_BY[c.lead].short} <span class="tag n">${relTier(G.rel[c.lead]).toLowerCase()}</span>`:'<span class="ask">none yet</span>','The fund setting terms for this round. Your relationship with the lead decides whether you get room in a hot round. See the Network tab.')}
-    </dl></section>
+    </dl>${c.terms&&!c.owned?termsLadder(c):''}</section>
     <section class="dsec"><h4>Team</h4>
       <p class="founder"><b>${esc(c.founder)}</b>, CEO · ${esc(c.bg)}</p>
       <dl>${row('References',F.refs?esc(F.refs[1]):ask)}</dl></section>
@@ -1284,16 +1366,18 @@ function opener(c){
 }
 function pitchCard(c,i,n,ghost){
   const thesis=c.sector===G.thesis;
-  const acts=c.owned?`<span class="owned-note">You invested ${fmt$(c.invested)} for ${pct(c.own)}</span>`:`
-      <button class="act-pass" data-act="passDeal" data-id="${c.id}"><span>${isExploding(c)?'Let it go':'Pass'}</span><kbd>P</kbd></button>
-      ${!isExploding(c)&&referTarget(c)?`<button class="act-ref" data-act="passDeal" data-id="${c.id}" data-ref="${referTarget(c).id}" title="Pass, and send the deal to ${referTarget(c).name}. Builds the relationship, and more if the company does well."><span>Pass &amp; refer to ${referTarget(c).short}</span><kbd>R</kbd></button>`:''}
-      <button class="act-call" data-act="openCall" data-id="${c.id}" ${G.calls<=0||c.asked.length>=QUESTIONS.length||(isExploding(c)&&c.calls>=1)?'disabled':''}><span>${isExploding(c)?(c.calls?'No time for another call':'One call before they decide'):`Diligence call · ${G.calls} left`}</span><kbd>D</kbd></button>
+  const acts=c.owned?`<span class="owned-note">You invested ${fmt$(c.invested)} for ${pct(c.own)}</span>`
+    :c.pitch==='lost'?`<span class="owned-note lostnote">The round closed without you.</span><button class="primary" data-act="nextPitch">Next founder</button>`
+    :c.pitch==='waiting'?`<span class="owned-note">You're waiting to see if the price comes down next quarter.</span><button class="primary" data-act="nextPitch">Next founder</button>`:`
+      <button class="act-pass" data-act="passDeal" data-id="${c.id}"><span>Pass</span><kbd>P</kbd></button>
+      ${referTarget(c)?`<button class="act-ref" data-act="passDeal" data-id="${c.id}" data-ref="${referTarget(c).id}" title="Pass, and send the deal to ${referTarget(c).name}. Builds the relationship, and more if the company does well."><span>Pass &amp; refer to ${referTarget(c).short}</span><kbd>R</kbd></button>`:''}
+      <button class="act-call" data-act="openCall" data-id="${c.id}" ${G.calls<=0||c.asked.length>=QUESTIONS.length?'disabled':''}><span>Diligence call · ${G.calls} left</span><kbd>D</kbd></button>
       <button class="primary act-inv" data-act="openInvest" data-id="${c.id}" ${G.cash<=0?'disabled':''}><span>Invest</span><kbd>I</kbd></button>`;
-  const hot=hotRound(c)&&!c.owned&&!c.pitch, refBy=c.referredBy==='founder'?`Intro from ${esc(c.referrer)}`:c.referredBy?`Referred by ${FUND_BY[c.referredBy].short}`:'';
+  const hot=hotRound(c)&&!c.owned&&!c.pitch&&!roundClosed(c), refBy=c.referredBy==='founder'?`Intro from ${esc(c.referrer)}`:c.referredBy?`Referred by ${FUND_BY[c.referredBy].short}`:'';
   const banner=!hot?'':isExploding(c)
-    ?`<div class="hotbar explode"><b>Competing term sheet.</b> ${c.lead?FUND_BY[c.lead].name:'Another fund'} has offered to lead. ${esc(c.founder.split(' ')[0])} will sign before leaving this room: one diligence call at most, and if you move on, the deal is gone.</div>`
-    :`<div class="hotbar access"><b>Hot round, and you're in.</b> ${c.lead&&G.rel[c.lead]>=60?`${FUND_BY[c.lead].name} saved you an allocation because you're ${relTier(G.rel[c.lead]).toLowerCase()}.`:'Your reputation with founders got you an allocation.'} Take your time.</div>`;
-  const vb=c.owned?'':(!isExploding(c)&&referTarget(c)?'four':'');
+    ?`<div class="hotbar explode"><b>Hot round, filling fast.</b> ${c.lead?FUND_BY[c.lead].name+' is leading and':'Several funds are'} circling. The cap steps up every two weeks and the round closes at week 4. Each diligence call costs you two weeks.</div>`
+    :`<div class="hotbar access"><b>Hot round, and you're in.</b> ${c.lead&&G.rel[c.lead]>=60?`${FUND_BY[c.lead].name} is holding your allocation at the first-close cap because you're ${relTier(G.rel[c.lead]).toLowerCase()}.`:'Your reputation with founders got you held at the first-close cap.'} The round stays open until week 6.</div>`;
+  const vb=c.owned||c.pitch?'':(referTarget(c)?'four':'');
   return `<article class="card pitch ${ghost?'ghost':''} ${c.owned?'is-owned':''}" ${ghost?'aria-hidden="true"':''}>
     <header class="pitch-h">
       <div class="avatar" aria-hidden="true">${esc(initials(c.founder))}</div>
@@ -1309,9 +1393,9 @@ function pitchCard(c,i,n,ghost){
 }
 function lineup(){
   return `<div class="lineup" role="tablist" aria-label="This quarter's founders">${G.deals.map((id,i)=>{const c=byId(id);
-    const st=c.owned?'funded':c.pitch==='passed'?'passed':c.pitch==='lost'?'lost':G.stage==='pitch'&&i===G.pitch?'now':'waiting';
-    const lbl={funded:'Funded',passed:'Passed',lost:'Lost',now:'Pitching',waiting:hotRound(c)&&!hasAccess(c)?'Hot · waiting':'Waiting'}[st];
-    return `<button class="lu lu-${st}" role="tab" aria-selected="${st==='now'}" data-act="gotoPitch" data-i="${i}" ${st==='lost'?'disabled':''}><span class="avatar sm" aria-hidden="true">${esc(initials(c.founder))}</span><span class="lu-t"><b>${esc(c.name)}</b><small>${lbl}</small></span></button>`;}).join('')}</div>`;
+    const st=c.owned?'funded':c.pitch==='passed'?'passed':c.pitch==='lost'?'lost':c.pitch==='waiting'?'wait':G.stage==='pitch'&&i===G.pitch?'now':'waiting';
+    const lbl={funded:'Funded',passed:'Passed',lost:'Round closed',wait:'Waiting on price',now:'Pitching',waiting:hotRound(c)&&!hasAccess(c)?'Hot · waiting':'Waiting'}[st];
+    return `<button class="lu lu-${st}" role="tab" aria-selected="${st==='now'}" data-act="gotoPitch" data-i="${i}"><span class="avatar sm" aria-hidden="true">${esc(initials(c.founder))}</span><span class="lu-t"><b>${esc(c.name)}</b><small>${lbl}</small></span></button>`;}).join('')}</div>`;
 }
 function renderDeals(){
   if(G.q>=INVEST_QS) return `<div class="card empty"><h3>The investment period is over</h3><p>No new deals after Year 4. Your job now is the portfolio: follow-ons, bridges and founder support. You have ${fmt$(G.cash)} in reserves.</p></div>`;
@@ -1334,13 +1418,14 @@ function renderDeals(){
   const ghost=ghostC?pitchCard(ghostC,ghostI,n,fx.t):'';
   const toast=G.toast?`<div class="toast ${G.toast.kind}" role="status"><span class="avatar sm" aria-hidden="true">${esc(G.toast.ini)}</span><span><b>${esc(G.toast.who)}, ${esc(G.toast.co)}:</b> \u201c${esc(G.toast.text)}\u201d</span></div>`:'';
   if(G.stage==='done'){
-    const funded=G.deals.map(byId).filter(c=>c.owned), passed=G.deals.map(byId).filter(c=>!c.owned&&c.pitch!=='lost'), lost=G.deals.map(byId).filter(c=>c.pitch==='lost');
+    const funded=G.deals.map(byId).filter(c=>c.owned), passed=G.deals.map(byId).filter(c=>!c.owned&&c.pitch!=='lost'&&c.pitch!=='waiting'), lost=G.deals.map(byId).filter(c=>c.pitch==='lost');
     const needs=G.pending.length+G.companies.filter(c=>c.owned&&c.status==='alive'&&c.crisis).length;
     return `${lineup()}${toast}<div class="stage">${ghost}<section class="card wrapup ${fx?'enter':''}">
       <p class="eyebrow">Pitch day is over</p><h2>${funded.length?`You backed ${funded.length} of ${n}`:'You passed on everyone'}</h2>
       ${funded.length?`<p>${funded.map(c=>`<b>${esc(c.name)}</b> · ${fmt$(c.invested)} for ${pct(c.own)}`).join('<br>')}</p>`:''}
       ${passed.length?`<p class="muted">Passed: ${passed.map(c=>esc(c.name)+(c.referredTo?` (referred to ${FUND_BY[c.referredTo].short})`:'')).join(', ')}</p>`:''}
-      ${lost.length?`<p class="muted">Lost to faster funds: ${lost.map(c=>esc(c.name)).join(', ')}</p>`:''}
+      ${lost.length?`<p class="muted">Rounds that closed without you: ${lost.map(c=>esc(c.name)).join(', ')}</p>`:''}
+      ${G.deals.map(byId).filter(c=>c.pitch==='waiting').length?`<p class="muted">Waiting on price: ${G.deals.map(byId).filter(c=>c.pitch==='waiting').map(c=>esc(c.name)).join(', ')}</p>`:''}
       <p class="muted" style="font-size:.85rem">${fmt$(G.cash)} dry powder left. Most seed funds hold back 40–60% for follow-ons.</p>
       <div class="row">${needs?`<button data-act="tab" data-k="port">Portfolio · ${needs} need${needs>1?'':'s'} you</button>`:''}<button class="primary big" data-act="end">End the quarter</button></div>
     </section></div>`;
@@ -1554,25 +1639,42 @@ function renderModal(){
     if(!M.lines){
       body=`<div class="modal-h"><div><p class="eyebrow">Diligence call · uses 1 of ${G.calls} left</p><h2>${esc(c.founder)}, ${esc(c.name)}</h2></div><button class="ghost small" data-act="close">Cancel</button></div>
         <p class="muted">Pick up to ${QPERCALL} questions. Grayed ones you've already asked.</p>
+        ${c.terms?(()=>{const after=c.week+WEEKS_PER_CALL, closes=after>=closeWeek(c), capA=capAt(c,after), cur=capNow(c);
+          return closes?`<div class="flag"><b>This call outlasts the round.</b> It takes about two weeks and the round closes at week ${closeWeek(c)}. You won't be able to invest afterwards.</div>`
+            :capA>cur?`<div class="flag warn"><b>The price will move.</b> This call takes about two weeks. By the time you hang up, the cap rises from ${fmt$(cur)} to ${fmt$(capA)}.</div>`
+            :`<p class="muted" style="font-size:.85rem">This call takes about two weeks. The cap stays at ${fmt$(cur)}.</p>`;})():''}
         <div class="qs">${QUESTIONS.map(([k,t])=>{const asked=c.asked.includes(k),on=M.picked.includes(k);return `<button class="q ${on?'on':''} ${asked?'asked':''}" data-act="pickQ" data-k="${k}" ${asked?'disabled':''} aria-pressed="${on}">${t}</button>`}).join('')}</div>
         <div class="mfoot"><button class="primary" data-act="runCall" ${M.picked.length?'':'disabled'}>Start the call (${M.picked.length}/${QPERCALL})</button></div>`;
     } else {
+      const mv=c.lastMove, closedNow=c.pitch==='lost';
       body=`<div class="modal-h"><div><p class="eyebrow">Call notes · ${G.calls} calls left</p><h2>${esc(c.name)}</h2></div></div>
+        ${closedNow?`<div class="flag"><b>The round closed while you were on the phone.</b> ${c.lead?FUND_BY[c.lead].name:'Faster funds'} filled it.</div>`:mv&&mv.to>mv.from?`<div class="flag warn"><b>The round moved.</b> While you were on the call, the cap went from ${fmt$(mv.from)} to ${fmt$(mv.to)}.</div>`:''}
         <div class="transcript">${M.lines.map((l,i)=>`<div class="tline"><span class="who">00:${String(4+i*7).padStart(2,'0')} · You</span><span class="you">${esc(l.q)}</span>
           <span class="who">${esc(c.founder.split(' ')[0])}</span><span class="them">“${esc(l.quote)}”</span>
           ${l.fact?`<span class="data">${esc(l.fact[0])}: ${esc(l.fact[1])}</span>`:''}
           ${l.flag?`<div class="flag ${l.level==='warn'?'warn':''}"><b>${l.level==='warn'?'Watch:':'Red flag:'}</b> ${esc(l.flag)}</div>`:''}</div>`).join('')}</div>
-        <div class="mfoot"><button data-act="close">Back to deals</button><button class="primary" data-act="openInvest" data-id="${c.id}">Invest</button></div>`;
+        <div class="mfoot"><button data-act="close">Back to the pitch</button><button class="primary" data-act="openInvest" data-id="${c.id}" ${closedNow?'disabled':''}>Invest</button></div>`;
     }
   }
   if(M.type==='invest'){
     const c=byId(M.cid), opts=checkOptions(c), sel=opts[M.choice]||opts.find(o=>o.ok);
     const after=sel?G.cash-sel.amt:G.cash;
     body=`<div class="modal-h"><div><p class="eyebrow">Term sheet · ${STAGES[c.stage]}</p><h2>Invest in ${esc(c.name)}</h2></div><button class="ghost small" data-act="close">Cancel</button></div>
-      <p>${fmt$(c.round)} round at ${fmt$(c.post)} post-money. 1x non-participating preferred.</p>
-      <div class="checks">${opts.map((o,i)=>`<button class="check ${sel===o?'on':''}" data-act="pickCheck" data-i="${i}" ${o.ok?'':'disabled'}><b>${o.label}</b><span>${fmt$(o.amt)} for ${pct(o.amt/c.post)} ownership${o.hotBlock?' · round is oversubscribed, no lead allocation':''}</span><span class="num">${o.ok?'':'n/a'}</span></button>`).join('')}</div>
+      ${(()=>{const price=capNow(c)||c.post, first=c.terms?c.terms.tr[0].cap:price;
+        return `<p>${fmt$(c.round)} round. You're buying at a <b>${fmt$(price)}</b> post-money ${c.stage<2?'cap (SAFE)':'valuation'}. 1x non-participating preferred.</p>
+        ${price>first?`<div class="flag warn"><b>You're paying up.</b> First close was ${fmt$(first)}. At ${fmt$(price)}, the same check buys ${pct(1-first/price,0)} less of the company.</div>`:c.negCap?`<p class="pref-note">You negotiated this cap down. The same check buys more of the company than the rest of the round gets.</p>`:''}`;})()}
+      <div class="checks">${opts.map((o,i)=>`<button class="check ${sel===o?'on':''}" data-act="pickCheck" data-i="${i}" ${o.ok?'':'disabled'}><b>${o.label}</b><span>${fmt$(o.amt)} for ${pct(o.amt/(capNow(c)||c.post))} ownership${o.hotBlock?' · round is oversubscribed, no lead allocation':''}</span><span class="num">${o.ok?'':'n/a'}</span></button>`).join('')}</div>
       <p class="muted" style="font-size:.85rem">Dry powder after this check: <b class="num">${fmt$(after)}</b> (${pct(after/G.investable,0)} of investable capital). ${c.calls?'':'You haven\'t taken a diligence call on this company.'}</p>
       <div class="mfoot"><button class="primary" data-act="confirmInvest" ${sel?'':'disabled'}>Wire ${sel?fmt$(sel.amt):''}</button></div>`;
+  }
+  if(M.type==='neg'){
+    const c=byId(M.cid), cur=M.result?M.result.cur:capNow(c), R=M.result;
+    const odds=p=>p>0.66?'likely':p>0.4?'possible':p>0.2?'a stretch':'a long shot';
+    body=`<div class="modal-h"><div><p class="eyebrow">Negotiate · nobody is leading this round</p><h2>Propose a lower cap to ${esc(c.founder.split(' ')[0])}</h2></div>${R?'':'<button class="ghost small" data-act="close">Cancel</button>'}</div>
+      ${R?`<div class="${R.ok?'pref-note':'flag warn'}"><b>${R.ok?'Accepted.':'Turned down.'}</b> ${R.ok?`Your cap is ${fmt$(c.negCap)}, down from ${fmt$(R.cur)}. On a $1M check, that's ${pct(1e6/c.negCap,1)} of the company instead of ${pct(1e6/R.cur,1)}.`:`${esc(c.founder.split(' ')[0])} is sticking with ${fmt$(R.cur)}. ${R.disc>=0.25?'Asking for that much off cost you a little goodwill with founders.':''}`} The back-and-forth took a week.</div>
+        <div class="mfoot"><button class="primary" data-act="close">Back to the pitch</button></div>`
+      :`<p>The cap is ${fmt$(cur)} today. With no lead, whoever writes the first check helps set the price. Founders say yes more often when demand is soft and your reputation is good, and a lowball on a hot round can backfire. You get one try, and it takes about a week.</p>
+      <div class="checks">${[0.1,0.2,0.3].map(dz=>`<button class="check" data-act="negotiate" data-disc="${dz}"><b>${pct(dz,0)} lower</b><span>${fmt$(cur*(1-dz))} cap · $1M buys ${pct(1e6/(cur*(1-dz)),1)}</span><span class="num">${odds(negOdds(c,dz))}</span></button>`).join('')}</div>`}`;
   }
   if(M.type==='wrap') body=renderWrap(M);
   if(M.type==='events'&&G.events[M.i].t==='miss'){
@@ -1764,6 +1866,9 @@ function renderEnd(){
       </div></section>
     <section class="card lesson"><h3>What this fund teaches</h3><ul>
       ${top?`<li>Your best company, ${esc(top.c.name)}, produced ${pct(topShare,0)} of all value. ${topShare>0.5?'That is the power law: one winner carries the fund.':'Value was unusually spread out across the portfolio.'}</li>`:''}
+      ${(()=>{const o=G.companies.filter(c=>c.owned&&c.entryCap&&c.firstCap), lost=G.companies.filter(c=>c.pitch==='lost').length, neg=o.filter(c=>c.negCap).length;
+        if(!o.length) return ''; const prem=o.reduce((a,c)=>a+c.entryCap/c.firstCap,0)/o.length-1;
+        return `<li>Pricing: on average you paid ${Math.abs(prem)<0.005?'exactly the first-close price':prem>0?`${pct(prem,0)} above the first-close price`:`${pct(-prem,0)} below the first-close price`}${neg?`, with ${neg} negotiated cap${neg>1?'s':''}`:''}.${lost?` ${lost} round${lost>1?'s':''} closed while you were still deciding.`:''}</li>`;})()}
       <li>You took diligence calls on ${R.called} of ${R.dealsSeen} deals and invested in ${R.calledInvested} of those. ${R.owned-R.calledInvested>0?`${R.owned-R.calledInvested} of your investments had no diligence call.`:''}</li>
       ${R.undeployed>2e6?`<li>You finished with ${fmt$(R.undeployed)} undeployed. LPs pay fees on that money too, which drags net TVPI.</li>`:''}
       ${R.misses.length&&R.misses[0].x>3?`<li>The one that got away: ${esc(R.misses[0].c.name)} would have turned a $1M check into ${fmt$(R.misses[0].x*1e6)}. ${R.misses[0].c.calls?'You did diligence on it and passed.':'You never took a call.'}</li>`:''}
@@ -1820,14 +1925,13 @@ const ACT={
   evNext:()=>{ const M=G.modal; if(M.i<G.events.length-1) M.i++; else G.modal=null; },
   evSkip:()=>{ G.modal=null; },
   startPitches:()=>{ G.stage='pitch'; G.pitch=Math.max(0,G.deals.findIndex(id=>undecided(byId(id)))); G.fx={t:'enter'}; window.scrollTo(0,0); },
-  passDeal:d=>{ const c=byId(+d.id);
-    if(isExploding(c)){ loseDeal(c.id); G.toast=reaction(c,'lost',c.lead?FUND_BY[c.lead].short:'Another fund'); G.fx={t:'lost',id:c.id}; }
-    else { passDeal(c.id,d.ref); G.toast=reaction(c,d.ref?'refer':'pass',d.ref?FUND_BY[d.ref].name:''); G.fx={t:'pass',id:c.id}; }
-    advancePitch(); window.scrollTo(0,0); },
+  passDeal:d=>{ const c=byId(+d.id); passDeal(c.id,d.ref); G.toast=reaction(c,d.ref?'refer':'pass',d.ref?FUND_BY[d.ref].name:''); G.fx={t:'pass',id:c.id}; advancePitch(); window.scrollTo(0,0); },
+  nextPitch:()=>{ const c=byId(G.deals[G.pitch]); if(c&&c.pitch==='lost'){ G.toast=reaction(c,'lost',c.lead?FUND_BY[c.lead].short:'Another fund'); G.fx={t:'lost',id:c.id}; } else G.fx={t:'enter'}; advancePitch(); window.scrollTo(0,0); },
+  waitDeal:d=>{ const c=byId(+d.id); waitDeal(c.id); G.fx={t:'enter'}; advancePitch(); },
+  openNeg:d=>{ G.modal={type:'neg',cid:+d.id}; },
+  negotiate:d=>{ const r=negotiate(G.modal.cid,+d.disc); if(r) G.modal.result=r; },
   coffee:d=>coffee(d.f),
-  gotoPitch:d=>{ const cur=G.stage==='pitch'&&byId(G.deals[G.pitch]);
-    if(cur&&+d.i!==G.pitch&&undecided(cur)&&isExploding(cur)){ loseDeal(cur.id); G.toast=reaction(cur,'lost',cur.lead?FUND_BY[cur.lead].short:'Another fund'); }
-    G.stage='pitch'; G.pitch=+d.i; G.fx={t:'enter'}; },
+  gotoPitch:d=>{ G.stage='pitch'; G.pitch=+d.i; G.fx={t:'enter'}; },
   wrapGo:d=>{ const M=G.modal; M.i=Math.max(0,Math.min(5,M.i+(+d.d))); },
   openWrap:d=>{ G.modal={type:'wrap',i:+(d.i||0)}; },
   copyShare:()=>{ const t=shareText()+' '+shareLink(); try{ navigator.clipboard.writeText(t).then(()=>{G.modal.copied=true;render();},()=>prompt('Copy this challenge:',t)); }catch(e){ prompt('Copy this challenge:',t); } },
@@ -1855,9 +1959,10 @@ document.addEventListener('keydown',e=>{
   if(G.stage==='intro'&&k==='enter'){ e.preventDefault(); ACT.startPitches(); render(); return; }
   if(G.stage!=='pitch') return;
   const c=byId(G.deals[G.pitch]); if(!c||c.owned) return;
+  if(c.pitch) return;
   if(k==='p'){ ACT.passDeal({id:c.id}); render(); }
-  else if(k==='r'&&!isExploding(c)&&referTarget(c)){ ACT.passDeal({id:c.id,ref:referTarget(c).id}); render(); }
-  else if(k==='d'&&G.calls>0&&!(isExploding(c)&&c.calls>=1)){ ACT.openCall({id:c.id}); render(); }
+  else if(k==='r'&&!c.pitch&&referTarget(c)){ ACT.passDeal({id:c.id,ref:referTarget(c).id}); render(); }
+  else if(k==='d'&&G.calls>0&&!c.pitch){ ACT.openCall({id:c.id}); render(); }
   else if(k==='i'&&G.cash>0){ ACT.openInvest({id:c.id}); render(); }
 });
 // A challenge link carries the seed and settings in the URL hash, so a friend plays the same fund.
