@@ -21,7 +21,7 @@ for(const [name,S] of Object.entries(STRATS)){
   const irrs=[],tvpis=[],mix=[0,0,0,0],idx=[0,0,0,0],status={},top={share:0},nOwned=[];
   for(let s=1;s<=N;s++){
     rngS=s*7919+13;
-    A.newGame({fund:'F',diff:'normal',thesis:'Generalist',gp:0.01,seed:String(s)});
+    A.newGame({fund:'F',diff:process.env.DIFF||'normal',mode:process.env.MODE||'class',thesis:'Generalist',gp:0.01,seed:String(s)});
     const G=A.G;
     while(!G.over){
       for(const id of [...G.deals]){const c=A.byId(id); if(!S.pick(c)) continue; const o=A.checkOptions(c).filter(o=>o.ok); if(o.length) A.invest(id,o[Math.min(S.size,o.length-1)].amt);}
