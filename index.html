@@ -82,7 +82,14 @@ label.f{display:grid;gap:.35rem;font-size:.82rem;font-weight:600;color:var(--mut
 .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(20,30,40,.12),inset 0 0 0 1px var(--line)}
 .seg button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .terms-chips{display:flex;flex-wrap:wrap;gap:6px;padding-top:14px;border-top:1px solid var(--line)}
-.terms-chips span{font-family:var(--f-mono);font-size:.72rem;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--paper);border:1px solid var(--line);color:var(--muted)}
+.terms-chips{position:relative}
+.tip{position:static;display:inline-block}
+.terms-chips .tip-btn{font:inherit;font-size:.74rem;font-weight:600;padding:3px 8px;border-radius:4px;background:var(--paper);border:1px solid var(--line);color:var(--muted);text-decoration:underline dotted;text-underline-offset:3px;cursor:help}
+.terms-chips .tip-btn:hover,.terms-chips .tip-btn:focus-visible,.tip:focus-within .tip-btn{color:var(--ink);border-color:var(--accent)}
+.tip-pop{display:none;position:absolute;z-index:30;left:0;right:0;top:calc(100% + 6px);max-width:440px;padding:10px 12px;border-radius:6px;background:var(--card);border:1px solid var(--line);box-shadow:0 8px 24px rgba(15,25,35,.16);font-size:.83rem;line-height:1.45;color:var(--ink);font-weight:400;text-align:left}
+.tip-pop b{display:block;margin-bottom:3px;font-size:.85rem}
+.tip:hover .tip-pop,.tip:focus-within .tip-pop{display:block}
+.terms-chips span.tip-x{font-family:var(--f-mono);font-size:.72rem;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--paper);border:1px solid var(--line);color:var(--muted)}
 .cta{width:100%;justify-content:center}
 .how .hn{font-family:var(--f-display);font-weight:800;font-size:1.02rem}
 .srcs{font-size:.76rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
@@ -1370,6 +1377,14 @@ function momentumLabel(c){
 
 // Brand mark: a power-law curve in a rounded square.
 const LOGO=(cls='')=>`<svg class="logo ${cls}" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" class="lg-bg"/><path d="M7 7 C 9 19, 13 23, 25 24" class="lg-curve"/><circle cx="7" cy="7" r="2.4" class="lg-dot"/></svg>`;
+// Definitions for the fund terms shown above the start button.
+const FUND_TERMS=[
+  ['$50M from LPs','Limited partners (LPs)','The investors in the fund: pensions, endowments, family offices and wealthy individuals. They commit $50M up front, and the fund calls the money as it needs it. Their liability is limited to what they commit, and they stay out of individual investment decisions.'],
+  ['2% fee','Management fee','2% of the $50M commitment every year: $1M a year, $10M over ten years. It pays the firm\u2019s salaries and costs whether or not the fund makes money, so about $40M is left to invest.'],
+  ['20% carry','Carried interest','The GP\u2019s share of the profits. Once LPs have their invested capital back, the GP keeps 20% of the gains and LPs keep 80%. No profit, no carry.'],
+  ['American waterfall','American (deal-by-deal) waterfall','Profits are split one exit at a time. When a company sells above cost, the GP takes 20% of that deal\u2019s profit right away, even if other companies are losing money. A clawback at the end returns any carry above 20% of the whole fund\u2019s profit. A European waterfall instead pays no carry until LPs get all their capital back.'],
+  ['10-year life','Fund life','The fund invests in new companies for its first years (two in a class session, four in a full fund), then spends the rest supporting and exiting them. At year ten, anything not yet sold is counted at its last valuation.'],
+];
 function seg(name,opts,cur,act){
   return `<div class="seg" role="radiogroup" aria-label="${name}">${opts.map(([k,l])=>`<button class="${cur===k?'on':''}" role="radio" aria-checked="${cur===k}" data-act="${act}" data-k="${k}">${l}</button>`).join('')}</div>`;
 }
@@ -1411,7 +1426,8 @@ function renderStart(){
       <div class="step"><span class="sn">4</span><div class="sb"><h3>GP commitment</h3>
         ${seg('GP commitment',GP_OPTS.map(x=>[String(x),x?pct(x,0)+' · '+fmt$(FUND*x):'None']),String(START.gp),'pickGp')}
         <p class="hint">Your own money in the fund, from ${fmt$(GP_WEALTH)} of personal capital. It pays no fees or carry and adds dry powder. You keep ${fmt$(GP_WEALTH-FUND*START.gp)}.</p></div></div>
-      <div class="terms-chips"><span>$50M from LPs</span><span>2% fee</span><span>20% carry</span><span>American waterfall</span><span>10-year life</span></div>
+      <div class="terms-chips" aria-label="Fund terms">${FUND_TERMS.map(([l,t,d],i)=>`<span class="tip ${i>=FUND_TERMS.length-2?'r':''}"><button type="button" class="tip-btn" aria-describedby="tip-${i}">${l}</button><span class="tip-pop" role="tooltip" id="tip-${i}"><b>${t}</b>${d}</span></span>`).join('')}</div>
+      <p class="hint" style="margin-top:-6px">Hover or tap a term for a definition.</p>
       <button class="primary big cta" data-act="start">Close the fund and start Year 1</button>
     </section>
     <footer class="srcs">Benchmarks: Carta VC Fund Performance Report, Q1 2025 (2017 vintage). S&amp;P 500 10-year return: Cambridge Associates, H1 2025. Outcome mix: Correlation Ventures via Deutsche Bank Wealth Management. Companies, founders and co-investor funds in the game are fictional.</footer>
