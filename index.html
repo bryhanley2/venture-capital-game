@@ -321,7 +321,7 @@ tr:last-child td{border-bottom:0}
 .act-call:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
 kbd{font-family:var(--f-mono);font-size:.68rem;font-weight:600;border:1px solid currentColor;border-radius:4px;padding:0 4px;opacity:.6}
 @media (hover:none){kbd{display:none}}
-.ghost{position:absolute;inset:0 0 auto 0;z-index:5;pointer-events:none;opacity:0}
+.pitch-ghost{position:absolute;inset:0 0 auto 0;z-index:5;pointer-events:none;opacity:0}
 .stamp{position:absolute;top:96px;left:50%;transform:translateX(-50%) rotate(-12deg);font-family:var(--f-display);font-stretch:85%;font-weight:900;font-size:3.2rem;letter-spacing:.06em;text-transform:uppercase;line-height:1;padding:10px 22px;border:5px solid currentColor;border-radius:10px;display:grid;justify-items:center;background:var(--card)}
 .stamp small{font-family:var(--f-mono);font-size:1rem;letter-spacing:.04em}
 .stamp.pass{color:var(--bad)} .stamp.fund{color:var(--good)}
@@ -401,6 +401,9 @@ button.big{padding:.8rem 1.3rem;font-size:1rem;display:inline-flex;gap:10px;alig
 .lostnote{color:var(--bad)!important}
 .lesson-card{display:grid;gap:12px}
 .lesson-card h2{font-family:var(--f-display);font-stretch:80%;font-weight:850;font-size:1.9rem;line-height:1.05;margin:0}
+.fnote{border-left:3px solid var(--good);background:var(--good-soft);border-radius:0 10px 10px 0;padding:8px 12px;display:grid;gap:2px;font-size:.9rem}
+.fnote b{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--good)}
+.lessons .fnote{display:block;margin-top:4px;font-size:.84rem}
 .lesson-card .lb{font-size:1rem;line-height:1.55}
 .lq{background:var(--accent-soft);border-radius:10px;padding:10px 14px;display:grid;gap:4px}
 .lq b{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
@@ -414,6 +417,65 @@ button.big{padding:.8rem 1.3rem;font-size:1rem;display:inline-flex;gap:10px;alig
 .setup .teachopt{display:flex;gap:8px;align-items:flex-start;justify-content:flex-start;text-align:left;font-size:.85rem;font-weight:400;color:var(--muted)}
 .setup .teachopt input{width:auto;flex:0 0 auto;margin:3px 0 0;padding:0}
 .modes{margin-bottom:2px}
+.hud .hud-in{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px 22px;align-items:center;padding-block:10px}
+.hud-id{display:grid;gap:2px;line-height:1.1}
+.hud-id b{font-family:var(--f-display);font-stretch:75%;font-weight:850;font-size:1.3rem;text-transform:uppercase}
+.hud-when{font-family:var(--f-mono);font-size:.82rem;font-weight:600}
+.hud-phase{justify-self:start;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.hud-phase.h{background:var(--good-soft);color:var(--good)}
+.hud-meters{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;min-width:0}
+.hm{position:relative;display:grid;gap:3px;min-width:0}
+.hm small{font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.hm-row{display:flex;align-items:center;gap:6px}
+.hm .num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:600;font-size:.92rem}
+.hm .big{font-size:1.25rem;line-height:1}
+.hm .small{font-size:.72rem}
+.hbar{display:block;width:84px;height:8px;border-radius:4px;background:var(--paper);border:1px solid var(--line);overflow:hidden}
+.hbar i{display:block;height:100%;background:var(--accent);transition:width .5s ease}
+.pips{display:flex;gap:3px}
+.pips i{width:7px;height:12px;border-radius:2px;background:var(--line)}
+.pips i.on{background:var(--accent)}
+.hm-score .big{color:var(--accent)}
+.wi{width:22px;height:22px;flex:0 0 auto}
+.wi.big{width:64px;height:64px}
+.wi .wi-sun{fill:var(--warn);stroke:none}
+.wi .wi-ray{stroke:var(--warn);stroke-width:1.6;stroke-linecap:round}
+.wi .wi-cloud{fill:var(--paper);stroke:var(--muted);stroke-width:1.4}
+.wi .wi-rain{stroke:var(--accent);stroke-width:1.6;stroke-linecap:round}
+.wi .wi-bolt{fill:none;stroke:var(--bad);stroke-width:1.8;stroke-linejoin:round}
+.hm-mkt.reg-boom b{color:var(--good)} .hm-mkt.reg-normal b{color:var(--accent)} .hm-mkt.reg-correction b{color:var(--warn)} .hm-mkt.reg-recession b{color:var(--bad)}
+.delta{position:absolute;right:-4px;top:-15px;font-family:var(--f-mono);font-size:.72rem;font-weight:700;padding:1px 5px;border-radius:5px;pointer-events:none;white-space:nowrap}
+.delta.up{color:var(--good);background:var(--good-soft)} .delta.down{color:var(--bad);background:var(--bad-soft)}
+.turn{display:grid;gap:14px;justify-items:center;text-align:center;padding:8px 4px}
+.turn-when{font-family:var(--f-display);font-stretch:70%;font-weight:900;font-size:clamp(2.6rem,9vw,4.2rem);line-height:.95;margin:0}
+.turn-when span{color:var(--muted)}
+.turn-wx{display:flex;align-items:center;gap:12px;text-align:left}
+.turn-wx b{display:block;font-size:1.15rem}
+.turn-wx span{font-size:.85rem;color:var(--muted)}
+.turn.reg-boom .turn-wx b{color:var(--good)} .turn.reg-normal .turn-wx b{color:var(--accent)} .turn.reg-correction .turn-wx b{color:var(--warn)} .turn.reg-recession .turn-wx b{color:var(--bad)}
+.turn-news{margin:0;padding:0;list-style:none;display:grid;gap:6px;width:100%;max-width:52ch;text-align:left}
+.turn-news li{font-size:.88rem;padding:6px 10px;border-radius:8px;background:var(--paper);border-left:3px solid var(--line)}
+.turn-news li.good{border-left-color:var(--good)} .turn-news li.bad{border-left-color:var(--bad)} .turn-news li.warn{border-left-color:var(--warn)}
+.turn-next{font-weight:600}
+.badge-toast{position:fixed;z-index:80;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center;max-width:min(340px,calc(100vw - 32px));padding:10px 14px;border-radius:12px;background:var(--ink);color:var(--card);box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.badge-toast small{display:block;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;opacity:.7}
+.badge-toast b{display:block;font-size:.98rem}
+.badge-toast em{display:block;font-style:normal;font-size:.8rem;opacity:.8}
+.bt-medal{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--warn);color:var(--card);font-size:1.1rem;flex:0 0 auto}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:8px}
+.bdg{display:grid;grid-template-columns:auto 1fr;column-gap:8px;padding:8px 10px;border-radius:10px;border:1px dashed var(--line);opacity:.45}
+.bdg span{grid-row:1/3;color:var(--muted);font-size:1.1rem}
+.bdg b{font-size:.86rem} .bdg small{font-size:.75rem;color:var(--muted)}
+.bdg.on{opacity:1;border-style:solid;border-color:var(--warn);background:var(--warn-soft)} .bdg.on span{color:var(--warn)}
+@media (max-width:560px){
+  .hud .hud-in{grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;padding-block:8px}
+  .hud-meters{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 10px}
+  .hud .acts{grid-column:2;grid-row:1}
+  .hud .acts button{padding:.4rem .7rem;font-size:.82rem}
+  .hbar{width:56px}
+  .hud-id{grid-template-columns:auto auto;column-gap:8px;align-items:baseline}
+  .hud-phase{display:none}
+}
 .mfoot{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
 
 /* End screen */
@@ -460,12 +522,22 @@ details summary{cursor:pointer;font-weight:600}
 @media (prefers-reduced-motion:no-preference){
   .pc,.decision{animation:rise .25s ease-out both}
   .enter{animation:pitchIn .4s cubic-bezier(.2,.8,.2,1) both}
-  .stage .ghost~.enter{animation-delay:.42s}
-  .ghost{opacity:1}
-  .ghost .stamp{animation:stampIn .22s cubic-bezier(.3,1.6,.5,1) both}
-  .ghost.pitch:has(.stamp.pass){animation:passOut .75s ease-in both}
-  .ghost.pitch:has(.stamp.fund){animation:fundOut .9s ease-in both}
+  .stage .pitch-ghost~.enter{animation-delay:.42s}
+  .pitch-ghost{opacity:1}
+  .pitch-ghost .stamp{animation:stampIn .22s cubic-bezier(.3,1.6,.5,1) both}
+  .pitch-ghost:has(.stamp.pass){animation:passOut .75s ease-in both}
+  .pitch-ghost:has(.stamp.fund){animation:fundOut .9s ease-in both}
   .toast{animation:toastIn .35s ease-out both}
+  .delta{animation:deltaUp 1.8s ease-out both}
+  @keyframes deltaUp{0%{opacity:0;transform:translateY(4px)}15%{opacity:1;transform:none}70%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
+  .badge-toast{animation:badgeIn .45s cubic-bezier(.3,1.5,.5,1) both, badgeOut .4s ease-in 3.8s forwards}
+  @keyframes badgeIn{from{opacity:0;transform:translateY(20px) scale(.9)}to{opacity:1;transform:none}}
+  @keyframes badgeOut{to{opacity:0;transform:translateY(10px)}}
+  .turn .turn-when{animation:turnIn .5s cubic-bezier(.2,.8,.2,1) both}
+  .turn .turn-wx{animation:turnIn .5s .12s cubic-bezier(.2,.8,.2,1) both}
+  .turn .turn-news li{animation:turnIn .4s cubic-bezier(.2,.8,.2,1) both}
+  .turn .turn-news li:nth-child(2){animation-delay:.2s} .turn .turn-news li:nth-child(3){animation-delay:.28s} .turn .turn-news li:nth-child(4){animation-delay:.36s}
+  @keyframes turnIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   @keyframes toastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
   .fx-intro .lcard{animation:dealIn .45s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d)*130ms + .1s)}
   @keyframes pitchIn{from{opacity:0;transform:translateX(56px) rotate(1.2deg)}to{opacity:1;transform:none}}
@@ -906,6 +978,7 @@ function answer(c,key){
   if(!c.asked.includes(key)) c.asked.push(key);
   if(fact) c.facts[key]=fact;
   if(flag && !c.flagsSeen.some(x=>x.key===key)) c.flagsSeen.push({key,text:flag,level});
+  if(flag && level==='bad') teach('verify',{name:c.name,flag});
   return {key,q:QTEXT[key],quote,fact,flag,level};
 }
 function runCall(cid,keys){
@@ -942,6 +1015,7 @@ function invest(cid,amt){
   addLog(`Invested ${fmt$(amt)} in ${c.name} (${STAGES[c.stage]}) at a ${fmt$(price)} post-money cap for ${pct(amt/price)}.`,'good');
   if(c.lead) relChg(c.lead,6,`co-invested in ${c.name}.`);
   repChg(1);
+  teach('thesis',{name:c.name,sector:c.sector,thesis:G.thesis,inThesis:c.sector===G.thesis});
 }
 function decide(pid,choice){
   const i=G.pending.findIndex(p=>p.pid===pid); if(i<0) return; const p=G.pending[i]; const c=byId(p.cid);
@@ -990,7 +1064,11 @@ function doSupport(cid,key){
 // ---------------------------------------------------------------------------
 function payout(own,inv,val,raised){ return val>=raised?Math.max(own*val,Math.min(inv,val)):val*inv/raised; }
 function haircut(c){ return c.status==='bridge'?0.25:c.m<-1?0.4:c.m<-0.3?0.75:1; }
-function navOf(c){ return (c.status==='alive'||c.status==='bridge')?c.own*c.post*haircut(c):0; }
+function navOf(c){
+  // A check wired this quarter is held at cost until the quarter ends.
+  if(c.status==='deal'&&c.owned) return c.invested;
+  return (c.status==='alive'||c.status==='bridge')?c.own*c.post*haircut(c):0;
+}
 function valueOf(c){ return c.status==='exited'?c.returned:navOf(c); }
 function doExit(c,val,kind){
   c.status='exited'; c.exitVal=val; c.exitKind=kind; c.exitQ=G.q;
@@ -1107,6 +1185,7 @@ function stepCompany(c){
       if(c.owned){
         G.pending.push({pid:'p'+c.id+'_'+G.q,type:'prorata',cid:c.id,amount:ownPre*round,ownPre,step,round});
         teach('prorata',{name:c.name,ownPre,ownPost:c.own,amount:ownPre*round,step});
+        if(step>=1.5) teach('markup',{name:c.name,step});
         rec(c,step>=1?'good':'warn',`${c.name} raised a ${STAGES[c.stage]} at ${fmt$(c.post)} post${step<1?' (a down round)':` (${step.toFixed(1)}x step-up)`}. Pro-rata decision waiting.`);
       }
     } else {
@@ -1133,6 +1212,7 @@ function endQuarter(reset=true){
   // Relationships need upkeep: anything above a fund's starting point fades a little each quarter.
   FUNDS.forEach(f=>{ if(G.rel[f.id]>f.start) G.rel[f.id]-=1; });
   if(G.q<INVEST_QS){ genDeals(); requeueWaiting(); }
+  if(G.q===20){ const o=G.companies.filter(c=>c.owned); teach('lifecycle',{owned:o.length,dead:o.filter(c=>c.status==='dead'||c.exitKind==='Soft landing').length,big:o.filter(c=>c.status==='exited'&&c.returned>=3*c.invested).length}); }
   if(G.q===INVEST_QS) teach('jcurve',{net:G.lp.dist-G.lp.called-G.lp.fees,fees:G.lp.fees});
   if(G.q===INVEST_QS) rec(null,'info','The investment period is over. No new deals from here on: manage reserves, follow-ons and founder support until year 10.');
 }
@@ -1260,28 +1340,46 @@ function renderStart(){
 
 function stat(label,val,cls=''){return `<div class="stat"><small>${label}</small><span class="${cls}">${val}</span></div>`}
 
+// Market weather icons for the HUD and turn cards.
+function weather(reg,cls=''){
+  const sun='<circle cx="12" cy="12" r="4.5" class="wi-sun"/>'+[0,45,90,135,180,225,270,315].map(a=>`<line x1="12" y1="2.5" x2="12" y2="5" class="wi-ray" transform="rotate(${a} 12 12)"/>`).join('');
+  const cloud='<path class="wi-cloud" d="M7 18h10a4 4 0 0 0 .4-8 5.5 5.5 0 0 0-10.6 1.2A3.4 3.4 0 0 0 7 18z"/>';
+  const inner={boom:sun,normal:'<g transform="translate(-3 -3) scale(.75)">'+sun+'</g>'+cloud,
+    correction:cloud+'<line class="wi-rain" x1="9" y1="20" x2="8" y2="23"/><line class="wi-rain" x1="13" y1="20" x2="12" y2="23"/><line class="wi-rain" x1="17" y1="20" x2="16" y2="23"/>',
+    recession:cloud+'<path class="wi-bolt" d="M13 17l-3 4h3l-2 3"/>'}[reg];
+  return `<svg class="wi ${cls}" viewBox="0 0 24 24" aria-hidden="true">${inner}</svg>`;
+}
+function pips(n,max,cls){ return `<span class="pips ${cls}">${Array.from({length:max},(_,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}</span>`; }
 function renderHeader(){
-  const L=liveStats();
+  const L=liveStats(), S=settle(), harvest=G.q>=INVEST_QS;
   const ticks=Array.from({length:TOTAL_QS},(_,i)=>`<i class="${i<G.q?'past':i===G.q?'now':i<INVEST_QS?'inv':''}" title="${qLabel(i)}"></i>`).join('');
-  return `<header class="bar"><div class="wrap bar-in">
-      <div class="fund"><b>${esc(G.fundName)}</b><span>${G.D.label} · ${esc(G.thesis)} thesis · seed ${esc(G.seed)}</span></div>
-      <div class="stats">
-        ${stat(G.q<INVEST_QS?'Quarter':'Harvest',qLabel(G.q))}
-        ${stat('Market',REGIMES[G.regime].label,'reg reg-'+G.regime)}
-        ${stat('Fed funds',G.rate.toFixed(2)+'%')}
-        ${stat('Dry powder',fmt$(G.cash))}
-        ${stat('Diligence',`${G.calls} calls`)}
-        ${stat('Partner hours',`${G.hours} / ${G.D.hours}`)}
-        ${stat('Gross MOIC',L.invested?fmtX(L.moic):'—')}
-        ${stat('Net TVPI',L.invested?fmtX(settle().tvpi):'—')}
+  const maxCalls=Math.round(G.D.calls*MODES[G.mode].callMult);
+  return `<header class="bar hud"><div class="wrap hud-in">
+      <div class="hud-id"><b>${esc(G.fundName)}</b><span class="hud-when">Year ${Math.floor(G.q/4)+1} · Q${G.q%4+1}</span><span class="hud-phase ${harvest?'h':''}">${harvest?'Harvest':'Investing'}</span></div>
+      <div class="hud-meters">
+        <div class="hm hm-cash" data-hud="cash" title="Dry powder: money left to invest"><small>Dry powder</small><span class="hm-row"><span class="hbar"><i style="width:${(G.cash/G.investable*100).toFixed(1)}%"></i></span><b class="num">${fmt$(G.cash)}</b></span></div>
+        <div class="hm" title="Diligence calls left for the whole fund"><small>Calls</small><span class="hm-row"><b class="num">${G.calls}</b><span class="muted small">/ ${maxCalls}</span></span></div>
+        <div class="hm" title="Partner hours left this quarter for founder support and coffee"><small>Hours</small>${pips(G.hours,G.D.hours,'ph')}</div>
+        <div class="hm hm-mkt reg-${G.regime}" title="Market: ${REGIMES[G.regime].label}. Fed funds ${G.rate.toFixed(2)}%"><small>Market</small><span class="hm-row">${weather(G.regime)}<b>${REGIMES[G.regime].label}</b><span class="muted small num">${G.rate.toFixed(2)}%</span></span></div>
+        <div class="hm hm-score" data-hud="tvpi" title="Net TVPI to your LPs, after fees and carry"><small>Net TVPI</small><b class="num big">${L.invested?fmtX(S.tvpi):'—'}</b></div>
+        <div class="hm" data-hud="rep" title="Founder reputation"><small>Founder rep</small><b class="num">${Math.round(G.rep)}</b></div>
       </div>
       <div class="acts">
-        ${G.q>=INVEST_QS&&G.mode==='class'?'<button class="primary" data-act="skip" title="Advance until a decision or crisis needs you">Next decision</button><button data-act="end">One quarter</button>'
-          :`<button class="primary" data-act="end">End quarter</button>${G.q>=INVEST_QS?'<button data-act="skip" title="Advance until a decision or crisis needs you">Skip to next decision</button>':''}`}
+        ${harvest&&G.mode==='class'?'<button class="primary" data-act="skip" title="Advance until a decision or crisis needs you">Next decision</button><button data-act="end">One quarter</button>'
+          :`<button class="primary" data-act="end">End quarter</button>${harvest?'<button data-act="skip" title="Advance until a decision or crisis needs you">Skip to next decision</button>':''}`}
       </div>
     </div>
     <div class="wrap timeline" aria-hidden="true">${ticks}</div>
   </header>`;
+}
+// Floating deltas on the HUD when a number changes between screens.
+function hudDeltas(){
+  if(!G||G.over) return; const S=settle(), now={cash:G.cash,tvpi:liveStats().invested?S.tvpi:null,rep:G.rep}, prev=G.hudPrev;
+  G.hudPrev=now; if(!prev) return;
+  const add=(key,txt,up)=>{ const el=document.querySelector(`[data-hud="${key}"]`); if(!el) return; const d=document.createElement('span'); d.className='delta '+(up?'up':'down'); d.textContent=txt; el.appendChild(d); };
+  if(Math.abs(now.cash-prev.cash)>=1e3) add('cash',(now.cash>prev.cash?'+':'−')+fmt$(Math.abs(now.cash-prev.cash)),now.cash>prev.cash);
+  if(now.tvpi!=null&&prev.tvpi!=null&&Math.abs(now.tvpi-prev.tvpi)>=0.01) add('tvpi',(now.tvpi>prev.tvpi?'+':'−')+Math.abs(now.tvpi-prev.tvpi).toFixed(2)+'x',now.tvpi>prev.tvpi);
+  if(Math.abs(now.rep-prev.rep)>=1) add('rep',(now.rep>prev.rep?'+':'−')+Math.round(Math.abs(now.rep-prev.rep)),now.rep>prev.rep);
 }
 
 function renderRecap(){
@@ -1416,7 +1514,7 @@ function pitchCard(c,i,n,ghost){
     ?`<div class="hotbar explode"><b>Hot round, filling fast.</b> ${c.lead?FUND_BY[c.lead].name+' is leading and':'Several funds are'} circling. The cap steps up every two weeks and the round closes at week 4. Each diligence call costs you two weeks.</div>`
     :`<div class="hotbar access"><b>Hot round, and you're in.</b> ${c.lead&&G.rel[c.lead]>=60?`${FUND_BY[c.lead].name} is holding your allocation at the first-close cap because you're ${relTier(G.rel[c.lead]).toLowerCase()}.`:'Your reputation with founders got you held at the first-close cap.'} The round stays open until week 6.</div>`;
   const vb=c.owned||c.pitch?'':(referTarget(c)?'four':'');
-  return `<article class="card pitch ${ghost?'ghost':''} ${c.owned?'is-owned':''}" ${ghost?'aria-hidden="true" inert':''}>
+  return `<article class="card pitch ${ghost?'pitch-ghost':''} ${c.owned?'is-owned':''}" ${ghost?'aria-hidden="true" inert':''}>
     <header class="pitch-h">
       <div class="avatar" aria-hidden="true">${esc(initials(c.founder))}</div>
       <div class="pitch-who"><h3>${esc(c.name)}</h3><small>${esc(c.founder)} · ${c.sector} · ${c.model}</small></div>
@@ -1652,28 +1750,65 @@ function renderFund(){
 // with a question an instructor can use in the debrief.
 // ---------------------------------------------------------------------------
 const LESSONS={
+  thesis:d=>({t:'Thesis fit',b:d.thesis==='Generalist'?`You backed ${d.name} with a generalist fund. Generalists see more deals, but they have a weaker story for LPs and less edge when helping founders. Most emerging managers pick a narrow thesis for exactly that reason.`
+      :d.inThesis?`You backed ${d.name}, inside your ${d.thesis} thesis. That fit compounds: it is a clearer story for LPs, you can help the founder more, and it is easier to justify follow-on money later.`
+      :`You backed ${d.name} in ${d.sector}, outside your ${d.thesis} thesis. Sometimes that is right, but it weakens the story you tell LPs and the help you can offer the founder.`,
+    q:'Two strong deals, one check left. Should thesis fit or return potential decide?',f:FIELD['Thesis fit breaks ties']}),
+  verify:d=>({t:'Claims versus evidence',b:`On the call with ${d.name}: ${d.flag} Founders pitch their own numbers. Until a primary source confirms them, they are claims.`,
+    q:'Which three facts would you insist on verifying before any seed check, and how would you verify them?',f:FIELD['Claims vs. evidence']}),
+  markup:d=>({t:'Markups are not cash',b:`${d.name} raised at a ${d.step.toFixed(1)}x step-up, so your stake is now marked up on paper. Your TVPI rises, but no money has come back to LPs. That only happens at an exit, which is what DPI measures.`,
+    q:'An LP asks how much of your TVPI is real. How do you answer, and what evidence do you point to?',f:FIELD['Markups are not cash']}),
+  lifecycle:d=>({t:'Losers ripen first',b:`Halfway through the fund: ${d.dead} of your ${d.owned} companies have shut down or sold for parts, and ${d.big} ha${d.big===1?'s':'ve'} returned 3x or more so far. That ordering is normal. Failures arrive in 3–5 years; winners usually take 7–10.`,
+    q:'If you had to judge this fund today, at year 5, what would you look at instead of TVPI?',f:FIELD['Losers ripen first']}),
   ownership:d=>({t:'Price is ownership',b:`Your ownership is your check divided by the post-money cap. $1M into ${d.name} at its ${fmt$(d.cap)} cap buys ${pct(1e6/d.cap,1)}. If the same company were priced at twice that, the same check would buy half as much, and every future exit would pay you half as much.`,
-    q:'A founder offers you $1M at a $10M cap or $2M at a $20M cap. Which is the better deal, and what would change your answer?'}),
+    q:'A founder offers you $1M at a $10M cap or $2M at a $20M cap. Which is the better deal, and what would change your answer?',f:FIELD['Post-money SAFE']}),
   clock:d=>({t:'Speed versus diligence',b:`While you were on the call with ${d.name}, the cap moved from ${fmt$(d.from)} to ${fmt$(d.to)}. The same check now buys ${pct(1-d.from/d.to,0)} less of the company. Hot rounds reward investors who can decide fast. That is why firms build conviction before the pitch, and why a close relationship with the lead investor is worth so much.`,
     q:'When is a diligence call worth a higher price? What could you do before a pitch so you need fewer calls?'}),
   prorata:d=>({t:'Reserves and signaling',b:`${d.name} just raised at a ${d.step.toFixed(1)}x step-up, and your stake was diluted from ${pct(d.ownPre)} to ${pct(d.ownPost)}. Keeping it costs ${fmt$(d.amount)}. Seed funds hold back 40–60% of the fund for decisions like this. Passing as a major holder tells other investors you have lost faith.`,
-    q:'Should reserves go to your strongest companies or to the ones that need help? What does it signal when an existing investor passes?'}),
+    q:'Should reserves go to your strongest companies or to the ones that need help? What does it signal when an existing investor passes?',f:FIELD['Pro-rata is a right']+' '+FIELD['Reserves ratio']}),
   bridge:d=>({t:'Bridges buy time, not survival',b:`${d.name} could not raise its next round and is asking insiders for ${fmt$(d.ask)}. You already have ${fmt$(d.invested)} in it. That money is spent either way. The only question is whether the next dollar has better odds here than anywhere else in your fund.`,
-    q:'How do you keep sunk cost out of the decision? What would you need to see before funding this bridge?'}),
+    q:'How do you keep sunk cost out of the decision? What would you need to see before funding this bridge?',f:FIELD['Write-down triggers']}),
   pref:d=>({t:'The liquidation preference',b:`${d.name} sold for ${fmt$(d.val)}, less than the ${fmt$(d.raised)} investors had put in. Your 1x preference paid you ${fmt$(d.got)} before common shareholders saw anything. As plain common stock, you would have received ${fmt$(d.common)}.`,
     q:'Why do investors insist on preferences? How do they change a founder’s incentives in a mediocre sale?'}),
   powerlaw:d=>({t:'Most companies fail',b:`${d.name} shut down, and the ${fmt$(d.inv)} you invested is gone. In a typical venture portfolio about a third of companies return nothing and roughly two-thirds return less than their cost. A fund still works if one or two companies return many times the fund.`,
-    q:'If most investments fail, how should that change what you are willing to pay, and how many companies you back?'}),
+    q:'If most investments fail, how should that change what you are willing to pay, and how many companies you back?',f:FIELD['Diversify at seed']}),
   carry:d=>({t:'Carried interest and the waterfall',b:`On ${d.name}, LPs made ${fmt$(d.profit)} of profit, and you earned ${fmt$(d.carry)} of carry (20%). Under an American waterfall, carry is paid deal by deal. A clawback at year 10 makes sure you keep no more than 20% of the whole fund’s profit after fees.`,
-    q:'Why might LPs prefer a European (whole-fund) waterfall? Who carries the risk under each?'}),
+    q:'Why might LPs prefer a European (whole-fund) waterfall? Who carries the risk under each?',f:FIELD['Escrowed carry']+' '+FIELD['Hurdles are rare in venture']}),
   jcurve:d=>({t:'The J-curve',b:`The investment period is over. In cash terms your LPs are at ${fmt$(d.net)} so far, including ${fmt$(d.fees)} of management fees. That dip is normal: fees and investments go out early, and exits arrive late.`,
-    q:'Why do LPs accept years of negative cash flow? What does that mean for judging a fund in year 3?'}),
+    q:'Why do LPs accept years of negative cash flow? What does that mean for judging a fund in year 3?',f:FIELD['Same multiple, different IRR']}),
   network:d=>({t:'Relationships are deal flow',b:`${d.fund} brought you into ${d.name}, a round they are leading. Funds share their best deals with partners who co-invest, refer good companies and stand behind bridges.`,
-    q:'Beyond money, what makes a co-investor valuable? What does a fund owe its network?'}),
+    q:'Beyond money, what makes a co-investor valuable? What does a fund owe its network?',f:FIELD['Network before you need it']}),
   offer:d=>({t:'Sell now or hold?',b:`A buyer offered ${fmt$(d.val)} for ${d.name}, about ${fmtX(d.x)} on your money. Holding out could produce a bigger outcome. But offers often do not come back, and a team that has been distracted by a sale loses momentum.`,
     q:'When an offer arrives, how do the fund’s incentives (cash back to LPs, timing, carry) differ from the founder’s?'}),
 };
-const LESSON_ORDER=['ownership','clock','prorata','bridge','powerlaw','pref','offer','carry','jcurve','network'];
+const LESSON_ORDER=['ownership','thesis','clock','verify','prorata','markup','bridge','powerlaw','pref','offer','lifecycle','carry','jcurve','network'];
+// Field notes: the author's own takeaways from the Venture Institute (Decile Group, Cohort 7) and fund work.
+const AUTHOR='Bryan Hanley', AUTHOR_CRED='Venture Institute (Decile Group) Cohort 7 graduate and VC resident';
+const FIELD_NOTES=[
+  ['Post-money SAFE','Most first checks today are post-money SAFEs, not priced rounds. With a post-money cap you know your ownership the day you sign: $250K on a $5M post-money SAFE is about 5% fully diluted. Many SAFEs also carry a 10–25% discount to the next round and a most-favored-nation clause.'],
+  ['Term sheet','A term sheet is non-binding. It is the negotiating document; the binding agreement (a SAFE or a stock purchase agreement) comes after. Many seed deals skip it and go straight to a SAFE.'],
+  ['Pre-money vs. post-money','Post-money is pre-money plus the new money. A $2M check on a $10M pre-money makes a $12M post-money, so the check buys 16.7%, not 20%. Ownership always comes from the post-money.'],
+  ['Pro-rata is a right','Pro-rata is a right, not an obligation. If you own 20% and the company raises $5M, keeping 20% means buying $1M of the new round.'],
+  ['Option pool','Usually 10–20% of the company, and often enlarged at seed and Series A. A bigger pool dilutes founders and early investors, so its size and timing are a real negotiation.'],
+  ['Committed vs. called capital','LPs commit up front; the GP draws the money down through capital calls as deals happen. Funds call capital right before they use it so LP money is not sitting idle.'],
+  ['Vintage','The year a fund starts investing. Funds are compared within a vintage because each one faced a different market.'],
+  ['Markups are not cash','A new round at a higher price lifts TVPI on paper. Only DPI counts money LPs actually got back, and every markup should point to outside evidence, not founder optimism.'],
+  ['Hurdles are rare in venture','A hurdle (often 8%) makes LPs earn a minimum return before carry. It is common in private equity but appears in only about 10–12% of venture funds, because 7–10 year holding periods make compounding hurdles hard to clear. With a catch-up, the GP then takes a larger share until it reaches its 20%.'],
+  ['Escrowed carry','Under a deal-by-deal (American) waterfall, GPs often hold part of their carry in escrow, in case the whole fund ends up returning less and the clawback kicks in.'],
+  ['Reserves ratio','Seed funds often split about 50/50 between first checks and follow-ons. Very small funds may reserve closer to 30% and spread more first checks to maximize starting ownership.'],
+  ['Thesis fit breaks ties','The thesis anchors every decision. When two strong deals compete for the same check, thesis fit usually beats raw return potential: it tells a clearer story to LPs, benefits most from the fund’s expertise, and is easier to support with follow-ons.'],
+  ['What decides a deal','After thesis fit: portfolio construction, founder quality and coachability, return profile and ownership, time sensitivity, and the story the deal tells LPs.'],
+  ['Who breaks a tie','Many seed funds skip a formal investment committee, but one adds objectivity. When partners split, the committee or managing partners decide. LPs stay out of individual deals to keep their limited liability, except in narrow cases like concentration limits or conflicts of interest.'],
+  ['Claims vs. evidence','Every founder number is a claim until it is checked against a primary source. Good diligence labels what could not be verified instead of quietly trusting it.'],
+  ['The downside case','Ask what happens if most things go wrong, not only what happens if everything goes right.'],
+  ['Losers ripen first','Early in a fund the power law looks inverted: failures arrive in 3–5 years, winners take 7–10. Around year 7.5, 40–60% of a portfolio can be zombies, 20–30% modest 1–3x outcomes, and one to three companies decide the fund.'],
+  ['Write-down triggers','Mark a company down when runway falls under six months with no credible investor, when a down round closes, or when it loses a key founder or customer. A position that grows past ~15% of NAV deserves a second opinion and a note to LPs.'],
+  ['Same multiple, different IRR','Two funds can return the same TVPI with very different IRRs. Cash back in year 3 is worth far more than the same cash in year 8.'],
+  ['Capital efficiency','Some of the best outcomes raise very little. One solar-monitoring software company raised about $16M in total and sold for roughly $695M.'],
+  ['Network before you need it','Relationships compound. Some seed deals happen because an investor knew the founder for years before the company existed.'],
+  ['Diversify at seed','The power law is steeper at seed than at later stages. Backing more companies, 40 or so for a seed fund, raises the odds of catching the outlier that returns the fund.'],
+];
+const FIELD=Object.fromEntries(FIELD_NOTES);
 const GLOSSARY=[
   ['Post-money valuation','The company’s value including the new money. Ownership = check ÷ post-money.'],
   ['SAFE and valuation cap','A SAFE converts to shares at a later round. The post-money cap is the highest price the investor’s money converts at.'],
@@ -1717,12 +1852,13 @@ function renderNetwork(){
 function lessonList(withNum){
   const seen=LESSON_ORDER.filter(k=>G.lessonsSeen.includes(k));
   if(!seen.length) return '<p class="muted">No teaching moments yet. They appear the first time a concept comes up in your fund.</p>';
-  return `<ol class="lessons">${seen.map(k=>{const L=G.lessonLog&&G.lessonLog[k]; return `<li><b>${L?esc(L.t):k}</b>${L?` <span class="muted">· ${qLabel(L.q)}</span><p>${esc(L.b)}</p><p class="lq"><b>Discuss:</b> ${esc(L.qq)}</p>`:''}</li>`;}).join('')}</ol>`;
+  return `<ol class="lessons">${seen.map(k=>{const L=G.lessonLog&&G.lessonLog[k]; return `<li><b>${L?esc(L.t):k}</b>${L?` <span class="muted">· ${qLabel(L.q)}</span><p>${esc(L.b)}</p>${L.f?`<p class="fnote"><b>Field note:</b> ${esc(L.f)}</p>`:''}<p class="lq"><b>Discuss:</b> ${esc(L.qq)}</p>`:''}</li>`;}).join('')}</ol>`;
 }
 function renderNotebook(){
   return `<div class="section-h"><div><h2>Notebook</h2><p>Every concept you have met so far, the glossary, and the full fund log.</p></div><button class="ghost small" data-act="askRestart">Start a new fund</button></div>
     <section class="card" style="padding:14px 16px;display:grid;gap:8px"><p class="eyebrow">Teaching moments · ${G.lessonsSeen.length} of ${LESSON_ORDER.length}</p>${lessonList()}</section>
-    <details class="card" style="padding:14px 16px"><summary>Glossary</summary><dl class="gloss">${GLOSSARY.map(([t,d])=>`<div><dt>${t}</dt><dd>${d}</dd></div>`).join('')}</dl></details>
+    <details class="card" style="padding:14px 16px" open><summary>Field notes · ${FIELD_NOTES.length} from ${AUTHOR}</summary><p class="muted" style="font-size:.82rem;margin-top:6px">How these ideas show up in practice, from the author's notes as a ${AUTHOR_CRED}.</p><dl class="gloss">${FIELD_NOTES.map(([t,d])=>`<div><dt>${t}</dt><dd>${d}</dd></div>`).join('')}</dl></details>
+    <details class="card" style="padding:14px 16px"><summary>Glossary · ${GLOSSARY.length} terms</summary><dl class="gloss">${GLOSSARY.map(([t,d])=>`<div><dt>${t}</dt><dd>${d}</dd></div>`).join('')}</dl></details>
     <details class="card" style="padding:14px 16px"><summary>Fund log</summary><div class="log" style="margin-top:10px">${[...G.log].reverse().map(l=>`<div><span>${qLabel(l.q)}</span><span>${esc(l.text)}</span></div>`).join('')}</div></details>`;
 }
 function renderLog(){
@@ -1775,9 +1911,21 @@ function renderModal(){
       :`<p>The cap is ${fmt$(cur)} today. With no lead, whoever writes the first check helps set the price. Founders say yes more often when demand is soft and your reputation is good, and a lowball on a hot round can backfire. You get one try, and it takes about a week.</p>
       <div class="checks">${[0.1,0.2,0.3].map(dz=>`<button class="check" data-act="negotiate" data-disc="${dz}"><b>${pct(dz,0)} lower</b><span>${fmt$(cur*(1-dz))} cap · $1M buys ${pct(1e6/(cur*(1-dz)),1)}</span><span class="num">${odds(negOdds(c,dz))}</span></button>`).join('')}</div>`}`;
   }
+  if(M.type==='turn'){
+    const T=G.turn, jumped=G.q-T.pq>1, changed=T.pr!==G.regime, up=ORDER.indexOf(G.regime)<ORDER.indexOf(T.pr);
+    const heads=G.recap.slice(0,4), n=G.q<INVEST_QS?G.deals.length:0, needs=G.pending.length+G.companies.filter(c=>c.owned&&c.status==='alive'&&c.crisis).length;
+    body=`<div class="turn reg-${G.regime}">
+      <p class="eyebrow">${jumped?`Fast-forward · ${G.q-T.pq} quarters`:'New quarter'}</p>
+      <h2 class="turn-when">Year ${Math.floor(G.q/4)+1} <span>·</span> Q${G.q%4+1}</h2>
+      <div class="turn-wx">${weather(G.regime,'big')}<div><b>${REGIMES[G.regime].label} market</b><span>${changed?`${up?'Improving':'Worsening'} from ${REGIMES[T.pr].label.toLowerCase()}`:'Holding steady'} · Fed funds ${G.rate.toFixed(2)}%</span></div></div>
+      ${heads.length?`<ul class="turn-news">${heads.map(r=>`<li class="${r.t}">${esc(r.text)}</li>`).join('')}</ul>`:''}
+      <p class="turn-next">${n?`${n} founders are waiting in the lobby.`:needs?`${needs} decision${needs>1?'s':''} need${needs>1?'':'s'} you in the portfolio.`:'Your portfolio is quiet this quarter.'}</p>
+      <div class="mfoot"><button class="primary big" data-act="turnGo">Continue <kbd>Enter</kbd></button></div></div>`;
+  }
   if(M.type==='lesson'){
     const L=G.lessonQ[0]; if(L){ const C=LESSONS[L.key](L.d);
       body=`<div class="lesson-card"><p class="eyebrow">Teaching moment · ${G.lessonsSeen.length} of ${LESSON_ORDER.length} concepts</p><h2>${C.t}</h2><p class="lb">${esc(C.b)}</p>
+        ${C.f?`<div class="fnote"><b>Field note · ${AUTHOR}</b><p>${esc(C.f)}</p></div>`:''}
         <div class="lq"><b>For discussion</b><p>${esc(C.q)}</p></div>
         <div class="mfoot"><span class="muted" style="font-size:.8rem;margin-right:auto">Saved to your Notebook.</span><button class="primary" data-act="lessonOk">Got it</button></div></div>`; }
   }
@@ -1969,6 +2117,7 @@ function renderEnd(){
         <div class="card"><small class="eyebrow">Your picks</small><b style="color:${pickEdge>=0?'var(--good)':'var(--bad)'}">${fmtX(R.picksM)}</b><p>$1M in each of your ${R.owned} picks. ${pickEdge>=0?`Your selection beat the market by ${pickEdge.toFixed(2)}x.`:`Your selection trailed the market by ${(-pickEdge).toFixed(2)}x.`}</p></div>
         <div class="card"><small class="eyebrow">Your actual fund</small><b style="color:${constr>=0?'var(--good)':'var(--bad)'}">${fmtX(R.moic)}</b><p>With your real check sizes, follow-ons, bridges and support. ${constr>=0?`Portfolio construction and support added ${constr.toFixed(2)}x.`:`Sizing and follow-ons cost you ${(-constr).toFixed(2)}x versus equal checks.`}</p></div>
       </div></section>
+    ${(G.badges||[]).length?`<section class="card" style="padding:14px 16px;display:grid;gap:8px"><h3>Achievements · ${G.badges.length} of ${BADGES.length}</h3><div class="badges">${BADGES.map(b=>`<div class="bdg ${G.badges.includes(b.id)?'on':''}"><span aria-hidden="true">★</span><b>${b.name}</b><small>${b.d}</small></div>`).join('')}</div></section>`:''}
     <section class="card lesson"><h3>What this fund teaches</h3><ul>
       ${top?`<li>Your best company, ${esc(top.c.name)}, produced ${pct(topShare,0)} of all value. ${topShare>0.5?'That is the power law: one winner carries the fund.':'Value was unusually spread out across the portfolio.'}</li>`:''}
       ${(()=>{const o=G.companies.filter(c=>c.owned&&c.entryCap&&c.firstCap), lost=G.companies.filter(c=>c.pitch==='lost').length, neg=o.filter(c=>c.negCap).length;
@@ -1995,7 +2144,7 @@ function renderEnd(){
 
 function render(){
   if(!G){ app.innerHTML=renderStart(); return; }
-  if(!G.over&&!G.modal&&G.lessonQ&&G.lessonQ.length){ const L=G.lessonQ[0], C=LESSONS[L.key](L.d); G.lessonLog=G.lessonLog||{}; G.lessonLog[L.key]={t:C.t,b:C.b,qq:C.q,q:L.q}; G.modal={type:'lesson'}; }
+  if(!G.over&&!G.modal&&G.lessonQ&&G.lessonQ.length){ const L=G.lessonQ[0], C=LESSONS[L.key](L.d); G.lessonLog=G.lessonLog||{}; G.lessonLog[L.key]={t:C.t,b:C.b,qq:C.q,q:L.q,f:C.f}; G.modal={type:'lesson'}; }
   if(G.over){ app.innerHTML=renderEnd()+renderModal(); return; }
   const nOwn=G.companies.filter(c=>c.owned&&(c.status==='alive'||c.status==='bridge')).length;
   const alerts=G.pending.length+G.companies.filter(c=>c.owned&&c.status==='alive'&&c.crisis).length;
@@ -2006,10 +2155,35 @@ function render(){
     <nav class="tabs" role="tablist">${tabs.map(([k,l,n,a])=>`<button class="tab ${G.tab===k?'on':''}" role="tab" aria-selected="${G.tab===k}" data-act="tab" data-k="${k}">${l}${n?`<span class="count ${a?'alert':''}">${n}</span>`:''}</button>`).join('')}</nav>
     ${views[G.tab]()}</main>`+renderModal();
   G.fx=null; G.toast=null;
+  hudDeltas();
 }
 
 function waitingFounders(){ return G.q<INVEST_QS?G.deals.filter(id=>undecided(byId(id))).length:0; }
-function showEvents(){ if(!G) return; if(G.over){ G.modal={type:'wrap',i:0}; return; } if(G.events.length) G.modal={type:'events',i:0}; }
+const BADGES=[
+  {id:'first',name:'First check',d:'Wrote your first check.',t:()=>G.companies.some(c=>c.owned)},
+  {id:'early',name:'Early bird',d:'Got into a hot round at the first-close cap.',t:()=>G.companies.some(c=>c.owned&&c.terms&&c.terms.heat==='hot'&&c.entryCap&&c.entryCap<=c.terms.tr[0].cap*1.001)},
+  {id:'neg',name:'Negotiator',d:'A founder accepted your lower cap.',t:()=>G.companies.some(c=>c.negCap)},
+  {id:'patient',name:'Patient money',d:'Waited out a cold round and came back cheaper.',t:()=>G.companies.some(c=>c.waited&&c.owned)},
+  {id:'ten',name:'Ten-bagger',d:'An exit returned 10x or more.',t:()=>G.companies.some(c=>c.owned&&c.status==='exited'&&c.returned>=10*c.invested)},
+  {id:'returner',name:'Fund returner',d:'One company is worth more than the whole $50M fund.',t:()=>G.companies.some(c=>c.owned&&valueOf(c)>=FUND)},
+  {id:'comeback',name:'Comeback',d:'A company you bridged later exited above cost.',t:()=>G.companies.some(c=>c.owned&&c.bridges>0&&c.status==='exited'&&c.returned>=c.invested)},
+  {id:'trusted',name:'Trusted partner',d:'Reached Trusted with a co-investor fund.',t:()=>FUNDS.some(f=>G.rel[f.id]>=80)},
+  {id:'fav',name:'Founders\u2019 favorite',d:'Founder reputation of 75 or more.',t:()=>G.rep>=75},
+  {id:'dpi',name:'Money back',d:'LPs have received more cash than they paid in (DPI above 1x).',t:()=>{const S=settle();return S.paidIn>0&&G.lp.dist>=S.paidIn;}},
+  {id:'scholar',name:'Scholar',d:'Met ten teaching moments.',t:()=>G.lessonsSeen.length>=10},
+];
+function checkBadges(){
+  if(!G) return; G.badges=G.badges||[];
+  for(const b of BADGES){ if(G.badges.includes(b.id)) continue; let ok=false; try{ ok=b.t(); }catch(e){}
+    if(ok){ G.badges.push(b.id); flashBadge(b); } }
+}
+function flashBadge(b){
+  const el=document.createElement('div'); el.className='badge-toast'; el.setAttribute('role','status');
+  el.innerHTML=`<span class="bt-medal" aria-hidden="true">★</span><span><small>Achievement</small><b>${b.name}</b><em>${b.d}</em></span>`;
+  document.body.appendChild(el); setTimeout(()=>el.remove(),4200);
+}
+function showEvents(){ if(!G) return; if(G.over){ G.modal={type:'wrap',i:0}; return; } if(G.turn){ G.modal={type:'turn'}; return; } if(G.events.length) G.modal={type:'events',i:0}; }
+function markTurn(pq,pr){ if(G&&!G.over) G.turn={pq,pr}; }
 const ACT={
   pickDiff:d=>{START.diff=d.k},
   pickGp:d=>{START.gp=+d.p},
@@ -2026,11 +2200,12 @@ const ACT={
   overlay:(d,el,e)=>{ if(e.target===el){ if(G.modal&&G.modal.type==='lesson') G.lessonQ.shift(); G.modal=null; } },
   decide:d=>decide(d.p,d.c),
   sup:d=>doSupport(+d.id,d.k),
-  end:()=>{ if(G.pending.length||waitingFounders()){G.modal={type:'confirmEnd'};return;} endQuarter(); startQuarterUI(); showEvents(); window.scrollTo(0,0); },
-  forceEnd:()=>{ G.modal=null; endQuarter(); startQuarterUI(); showEvents(); window.scrollTo(0,0); },
-  skip:()=>{ if(G.pending.length){G.modal={type:'confirmEnd'};return;} skipAhead(); startQuarterUI(); showEvents(); window.scrollTo(0,0); },
+  end:()=>{ if(G.pending.length||waitingFounders()){G.modal={type:'confirmEnd'};return;} const pq=G.q,pr=G.regime; endQuarter(); markTurn(pq,pr); startQuarterUI(); showEvents(); window.scrollTo(0,0); },
+  forceEnd:()=>{ G.modal=null; const pq=G.q,pr=G.regime; endQuarter(); markTurn(pq,pr); startQuarterUI(); showEvents(); window.scrollTo(0,0); },
+  skip:()=>{ if(G.pending.length){G.modal={type:'confirmEnd'};return;} const pq=G.q,pr=G.regime; skipAhead(); markTurn(pq,pr); startQuarterUI(); showEvents(); window.scrollTo(0,0); },
   evNext:()=>{ const M=G.modal; if(M.i<G.events.length-1) M.i++; else G.modal=null; },
   evSkip:()=>{ G.modal=null; },
+  turnGo:()=>{ G.turn=null; G.modal=null; showEvents(); },
   lessonOk:()=>{ G.lessonQ.shift(); G.modal=null; },
   pickMode:d=>{START.mode=d.k},
   toggleTeach:()=>{START.teach=!START.teach},
@@ -2054,7 +2229,7 @@ document.addEventListener('click',e=>{
   const el=e.target.closest('[data-act]'); if(!el) return;
   const fn=ACT[el.dataset.act]; if(!fn) return;
   if(el.dataset.act==='overlay'&&e.target!==el) return;
-  fn(el.dataset,el,e); render();
+  fn(el.dataset,el,e); render(); checkBadges();
 });
 document.addEventListener('input',e=>{
   if(e.target.id==='fundName') START.fund=e.target.value;
@@ -2062,6 +2237,8 @@ document.addEventListener('input',e=>{
 });
 document.addEventListener('change',e=>{ if(e.target.id==='thesisSel') START.thesis=e.target.value; });
 document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&G&&G.modal&&G.modal.type==='turn'){ e.preventDefault(); ACT.turnGo(); render(); return; }
+  if(e.key==='Escape'&&G&&G.modal&&G.modal.type==='turn'){ ACT.turnGo(); render(); return; }
   if(e.key==='Escape'&&G&&G.modal){ if(G.modal.type==='lesson') G.lessonQ.shift(); G.modal=null;render();}
   if(G&&G.modal&&G.modal.type==='wrap'&&(e.key==='ArrowRight'||e.key==='ArrowLeft')){ ACT.wrapGo({d:e.key==='ArrowRight'?1:-1}); render(); }
   if(!G||G.modal||G.over||G.tab!=='deals'||G.q>=INVEST_QS||e.metaKey||e.ctrlKey||e.altKey||/INPUT|SELECT|TEXTAREA/.test(document.activeElement&&document.activeElement.tagName)) return;

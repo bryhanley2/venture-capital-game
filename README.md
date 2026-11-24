@@ -30,6 +30,13 @@ python3 -m http.server 8000
 - **Relationships.** Four fictional co-investor funds and a founder reputation score. Close relationships hold your allocation at the first-close cap in hot rounds, bring referred deals, and help portfolio companies raise.
 - **Board decisions.** Pro-rata, bridges and acquisition offers (sell or hold out).
 
+## Teaching layer
+
+- **Class session mode** (default) fits a 60–90 minute class; **Full fund** plays all forty quarters.
+- **Teaching moments**: fourteen concepts, each shown the first time it comes up, using the student's own numbers and ending with a discussion question.
+- **Field notes**: practitioner notes from the author's Venture Institute (Decile Group, Cohort 7) work and fund experience, written in the author's own words, shown in the Notebook and on teaching cards.
+- **Notebook** tab (lessons, field notes, glossary, fund log) and a discussion guide in the year-10 report.
+
 ## Benchmarks and calibration
 
 The end screen compares net IRR with real funds: Carta VC Fund Performance Report, Q1 2025 (2017 vintage) — bottom quartile 5.0%, median 11.5%, top quartile 18.7%, top decile 28.3% — and the S&P 500 10-year return of 13.6% (Cambridge Associates, H1 2025). Deal outcomes are compared with the Correlation Ventures mix: 35% total loss, 29% below cost, 22% at 1–3x, 14% at 3x+.
