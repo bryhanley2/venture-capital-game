@@ -585,6 +585,25 @@ details summary{cursor:pointer;font-weight:600}
   @keyframes rise{from{transform:translateY(4px)}to{transform:none}}
 }
 
+/* ---- Walkthrough ---- */
+.tut{display:grid;gap:14px}
+.tut-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tut h2{font-size:1.6rem;font-weight:650;letter-spacing:-.01em}
+.tut-b{font-size:1rem;line-height:1.55;max-width:62ch}
+.tut-demo{border:1px solid var(--line);border-radius:6px;background:var(--paper);padding:12px;display:grid;gap:8px;pointer-events:none}
+.tut-demo .verdict-bar{position:static;margin:0;padding:0;background:transparent;border:0}
+.tut-demo .lad-bar{background:var(--card)}
+.tut-cap{font-size:.85rem;color:var(--muted)}
+.tut-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.tut-flow div{border:1px solid var(--line);border-radius:6px;padding:10px;display:grid;gap:2px;background:var(--paper)}
+.tut-flow b{font-size:.95rem} .tut-flow span{font-size:.82rem;color:var(--muted)}
+.tut-flow div:first-child{border-color:var(--accent);background:var(--accent-soft)}
+.tut-list{list-style:none;margin:0;padding:0;display:grid;gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.tut-list li{display:grid;grid-template-columns:9.5rem 1fr;gap:10px;padding:9px 12px;border-top:1px solid var(--line);font-size:.88rem}
+.tut-list li:first-child{border-top:0}
+.tut-list span{color:var(--muted)}
+.tut-hud{max-width:none}
+@media (max-width:560px){.tut-flow{grid-template-columns:1fr}.tut-list li{grid-template-columns:1fr;gap:2px}.tut-demo .verdict-bar.four{grid-template-columns:1fr 1fr}}
 /* ---- Professional pass: one typeface, sentence-case labels, hairline borders, tight corners ---- */
 body{font-variant-numeric:tabular-nums}
 .card{border-radius:6px;box-shadow:none}
@@ -592,8 +611,7 @@ body{font-variant-numeric:tabular-nums}
 button{border-radius:5px}
 .chip,.lu,.terms-chips span,.hud-phase{border-radius:4px}
 .seg{border-radius:6px}.seg button{border-radius:4px}
-.eyebrow,.dsec h4,.kpi small,.hm small,.stat small,.facts small,.terms dt,.lu-t small,.lad-axis,.fnote b,.lq b,.tomb-kind,.wverdict,.lessons .lq b,.bdg small,.badge-toast small,.glance th{
-  font-family:var(--f-body);text-transform:none;letter-spacing:0;font-size:.78rem;font-weight:600}
+.wstat small,.tut-flow span,.eyebrow,.dsec h4,.kpi small,.hm small,.stat small,.facts small,.terms dt,.lu-t small,.lad-axis,.fnote b,.lq b,.tomb-kind,.wverdict,.lessons .lq b,.bdg small,.badge-toast small,  font-family:var(--f-body);text-transform:none;letter-spacing:0;font-size:.78rem;font-weight:600}
 .eyebrow,.dsec h4,.kpi small,.hm small,.stat small,.facts small,.terms dt,.lu-t small{color:var(--muted)}
 .dsec h4{font-size:.8rem;color:var(--ink)}
 .tag,.legend-line .tag{font-family:var(--f-body);text-transform:none;letter-spacing:0;font-size:.7rem;border-radius:3px}
@@ -1366,7 +1384,7 @@ function pct(x,d=1){return (x*100).toFixed(d)+'%'}
 // ---------------------------------------------------------------------------
 const app=document.getElementById('app');
 const randomSeed=()=>String(Math.floor(10000+Math.random()*89999));
-let START={fund:'Fund I',diff:'normal',mode:'class',teach:true,thesis:'Generalist',gp:0.01,seed:randomSeed()};
+let START={fund:'Fund I',diff:'normal',mode:'class',teach:true,tutorial:true,thesis:'Generalist',gp:0.01,seed:randomSeed()};
 const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
 
 function momentumLabel(c){
@@ -1410,7 +1428,8 @@ function renderStart(){
       <div class="step"><span class="sn">1</span><div class="sb"><h3>Session</h3>
         ${seg('Session length',Object.entries(MODES).map(([k,m])=>[k,m.label]),START.mode,'pickMode')}
         <p class="hint">${M.blurb}</p>
-        <label class="teachopt" for="teachChk"><input type="checkbox" id="teachChk" data-act="toggleTeach" ${START.teach?'checked':''}> Teaching moments with discussion questions</label></div></div>
+        <label class="teachopt" for="teachChk"><input type="checkbox" id="teachChk" data-act="toggleTeach" ${START.teach?'checked':''}> Teaching moments with discussion questions</label>
+        <label class="teachopt" for="tutChk"><input type="checkbox" id="tutChk" data-act="toggleTut" ${START.tutorial?'checked':''}> Start with a short walkthrough of how to play</label></div></div>
       <div class="step"><span class="sn">2</span><div class="sb"><h3>Market</h3>
         ${seg('Market conditions',Object.entries(DIFFS).map(([k,d])=>[k,d.label]),START.diff,'pickDiff')}
         <p class="hint">${D.blurb}</p></div></div>
@@ -1927,6 +1946,38 @@ const GLOSSARY=[
   ['Power law','In venture, a few outliers produce most of the returns.'],
 ];
 
+
+// ---------------------------------------------------------------------------
+// Walkthrough: six short steps before the first quarter, each with a small,
+// non-interactive example of the real interface.
+// ---------------------------------------------------------------------------
+function tutSteps(){
+  const iq=INVEST_QS/4, n=DEALS_PER_Q;
+  return [
+    {t:'Your job', b:`You are the general partner of a new $50M seed fund. Over ten years you pick startups, decide who gets more of your money, and try to return as much as possible to your investors, the limited partners (LPs). You have ${iq} year${iq>1?'s':''} to make new investments; after that you only manage the companies you own.`,
+     demo:`<div class="tut-flow"><div><b>Years 1–${iq}</b><span>Invest in new companies</span></div><div><b>Years ${iq+1}–10</b><span>Follow-ons, bridges and exits</span></div><div><b>Year 10</b><span>Results to your LPs</span></div></div>`},
+    {t:'Pitch day', b:`Each quarter, about ${n} founders pitch you one at a time. For each one you can pass, pass and refer the deal to another fund, take a diligence call, or invest. Numbers tagged “deck” come from the founder’s pitch and have not been checked. A diligence call asks up to three questions and verifies what you ask about.`,
+     demo:`<div class="tut-demo"><div class="verdict-bar four"><button tabindex="-1"><span>Pass</span><kbd>P</kbd></button><button tabindex="-1"><span>Pass &amp; refer</span><kbd>R</kbd></button><button tabindex="-1"><span>Diligence call</span><kbd>D</kbd></button><button class="primary" tabindex="-1"><span>Invest</span><kbd>I</kbd></button></div><p class="tut-cap">Revenue (ARR) <b>$587K</b> <span class="tag">deck</span> &nbsp;·&nbsp; Monthly burn <span class="ask">ask</span></p></div>`},
+    {t:'Price and time', b:`Rounds move while you think. Each diligence call takes about two weeks. In a hot round the price (the valuation cap) steps up every two weeks and the round can close without you. Your ownership is your check divided by that price, so paying twice as much means owning half as much. A close relationship with the lead investor holds your place at the first price.`,
+     demo:`<div class="tut-demo"><div class="ladder hot"><div class="lad-bar"><span class="lad-seg" style="left:0;width:16.67%"><b>$10M</b></span><span class="lad-seg" style="left:16.67%;width:16.67%"><b>$14M</b></span><span class="lad-seg" style="left:33.33%;width:16.67%"><b>$20M</b></span><span class="lad-closed" style="left:50%;width:50%">closed</span><i class="lad-now" style="left:1.5%"></i></div><div class="lad-axis"><span>week 0</span><span>12</span></div></div><p class="tut-cap">$1M at a $10M cap buys 10%. At $20M, the same check buys 5%.</p></div>`},
+    {t:'Your portfolio', b:`Once you own a company, decisions come to you. When it raises again you can invest more to keep your stake. When it struggles, insiders are asked for a bridge loan. When a buyer appears, the board votes on the sale. You also get a few partner hours each quarter to help founders through problems.`,
+     demo:`<ul class="tut-list"><li><b>Follow-on</b><span>Keep your ownership as the company grows</span></li><li><b>Bridge</b><span>Buy a struggling company time, with real risk</span></li><li><b>Acquisition offer</b><span>Sell now, or hold out for more</span></li><li><b>Partner hours</b><span>Recruiting, customer intros, board sessions</span></li></ul>`},
+    {t:'How you are scored', b:`Most startups fail, so a few winners have to pay for everything else. Your LPs also pay a 2% yearly fee and give you 20% of the profits (carry), so what they receive is less than what your companies earn. Your score is net TVPI: what LPs get back per dollar they put in. At the end, the game compares your fund with real venture funds.`,
+     demo:`<div class="tut-demo"><div class="wflow"><div class="wstat"><b>2.4x</b><small>gross multiple</small></div><span>→</span><div class="wstat"><b>−fees</b><small>2% a year</small></div><span>→</span><div class="wstat"><b>−carry</b><small>20% of profit</small></div><span>→</span><div class="wstat"><b>1.8x</b><small>net TVPI to LPs</small></div></div></div>`},
+    {t:'Reading the screen', b:`The bar at the top tracks your fund. Tabs below it hold your portfolio, your relationships with other funds, what your LPs see, the market, and your Notebook of lessons and definitions. ${G&&G.teach?'The first time a concept comes up, a short card explains it with your own numbers. ':''}Press End quarter when you are done with a quarter.`,
+     demo:`<table class="glance tut-hud"><tbody><tr><th scope="row">Dry powder</th><td>Money you have left to invest</td></tr><tr><th scope="row">Calls</th><td>Diligence calls left for the whole fund</td></tr><tr><th scope="row">Hours</th><td>Partner hours left this quarter</td></tr><tr><th scope="row">Market</th><td>Boom, normal, correction or recession, plus the interest rate</td></tr><tr><th scope="row">Net TVPI</th><td>Your score so far, after fees and carry</td></tr><tr><th scope="row">Founder rep</th><td>How founders talk about you</td></tr></tbody></table>`},
+  ];
+}
+function renderTutorial(M){
+  const S=tutSteps(), i=M.i, st=S[i], last=i===S.length-1;
+  return `<div class="tut">
+    <div class="tut-top"><p class="eyebrow">How to play · ${i+1} of ${S.length}</p><button class="ghost small" data-act="tutClose">Skip</button></div>
+    <h2>${st.t}</h2><p class="tut-b">${st.b}</p>${st.demo}
+    <div class="wnav"><button class="ghost" data-act="tutGo" data-d="-1" ${i===0?'disabled':''} aria-label="Previous step">←</button>
+      <span class="wdots">${S.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</span>
+      ${last?`<button class="primary" data-act="tutClose">Start playing</button>`:`<button class="primary" data-act="tutGo" data-d="1">Next →</button>`}</div></div>`;
+}
+
 function renderNetwork(){
   const meter=(v,marks)=>`<span class="relbar"><i style="width:${v}%"></i>${marks.map(m=>`<b style="left:${m}%"></b>`).join('')}</span>`;
   const perks=f=>[f.refers?[f.thr,`Shares deals with you`]:null,[60,'Saves you room in hot rounds it leads'],f.id==='copperline'?[60,'Your Series A+ companies raise more easily']:null,f.id==='larchmere'?[60,'Refers its best deals: much stronger companies']:null].filter(Boolean);
@@ -1951,7 +2002,7 @@ function lessonList(withNum){
   return `<ol class="lessons">${seen.map(k=>{const L=G.lessonLog&&G.lessonLog[k]; return `<li><b>${L?esc(L.t):k}</b>${L?` <span class="muted">· ${qLabel(L.q)}</span><p>${esc(L.b)}</p>${L.f?`<p class="fnote"><b>Field note:</b> ${esc(L.f)}</p>`:''}<p class="lq"><b>Discuss:</b> ${esc(L.qq)}</p>`:''}</li>`;}).join('')}</ol>`;
 }
 function renderNotebook(){
-  return `<div class="section-h"><div><h2>Notebook</h2><p>Every concept you have met so far, the glossary, and the full fund log.</p></div><button class="ghost small" data-act="askRestart">Start a new fund</button></div>
+  return `<div class="section-h"><div><h2>Notebook</h2><p>Every concept you have met so far, the glossary, and the full fund log.</p></div><div class="row" style="display:flex;gap:8px"><button class="small" data-act="openTut">How to play</button><button class="ghost small" data-act="askRestart">Start a new fund</button></div></div>
     <section class="card" style="padding:14px 16px;display:grid;gap:8px"><p class="eyebrow">Teaching moments · ${G.lessonsSeen.length} of ${LESSON_ORDER.length}</p>${lessonList()}</section>
     <details class="card" style="padding:14px 16px" open><summary>Field notes · ${FIELD_NOTES.length} from ${AUTHOR}</summary><p class="muted" style="font-size:.82rem;margin-top:6px">How these ideas show up in practice, from the author's notes as a ${AUTHOR_CRED}.</p><dl class="gloss">${FIELD_NOTES.map(([t,d])=>`<div><dt>${t}</dt><dd>${d}</dd></div>`).join('')}</dl></details>
     <details class="card" style="padding:14px 16px"><summary>Glossary · ${GLOSSARY.length} terms</summary><dl class="gloss">${GLOSSARY.map(([t,d])=>`<div><dt>${t}</dt><dd>${d}</dd></div>`).join('')}</dl></details>
@@ -2007,6 +2058,7 @@ function renderModal(){
       :`<p>The cap is ${fmt$(cur)} today. With no lead, whoever writes the first check helps set the price. Founders say yes more often when demand is soft and your reputation is good, and a lowball on a hot round can backfire. You get one try, and it takes about a week.</p>
       <div class="checks">${[0.1,0.2,0.3].map(dz=>`<button class="check" data-act="negotiate" data-disc="${dz}"><b>${pct(dz,0)} lower</b><span>${fmt$(cur*(1-dz))} cap · $1M buys ${pct(1e6/(cur*(1-dz)),1)}</span><span class="num">${odds(negOdds(c,dz))}</span></button>`).join('')}</div>`}`;
   }
+  if(M.type==='tut') body=renderTutorial(M);
   if(M.type==='turn'){
     const T=G.turn, jumped=G.q-T.pq>1, changed=T.pr!==G.regime, up=ORDER.indexOf(G.regime)<ORDER.indexOf(T.pr);
     const heads=G.recap.slice(0,6), more=G.recap.length-heads.length, n=G.q<INVEST_QS?G.deals.length:0, needs=G.pending.length+G.companies.filter(c=>c.owned&&c.status==='alive'&&c.crisis).length;
@@ -2284,7 +2336,11 @@ const ACT={
   pickDiff:d=>{START.diff=d.k},
   pickGp:d=>{START.gp=+(d.k??d.p)},
   newSeed:()=>{START.seed=randomSeed()},
-  start:()=>{ newGame({...START,seed:(START.seed||randomSeed()).trim()}); startQuarterUI(); window.scrollTo(0,0); },
+  start:()=>{ newGame({...START,seed:(START.seed||randomSeed()).trim()}); startQuarterUI(); if(START.tutorial) G.modal={type:'tut',i:0}; window.scrollTo(0,0); },
+  openTut:()=>{ G.modal={type:'tut',i:0}; },
+  tutGo:d=>{ const n=tutSteps().length; G.modal.i=Math.max(0,Math.min(n-1,G.modal.i+(+d.d))); },
+  tutClose:()=>{ G.modal=null; },
+  toggleTut:()=>{START.tutorial=!START.tutorial},
   tab:d=>{G.tab=d.k},
   openCall:d=>{G.modal={type:'call',cid:+d.id,picked:[]}},
   pickQ:d=>{const p=G.modal.picked,i=p.indexOf(d.k); if(i>=0)p.splice(i,1); else if(p.length<QPERCALL)p.push(d.k);},
@@ -2333,6 +2389,8 @@ document.addEventListener('input',e=>{
 });
 document.addEventListener('change',e=>{ if(e.target.id==='thesisSel') START.thesis=e.target.value; });
 document.addEventListener('keydown',e=>{
+  if(G&&G.modal&&G.modal.type==='tut'){ if(e.key==='ArrowRight'||e.key==='Enter'){ e.preventDefault(); if(G.modal.i>=tutSteps().length-1) ACT.tutClose(); else ACT.tutGo({d:1}); render(); return; } if(e.key==='ArrowLeft'){ ACT.tutGo({d:-1}); render(); return; } if(e.key==='Escape'){ ACT.tutClose(); render(); return; } }
+  if(e.key==='?'&&G&&!G.over&&!G.modal&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement&&document.activeElement.tagName)){ ACT.openTut(); render(); return; }
   if(e.key==='Enter'&&G&&G.modal&&G.modal.type==='turn'){ e.preventDefault(); ACT.turnGo(); render(); return; }
   if(e.key==='Escape'&&G&&G.modal&&G.modal.type==='turn'){ ACT.turnGo(); render(); return; }
   if(e.key==='Escape'&&G&&G.modal){ if(G.modal.type==='lesson') G.lessonQ.shift(); G.modal=null;render();}
