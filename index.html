@@ -3,7 +3,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
 <style>
 /* Layout: a partner's desk. Sticky fund ticker on top, tabbed workspace below; deals are memo cards, portfolio is a ledger. */
 :root{
@@ -11,9 +11,9 @@
   --accent:#1F4FD8; --accent-ink:#FFFFFF; --accent-soft:#E2E9FB; --band:#C3D1F7;
   --good:#17804F; --good-soft:#DDF2E7; --warn:#A0630E; --warn-soft:#F7EBD4; --bad:#BF3B33; --bad-soft:#F8E0DE;
   --shadow:0 1px 2px rgba(20,30,40,.06),0 4px 14px rgba(20,30,40,.05);
-  --f-display:'Archivo','Arial Narrow',system-ui,sans-serif;
+  --f-display:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
   --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  --f-mono:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --paper:#0D1319; --card:#151D26; --ink:#E2E8EE; --muted:#8C98A5; --line:#27323E;
@@ -55,7 +55,37 @@ label.f{display:grid;gap:.35rem;font-size:.82rem;font-weight:600;color:var(--mut
 
 /* ---------- Start screen ---------- */
 .start{padding-block:48px 64px;display:grid;gap:36px}
-.brand{font-size:clamp(3.6rem,13vw,8.5rem);font-stretch:62%;font-weight:900;letter-spacing:-.01em;line-height:.88;text-transform:uppercase}
+.start{grid-template-columns:minmax(0,1fr)}
+@media (min-width:980px){.start{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);column-gap:48px;align-items:start}.start .how,.start .srcs{grid-column:1/-1}.hero{position:sticky;top:24px}}
+.hero{display:grid;gap:16px;align-content:start}
+.lockup{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-stretch:80%;font-weight:850;font-size:1.5rem;letter-spacing:-.01em}
+.hero-h{font-family:var(--f-display);font-stretch:85%;font-weight:800;font-size:clamp(2rem,4.4vw,3.1rem);line-height:1.05;letter-spacing:-.015em;max-width:18ch}
+.proof{list-style:none;margin:0;padding:0;display:grid;gap:10px;max-width:58ch}
+.proof li{position:relative;padding-left:26px;font-size:.94rem;color:var(--muted)}
+.proof li b{color:var(--ink)}
+.proof li::before{content:"";position:absolute;left:0;top:.3em;width:14px;height:14px;border-radius:4px;background:var(--accent-soft);border:1.5px solid var(--accent)}
+.curve .axis{stroke:var(--line);stroke-width:1}
+.byline{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;max-width:58ch}
+.logo{width:22px;height:22px;flex:0 0 auto;vertical-align:-4px}
+.logo.xl{width:40px;height:40px}
+.logo .lg-bg{fill:var(--accent)}
+.logo .lg-curve{fill:none;stroke:var(--accent-ink);stroke-width:2.6;stroke-linecap:round}
+.logo .lg-dot{fill:var(--accent-ink)}
+.setup h2{font-size:1.35rem}
+.step{display:grid;grid-template-columns:28px minmax(0,1fr);gap:12px;padding-top:14px;border-top:1px solid var(--line)}
+.sn{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-mono);font-size:.8rem;font-weight:600;background:var(--accent-soft);color:var(--accent)}
+.sb{display:grid;gap:8px;min-width:0}
+.sb h3{font-size:.98rem}
+.hint{font-size:.83rem;color:var(--muted);line-height:1.45}
+.seg{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--line);border-radius:10px;padding:3px;background:var(--paper)}
+.seg button{flex:1 1 auto;border:0;background:transparent;border-radius:7px;padding:.5rem .7rem;font-size:.86rem;color:var(--muted);white-space:nowrap}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(20,30,40,.12),inset 0 0 0 1px var(--line)}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.terms-chips{display:flex;flex-wrap:wrap;gap:6px;padding-top:14px;border-top:1px solid var(--line)}
+.terms-chips span{font-family:var(--f-mono);font-size:.72rem;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--paper);border:1px solid var(--line);color:var(--muted)}
+.cta{width:100%;justify-content:center}
+.how .hn{font-family:var(--f-display);font-weight:800;font-size:1.02rem}
+.srcs{font-size:.76rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
 .brand span{color:var(--accent)}
 .lede{max-width:62ch;font-size:1.08rem;margin-top:14px;color:var(--ink)}
 .curve{width:100%;max-width:520px;height:auto;margin-top:18px}
@@ -419,7 +449,7 @@ button.big{padding:.8rem 1.3rem;font-size:1rem;display:inline-flex;gap:10px;alig
 .modes{margin-bottom:2px}
 .hud .hud-in{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px 22px;align-items:center;padding-block:10px}
 .hud-id{display:grid;gap:2px;line-height:1.1}
-.hud-id b{font-family:var(--f-display);font-stretch:75%;font-weight:850;font-size:1.3rem;text-transform:uppercase}
+.hud-id b{font-family:var(--f-display);font-stretch:85%;font-weight:800;font-size:1.15rem;display:flex;align-items:center;gap:7px}
 .hud-when{font-family:var(--f-mono);font-size:.82rem;font-weight:600}
 .hud-phase{justify-self:start;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
 .hud-phase.h{background:var(--good-soft);color:var(--good)}
@@ -487,7 +517,7 @@ button.big{padding:.8rem 1.3rem;font-size:1rem;display:inline-flex;gap:10px;alig
 .kpi span{font-size:.78rem;color:var(--muted)}
 .kpi.hero{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .kpi.hero small,.kpi.hero span{color:var(--accent-ink);opacity:.85}
-.verdict{font-family:var(--f-display);font-stretch:70%;font-weight:900;font-size:clamp(2.4rem,8vw,4.6rem);text-transform:uppercase;line-height:.95}
+.verdict{font-family:var(--f-display);font-stretch:80%;font-weight:850;font-size:clamp(2.2rem,6vw,3.6rem);letter-spacing:-.015em;line-height:1}
 .bridge3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:12px}
 .bridge3 .card{padding:14px 16px;display:grid;gap:6px}
 .bridge3 b{font-family:var(--f-mono);font-size:1.4rem}
@@ -547,6 +577,55 @@ details summary{cursor:pointer;font-weight:600}
   @keyframes dealIn{from{opacity:0;transform:translateY(18px) rotate(-1.5deg)}to{opacity:1;transform:none}}
   @keyframes rise{from{transform:translateY(4px)}to{transform:none}}
 }
+
+/* ---- Professional pass: one typeface, sentence-case labels, hairline borders, tight corners ---- */
+body{font-variant-numeric:tabular-nums}
+.card{border-radius:6px;box-shadow:none}
+.modal{border-radius:8px;box-shadow:0 12px 40px rgba(15,25,35,.22)}
+button{border-radius:5px}
+.chip,.lu,.terms-chips span,.hud-phase{border-radius:4px}
+.seg{border-radius:6px}.seg button{border-radius:4px}
+.eyebrow,.dsec h4,.kpi small,.hm small,.stat small,.facts small,.terms dt,.lu-t small,.lad-axis,.fnote b,.lq b,.tomb-kind,.wverdict,.lessons .lq b,.bdg small,.badge-toast small,.glance th{
+  font-family:var(--f-body);text-transform:none;letter-spacing:0;font-size:.78rem;font-weight:600}
+.eyebrow,.dsec h4,.kpi small,.hm small,.stat small,.facts small,.terms dt,.lu-t small{color:var(--muted)}
+.dsec h4{font-size:.8rem;color:var(--ink)}
+.tag,.legend-line .tag{font-family:var(--f-body);text-transform:none;letter-spacing:0;font-size:.7rem;border-radius:3px}
+.hero-h{font-weight:600;font-size:clamp(1.7rem,3.2vw,2.3rem);line-height:1.15;letter-spacing:-.01em;max-width:24ch}
+.lockup{font-weight:700;font-size:1.2rem;letter-spacing:-.01em}
+.logo.xl{width:30px;height:30px}
+.glance{border-collapse:collapse;width:100%;max-width:62ch;font-size:.9rem}
+.glance th{text-align:left;vertical-align:top;white-space:nowrap;padding:9px 18px 9px 0;color:var(--ink);border-top:1px solid var(--line);width:1%}
+.glance td{padding:9px 0;border-top:1px solid var(--line);color:var(--muted)}
+.glance th,.glance td{white-space:normal}
+.glance tr:last-child th,.glance tr:last-child td{border-bottom:1px solid var(--line)}
+.byline{border-top:0;padding-top:0}
+.glance th{white-space:nowrap}
+.hero,.setup{min-width:0}
+.hud-id b{font-weight:700;font-size:1.02rem}
+.verdict{font-weight:700;font-size:clamp(1.9rem,4.5vw,2.8rem);letter-spacing:-.015em}
+.kpi b{font-weight:600;font-size:1.9rem;letter-spacing:-.01em}
+.whero b{font-weight:600;font-size:clamp(3.2rem,11vw,4.6rem);letter-spacing:-.02em}
+.wslide h2,.lesson-card h2,.tomb h2,.lobby h2,.wrapup h2,.pitch-who h3,.repnum{font-weight:650;letter-spacing:-.01em}
+.wslide h2,.lesson-card h2{font-size:1.6rem}
+.lobby h2{font-size:clamp(1.7rem,4vw,2.3rem)}
+.pitch-who h3{font-size:1.45rem}
+.tomb h2{font-size:1.7rem}
+.tomb-big b{font-weight:600;font-size:2.5rem;letter-spacing:-.02em}
+.turn-when{font-weight:600;font-size:clamp(2.2rem,6vw,3rem);letter-spacing:-.02em}
+.stamp{font-family:var(--f-body);font-weight:700;font-size:2.2rem;letter-spacing:.04em;border-width:3px;border-radius:6px;padding:8px 18px}
+.stamp small{font-family:var(--f-body);font-size:.85rem;font-weight:600;letter-spacing:0}
+.wverdict{border-radius:4px;padding:3px 10px}
+.opener{border-radius:6px;font-size:1rem}
+.hotbar,.flag,.pref-note,.fnote,.lq,.toast,.crisis{border-radius:5px}
+.fnote{border-radius:0 5px 5px 0}
+.lcard,.fundcard,.tile,.bdg,.check,.diff,.gpopt,.q{border-radius:6px}
+.lcard{box-shadow:none}
+.avatar{font-family:var(--f-body);font-weight:600}
+.lad-seg b,.terms dd,.dsec dd,.hm .num,.stat span,.facts span,.barrow .n,.chart text,.curve text{font-family:var(--f-body)}
+.ask{font-style:normal}
+.how div{border-top-width:1px}
+.badge-toast{border-radius:8px}
+.bt-medal{border-radius:6px}
 </style>
 
 <div id="app"></div>
@@ -606,11 +685,11 @@ const TRANS = {
   recession: {boom:0,   normal:.06, correction:.26, recession:.68},
 };
 const DIFFS = {
-  easy:  {label:'Bull Market', rate:1.5,  calls:24, hours:12, down:0.5, start:'boom',
+  easy:  {label:'Bull market', rate:1.5,  calls:24, hours:12, down:0.5, start:'boom',
           blurb:'Cheap money, open exit windows, rare downturns. 24 diligence calls, 12 partner hours a quarter.'},
-  normal:{label:'Full Cycle',  rate:3.0,  calls:18, hours:10, down:1.0, start:'normal',
+  normal:{label:'Full cycle',  rate:3.0,  calls:18, hours:10, down:1.0, start:'normal',
           blurb:'Rates drift, a correction is likely at some point. 18 diligence calls, 10 partner hours a quarter.'},
-  hard:  {label:'Rate Shock',  rate:0.25, calls:14, hours:8,  down:1.3, start:'boom', shock:true,
+  hard:  {label:'Rate shock',  rate:0.25, calls:14, hours:8,  down:1.3, start:'boom', shock:true,
           blurb:'Start at the top of a frothy market, then rates climb fast for two years. 14 calls, 8 hours a quarter.'},
 };
 
@@ -1289,52 +1368,53 @@ function momentumLabel(c){
   if(m>-0.4) return ['Steady','chip-acc']; if(m>-1.1) return ['Struggling','chip-warn']; return ['Critical','chip-bad'];
 }
 
+// Brand mark: a power-law curve in a rounded square.
+const LOGO=(cls='')=>`<svg class="logo ${cls}" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" class="lg-bg"/><path d="M7 7 C 9 19, 13 23, 25 24" class="lg-curve"/><circle cx="7" cy="7" r="2.4" class="lg-dot"/></svg>`;
+function seg(name,opts,cur,act){
+  return `<div class="seg" role="radiogroup" aria-label="${name}">${opts.map(([k,l])=>`<button class="${cur===k?'on':''}" role="radio" aria-checked="${cur===k}" data-act="${act}" data-k="${k}">${l}</button>`).join('')}</div>`;
+}
 function renderStart(){
-  const D=DIFFS;
+  const M=MODES[START.mode], D=DIFFS[START.diff];
   return `<main class="wrap start">
-    <section>
-      <p class="eyebrow">A venture capital fund simulator</p>
-      <h1 class="brand">Power<br><span>Law</span></h1>
-      <p class="lede">Run a $50M seed fund for ten years in under an hour. Read founder pitches, spend a small budget of diligence calls on the deals you care about, decide who gets your follow-on reserves, and support founders through the market cycle. Your score is the multiple you return.</p>
-      <svg class="curve" viewBox="0 0 520 140" role="img" aria-label="Power-law curve: a few companies return most of the fund">
-        <path class="fill" d="M20 12 C 60 100, 120 118, 500 122 L500 126 L20 126 Z"/>
-        <path class="line" d="M20 12 C 60 100, 120 118, 500 122"/>
-        <text x="28" y="20">1 company returns the fund</text>
-        <text x="330" y="112">most return 0–1x</text>
-      </svg>
+    <section class="hero">
+      <div class="lockup">${LOGO('xl')}<span>Power Law</span></div>
+      <h1 class="hero-h">A venture capital fund simulation for finance courses</h1>
+      <p class="lede">Students run a $50M seed fund through a ten-year cycle. They price rounds, decide how much to hold back for follow-ons, and see how fees, carry and timing turn gross returns into what limited partners actually receive.</p>
+      <table class="glance"><tbody>
+        <tr><th scope="row">Format</th><td>Individual play. Give the class one market seed and every student sees the same market and the same founders.</td></tr>
+        <tr><th scope="row">Length</th><td>About 45 minutes of play for a class session, or two hours and more for a full fund.</td></tr>
+        <tr><th scope="row">Topics</th><td>Valuation and ownership, SAFEs and caps, pro-rata and reserves, bridges, liquidation preferences, the power law, fees and carry, the J-curve.</td></tr>
+        <tr><th scope="row">Benchmarks</th><td>Net IRR by quartile from Carta (2017 vintage) and the deal outcome mix from Correlation Ventures.</td></tr>
+        <tr><th scope="row">Debrief</th><td>Fourteen teaching moments, each with a discussion question, collected into a discussion guide at the end.</td></tr>
+      </tbody></table>
+      <p class="byline">Created by ${AUTHOR}. Practitioner notes draw on the Venture Institute (Decile Group) and fund work.</p>
     </section>
     <section class="card setup" aria-label="Fund setup">
       ${START.challenge?`<div class="challenge"><b>You've been challenged.</b> ${esc(START.challenge.from)} returned <b>${START.challenge.beat.toFixed(2)}x net TVPI</b> on seed ${esc(START.seed)}. Same market, same deals. Beat it.</div>`:''}
-      <h2>Raise your fund</h2>
-      <div class="diffs modes" role="radiogroup" aria-label="Session length">
-        ${Object.entries(MODES).map(([k,m])=>`<button class="diff ${START.mode===k?'on':''}" role="radio" aria-checked="${START.mode===k}" data-act="pickMode" data-k="${k}"><b>${m.label}</b><small>${m.blurb}</small></button>`).join('')}
-      </div>
-      <label class="teachopt" for="teachChk"><input type="checkbox" id="teachChk" data-act="toggleTeach" ${START.teach?'checked':''}> Show teaching moments: a short card with a discussion question the first time each concept comes up</label>
-      <div class="diffs" role="radiogroup" aria-label="Difficulty">
-        ${Object.entries(D).map(([k,d])=>`<button class="diff ${START.diff===k?'on':''}" role="radio" aria-checked="${START.diff===k}" data-act="pickDiff" data-k="${k}"><b>${d.label}</b><small>${d.blurb}</small></button>`).join('')}
-      </div>
-      <div class="setup-grid">
-        <label class="f" for="fundName">Fund name<input id="fundName" value="${esc(START.fund)}" maxlength="28"></label>
-        <label class="f" for="thesisSel">Investment thesis
-          <select id="thesisSel">${['Generalist',...SECTORS].map(s=>`<option ${START.thesis===s?'selected':''}>${s}</option>`).join('')}</select></label>
-        <label class="f" for="seedInput">Market seed
-          <span class="seedrow"><input id="seedInput" value="${esc(START.seed)}" inputmode="numeric" maxlength="12"><button class="small" data-act="newSeed" type="button">New</button></span></label>
-      </div>
-      <div class="f"><span>GP commitment <span class="muted">· from your ${fmt$(GP_WEALTH)} of personal capital</span></span>
-        <div class="gpopts" role="radiogroup" aria-label="GP commitment">
-          ${GP_OPTS.map(p=>`<button class="gpopt ${START.gp===p?'on':''}" role="radio" aria-checked="${START.gp===p}" data-act="pickGp" data-p="${p}"><b>${p?pct(p,0):'None'}</b><small>${p?fmt$(FUND*p):'$0'} in · ${fmt$(GP_WEALTH-FUND*p)} kept</small></button>`).join('')}
+      <h2>Set up your fund</h2>
+      <div class="step"><span class="sn">1</span><div class="sb"><h3>Session</h3>
+        ${seg('Session length',Object.entries(MODES).map(([k,m])=>[k,m.label]),START.mode,'pickMode')}
+        <p class="hint">${M.blurb}</p>
+        <label class="teachopt" for="teachChk"><input type="checkbox" id="teachChk" data-act="toggleTeach" ${START.teach?'checked':''}> Teaching moments with discussion questions</label></div></div>
+      <div class="step"><span class="sn">2</span><div class="sb"><h3>Market</h3>
+        ${seg('Market conditions',Object.entries(DIFFS).map(([k,d])=>[k,d.label]),START.diff,'pickDiff')}
+        <p class="hint">${D.blurb}</p></div></div>
+      <div class="step"><span class="sn">3</span><div class="sb"><h3>Your fund</h3>
+        <div class="setup-grid">
+          <label class="f" for="fundName">Fund name<input id="fundName" value="${esc(START.fund)}" maxlength="28"></label>
+          <label class="f" for="thesisSel">Thesis
+            <select id="thesisSel">${['Generalist',...SECTORS].map(x=>`<option ${START.thesis===x?'selected':''}>${x}</option>`).join('')}</select></label>
+          <label class="f" for="seedInput">Market seed
+            <span class="seedrow"><input id="seedInput" value="${esc(START.seed)}" inputmode="numeric" maxlength="12"><button class="small" data-act="newSeed" type="button">New</button></span></label>
         </div>
-        <small class="muted" style="font-weight:400">LPs commit $50M on 2 and 20 terms: a 2% yearly fee on commitments for ten years ($10M total) and 20% carry, paid deal by deal (American waterfall) with a clawback at the end. Your GP commitment invests alongside them with no fees or carry, so it adds dry powder and puts your own money on the line. Money you keep is set aside for other uses.</small>
-      </div>
-      <p class="muted" style="font-size:.85rem">A sector thesis sends you more deals in that sector, makes founder pitches there easier to read, and makes your support 30% more effective. It also concentrates your risk when that sector hits bad news. Players who share a seed and thesis see the same market and the same deals, which makes classroom comparisons fair.</p>
-      <div><button class="primary" data-act="start">Close the fund and start Year 1</button></div>
+        <p class="hint">A sector thesis brings more deals in that sector and makes your support count 30% more, but concentrates risk. For a class, give everyone the same seed.</p></div></div>
+      <div class="step"><span class="sn">4</span><div class="sb"><h3>GP commitment</h3>
+        ${seg('GP commitment',GP_OPTS.map(x=>[String(x),x?pct(x,0)+' · '+fmt$(FUND*x):'None']),String(START.gp),'pickGp')}
+        <p class="hint">Your own money in the fund, from ${fmt$(GP_WEALTH)} of personal capital. It pays no fees or carry and adds dry powder. You keep ${fmt$(GP_WEALTH-FUND*START.gp)}.</p></div></div>
+      <div class="terms-chips"><span>$50M from LPs</span><span>2% fee</span><span>20% carry</span><span>American waterfall</span><span>10-year life</span></div>
+      <button class="primary big cta" data-act="start">Close the fund and start Year 1</button>
     </section>
-    <section class="how" aria-label="How the game works">
-      <div><h3>Ten years, forty quarters</h3><p>First comes the investment period, when founders pitch every quarter: two years in a class session, four in a full fund. The rest is the harvest: no new deals, only follow-ons, support and exits.</p></div>
-      <div><h3>Pitches are noisy</h3><p>Every deal shows the founder's own read on team, traction, revenue, technology, market and fit. The bands show how unsure you should be. Diligence calls narrow them and surface red flags.</p></div>
-      <div><h3>Reserves decide winners</h3><p>When a company raises, you can buy your pro-rata or pass. When one stalls, insiders get asked for a bridge. Run out of money and you can't back your breakout.</p></div>
-      <div><h3>Founders need your time</h3><p>You get a fixed number of partner hours each quarter. Spend them on recruiting, customer intros, fundraising prep or board sessions when a crisis hits.</p></div>
-    </section>
+    <footer class="srcs">Benchmarks: Carta VC Fund Performance Report, Q1 2025 (2017 vintage). S&amp;P 500 10-year return: Cambridge Associates, H1 2025. Outcome mix: Correlation Ventures via Deutsche Bank Wealth Management. Companies, founders and co-investor funds in the game are fictional.</footer>
   </main>`;
 }
 
@@ -1355,7 +1435,7 @@ function renderHeader(){
   const ticks=Array.from({length:TOTAL_QS},(_,i)=>`<i class="${i<G.q?'past':i===G.q?'now':i<INVEST_QS?'inv':''}" title="${qLabel(i)}"></i>`).join('');
   const maxCalls=Math.round(G.D.calls*MODES[G.mode].callMult);
   return `<header class="bar hud"><div class="wrap hud-in">
-      <div class="hud-id"><b>${esc(G.fundName)}</b><span class="hud-when">Year ${Math.floor(G.q/4)+1} · Q${G.q%4+1}</span><span class="hud-phase ${harvest?'h':''}">${harvest?'Harvest':'Investing'}</span></div>
+      <div class="hud-id"><b>${LOGO()}${esc(G.fundName)}</b><span class="hud-when">Year ${Math.floor(G.q/4)+1} · Q${G.q%4+1}</span><span class="hud-phase ${harvest?'h':''}">${harvest?'Harvest':'Investing'}</span></div>
       <div class="hud-meters">
         <div class="hm hm-cash" data-hud="cash" title="Dry powder: money left to invest"><small>Dry powder</small><span class="hm-row"><span class="hbar"><i style="width:${(G.cash/G.investable*100).toFixed(1)}%"></i></span><b class="num">${fmt$(G.cash)}</b></span></div>
         <div class="hm" title="Diligence calls left for the whole fund"><small>Calls</small><span class="hm-row"><b class="num">${G.calls}</b><span class="muted small">/ ${maxCalls}</span></span></div>
@@ -1913,12 +1993,12 @@ function renderModal(){
   }
   if(M.type==='turn'){
     const T=G.turn, jumped=G.q-T.pq>1, changed=T.pr!==G.regime, up=ORDER.indexOf(G.regime)<ORDER.indexOf(T.pr);
-    const heads=G.recap.slice(0,4), n=G.q<INVEST_QS?G.deals.length:0, needs=G.pending.length+G.companies.filter(c=>c.owned&&c.status==='alive'&&c.crisis).length;
+    const heads=G.recap.slice(0,6), more=G.recap.length-heads.length, n=G.q<INVEST_QS?G.deals.length:0, needs=G.pending.length+G.companies.filter(c=>c.owned&&c.status==='alive'&&c.crisis).length;
     body=`<div class="turn reg-${G.regime}">
       <p class="eyebrow">${jumped?`Fast-forward · ${G.q-T.pq} quarters`:'New quarter'}</p>
       <h2 class="turn-when">Year ${Math.floor(G.q/4)+1} <span>·</span> Q${G.q%4+1}</h2>
       <div class="turn-wx">${weather(G.regime,'big')}<div><b>${REGIMES[G.regime].label} market</b><span>${changed?`${up?'Improving':'Worsening'} from ${REGIMES[T.pr].label.toLowerCase()}`:'Holding steady'} · Fed funds ${G.rate.toFixed(2)}%</span></div></div>
-      ${heads.length?`<ul class="turn-news">${heads.map(r=>`<li class="${r.t}">${esc(r.text)}</li>`).join('')}</ul>`:''}
+      ${heads.length?`<ul class="turn-news">${heads.map(r=>`<li class="${r.t}">${esc(r.text)}</li>`).join('')}</ul>${more>0?`<p class="muted" style="font-size:.8rem">${more} more in the Notebook's fund log.</p>`:''}`:''}
       <p class="turn-next">${n?`${n} founders are waiting in the lobby.`:needs?`${needs} decision${needs>1?'s':''} need${needs>1?'':'s'} you in the portfolio.`:'Your portfolio is quiet this quarter.'}</p>
       <div class="mfoot"><button class="primary big" data-act="turnGo">Continue <kbd>Enter</kbd></button></div></div>`;
   }
@@ -2150,7 +2230,7 @@ function render(){
   const alerts=G.pending.length+G.companies.filter(c=>c.owned&&c.status==='alive'&&c.crisis).length;
   const tabs=[['deals',G.q<INVEST_QS?'Pitch day':'Deal flow',G.q<INVEST_QS?waitingFounders():0,false],['port','Portfolio',alerts||nOwn,alerts>0],['net','Network',0,false],['fund','LP view',0,false],['market','Market',0,false],['log','Notebook',G.lessonQ?0:0,false]];
   const views={deals:renderDeals,port:renderPortfolio,net:renderNetwork,fund:renderFund,market:renderMarket,log:renderNotebook};
-  const showRecap=!(G.tab==='deals'&&G.q<INVEST_QS&&G.stage!=='intro');
+  const showRecap=false;
   app.innerHTML=renderHeader()+`<main class="wrap game">${showRecap?renderRecap():''}
     <nav class="tabs" role="tablist">${tabs.map(([k,l,n,a])=>`<button class="tab ${G.tab===k?'on':''}" role="tab" aria-selected="${G.tab===k}" data-act="tab" data-k="${k}">${l}${n?`<span class="count ${a?'alert':''}">${n}</span>`:''}</button>`).join('')}</nav>
     ${views[G.tab]()}</main>`+renderModal();
@@ -2186,7 +2266,7 @@ function showEvents(){ if(!G) return; if(G.over){ G.modal={type:'wrap',i:0}; ret
 function markTurn(pq,pr){ if(G&&!G.over) G.turn={pq,pr}; }
 const ACT={
   pickDiff:d=>{START.diff=d.k},
-  pickGp:d=>{START.gp=+d.p},
+  pickGp:d=>{START.gp=+(d.k??d.p)},
   newSeed:()=>{START.seed=randomSeed()},
   start:()=>{ newGame({...START,seed:(START.seed||randomSeed()).trim()}); startQuarterUI(); window.scrollTo(0,0); },
   tab:d=>{G.tab=d.k},
